@@ -3,13 +3,14 @@
 }
 
 .scena-menu {
-    position: absolute;
-    top: 0;
-    width: var(--menu);
-    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    width: 100%;
+    height: var(--menu);
     background: var(--back2);
     box-sizing: border-box;
-    padding: 15px 7px 0px;
+    padding: 0.75rem 1rem;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -17,11 +18,6 @@
 }
 
 .scena-menu-bottom {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    padding: 15px 7px 0px;
-    width: 100%;
     box-sizing: border-box;
 }
 
@@ -30,6 +26,7 @@
 }
 
 .scena-icon {
+    width: 2rem;
     position: relative;
     display: block;
     font-size: 0;
@@ -37,7 +34,6 @@
     box-sizing: border-box;
     cursor: pointer;
     border: 1px solid transparent;
-    margin-bottom: 5px;
     border-radius: 3px;
     transition: all ease 0.2s;
 }
