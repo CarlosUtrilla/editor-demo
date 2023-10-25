@@ -835,8 +835,10 @@ export default class Editor extends React.PureComponent<
     this.eventBus.trigger("blur");
   }
   private onResize = () => {
-    this.horizontalGuides.current!.resize();
-    this.verticalGuides.current!.resize();
+    if (this.horizontalGuides.current && this.verticalGuides.current) {
+      this.horizontalGuides.current!.resize();
+      this.verticalGuides.current!.resize();
+    }
   };
   private onBlur = (e: any) => {
     const target = e.target as HTMLElement | SVGElement;
