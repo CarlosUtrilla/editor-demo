@@ -39,6 +39,7 @@ export interface ElementInfo {
 export default class Viewport extends React.PureComponent<{
     style: IObject<any>,
     onBlur: (e: any) => any,
+    children: React.ReactNode
 }> {
     public components: IObject<ScenaComponent> = {};
     public jsxs: IObject<ScenaJSXElement> = {};
@@ -129,17 +130,19 @@ export default class Viewport extends React.PureComponent<{
 
     public getLastChildInfo(id: string) {
         const info = this.getInfo(id);
-        const children = info.children!;
+        const children = info ? info.children! : [];
 
         return children[children.length - 1];
     }
     public getNextInfo(id: string) {
         const info = this.getInfo(id);
-        const parentInfo = this.getInfo(info.scopeId!)!;
-        const parentChildren = parentInfo.children!;
-        const index = parentChildren.indexOf(info);
-
-        return parentChildren[index + 1];
+        if (info.scopeId) {
+            const parentInfo = this.getInfo(info.scopeId!)!;
+            const parentChildren = parentInfo.children!;
+            const index = parentChildren.indexOf(info);
+            return parentChildren[index + 1];
+        }
+        return
     }
     public getPrevInfo(id: string) {
         const info = this.getInfo(id);

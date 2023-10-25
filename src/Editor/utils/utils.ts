@@ -3,7 +3,6 @@ import { PREFIX, DATA_SCENA_ELEMENT_ID } from "../consts";
 import { EDITOR_PROPERTIES } from "../consts";
 import { ScenaFunctionComponent, ScenaProps, ScenaComponent, ScenaJSXElement, ScenaFunctionJSXElement } from "../types";
 import { IObject } from "@daybrush/utils";
-import { isFunction, isObject } from "util";
 
 export function prefix(...classNames: string[]) {
     return prefixNames(PREFIX, ...classNames);
@@ -12,7 +11,7 @@ export function getContentElement(el: HTMLElement): HTMLElement | null {
     if (el.contentEditable === "inherit") {
         return getContentElement(el.parentElement!);
     }
-    if (el.contentEditable === "true")  {
+    if (el.contentEditable === "true") {
         return el;
     }
     return null;
@@ -55,10 +54,10 @@ export function checkImageLoaded(el: HTMLElement | SVGElement): Promise<any> {
     }
     return new Promise(resolve => {
         if ((el as HTMLImageElement).complete) {
-            resolve();
+            resolve("");
         } else {
             el.addEventListener("load", function loaded() {
-                resolve();
+                resolve("");
 
                 el.removeEventListener("load", loaded);
             })
@@ -100,14 +99,14 @@ export function getScenaAttrs(el: HTMLElement | SVGElement) {
 }
 
 export function isScenaFunction(value: any): value is ScenaComponent {
-    return isFunction(value) && "scenaComponentId" in value;
+    return typeof value === 'function' && "scenaComponentId" in value;
 }
 
 export function isScenaElement(value: any): value is ScenaJSXElement {
-    return isObject(value) && !isScenaFunction(value);
+    return value !== null && typeof value === 'object' && !isScenaFunction(value);
 }
 export function isScenaFunctionElement(value: any): value is ScenaFunctionJSXElement {
-    return isScenaElement(value) && isFunction(value.type);
+    return isScenaElement(value) && typeof value === 'function';
 }
 
 export function isNumber(value: any): value is number {

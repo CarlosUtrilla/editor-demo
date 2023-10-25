@@ -85,6 +85,8 @@ export default class Editor extends React.PureComponent<
     width: number;
     height: number;
     debug?: boolean;
+    initialJSX?: ElementInfo[]
+    backgroundImg?: string;
   },
   Partial<ScenaEditorState>
 > {
@@ -97,7 +99,8 @@ export default class Editor extends React.PureComponent<
     horizontalGuides: [],
     verticalGuides: [],
     zoom: 1,
-    selectedMenu: "MoveTool"
+    selectedMenu: "MoveTool",
+    showGuides: false
   };
   public historyManager = new HistoryManager(this);
   public console = new Debugger(this.props.debug);
@@ -129,8 +132,8 @@ export default class Editor extends React.PureComponent<
       selecto,
       state
     } = this;
-    const { selectedMenu, selectedTargets, zoom } = state;
-    const { width, height } = this.props;
+    const { selectedMenu, selectedTargets, zoom, showGuides } = state;
+    const width = 500, height = 500;
     const horizontalSnapGuides = [
       0,
       height,
@@ -147,54 +150,62 @@ export default class Editor extends React.PureComponent<
       <div className={prefix("editor")} ref={this.editorElement}>
         <Tabs ref={tabs} editor={this}></Tabs>
         <Menu ref={menu} editor={this} onSelect={this.onMenuChange} />
-        <div
-          className={prefix("reset")}
-          onClick={(e) => {
-            infiniteViewer.current!.scrollCenter();
-          }}
-        ></div>
-        <Guides
-          ref={horizontalGuides}
-          type="horizontal"
-          className={prefix("guides", "horizontal")}
-          style={{}}
-          snapThreshold={5}
-          snaps={horizontalSnapGuides}
-          displayDragPos={true}
-          dragPosFormat={(v) => `${v}px`}
-          zoom={zoom}
-          unit={unit}
-          onChangeGuides={(e) => {
-            // console.log(this.horizontalSnapGuides, "x");
+        {
+          showGuides &&
+          <React.Fragment>
+              <div
+                className={prefix("reset")}
+                onClick={(e) => {
+                  infiniteViewer.current!.scrollCenter();
+                }}
+              ></div>
+              <Guides
+                ref={horizontalGuides}
+                type="horizontal"
+                className={prefix("guides", "horizontal")}
+                style={{}}
+                snapThreshold={5}
+                snaps={horizontalSnapGuides}
+                displayDragPos={true}
+                dragPosFormat={(v) => `${v}px`}
+                zoom={zoom}
+                unit={unit}
+                onChangeGuides={(e) => {
+                  // console.log(this.horizontalSnapGuides, "x");
 
-            this.setState({
-              horizontalGuides: e.guides
-            });
-          }}
-        ></Guides>
-        <Guides
-          ref={verticalGuides}
-          type="vertical"
-          className={prefix("guides", "vertical")}
-          style={{}}
-          snapThreshold={5}
-          snaps={verticalSnapGuides}
-          displayDragPos={true}
-          dragPosFormat={(v) => `${v}px`}
-          zoom={zoom}
-          unit={unit}
-          onChangeGuides={(e) => {
-            this.setState({
-              verticalGuides: e.guides
-            });
-          }}
-        ></Guides>
+                  this.setState({
+                    horizontalGuides: e.guides
+                  });
+                }}
+              ></Guides>
+              <Guides
+                ref={verticalGuides}
+                type="vertical"
+                className={prefix("guides", "vertical")}
+                style={{}}
+                snapThreshold={5}
+                snaps={verticalSnapGuides}
+                displayDragPos={true}
+                dragPosFormat={(v) => `${v}px`}
+                zoom={zoom}
+                unit={unit}
+                onChangeGuides={(e) => {
+                  this.setState({
+                    verticalGuides: e.guides
+                  });
+                }}
+              ></Guides>
+          </React.Fragment>
+        }
         <InfiniteViewer
           ref={infiniteViewer}
           className={prefix("viewer")}
-          usePinch={true}
-          pinchThreshold={50}
+          pinchThreshold={5}
+          wheelScale={0.001}
           zoom={zoom}
+          zoomRange={[0,4]}
+          rangeX={[0, 0]}
+          rangeY={[0, 0]}
           onDragStart={(e) => {
             const target = e.inputEvent.target;
             this.checkBlur();
@@ -218,35 +229,43 @@ export default class Editor extends React.PureComponent<
             selecto.current!.triggerDragStart(e.inputEvent);
           }}
           onScroll={(e) => {
-            horizontalGuides.current!.scroll(e.scrollLeft);
-            horizontalGuides.current!.scrollGuides(e.scrollTop);
-
-            verticalGuides.current!.scroll(e.scrollTop);
-            verticalGuides.current!.scrollGuides(e.scrollLeft);
+            if (horizontalGuides.current) {
+              horizontalGuides.current!.scroll(e.scrollLeft);
+              horizontalGuides.current!.scrollGuides(e.scrollTop);
+            }
+            if (verticalGuides.current) {
+              verticalGuides.current!.scroll(e.scrollTop);
+              verticalGuides.current!.scrollGuides(e.scrollLeft);
+            }
           }}
           onPinch={(e) => {
+            const zoom = e.zoom >= 1 ? e.zoom : 1
             this.setState({
-              zoom: e.zoom
+              zoom
             });
           }}
         >
-          <Viewport
-            ref={viewport}
-            onBlur={this.onBlur}
-            style={{
-              width: `${width}px`,
-              height: `${height}px`
-            }}
+            <Viewport
+              ref={viewport}
+              onBlur={this.onBlur}
+              style={{
+                width: `${width}px`,
+                height: `${height}px`,
+              }}
           >
-            <MoveableManager
-              ref={moveableManager}
-              selectedTargets={selectedTargets}
-              selectedMenu={selectedMenu}
-              verticalGuidelines={verticalSnapGuides}
-              horizontalGuidelines={horizontalSnapGuides}
-              editor={this}
-            ></MoveableManager>
-          </Viewport>
+              {
+                this.props.backgroundImg &&
+                <img src={this.props.backgroundImg} alt=""/>
+              }
+              <MoveableManager
+                ref={moveableManager}
+                selectedTargets={selectedTargets}
+                selectedMenu={selectedMenu}
+                verticalGuidelines={verticalSnapGuides}
+                horizontalGuidelines={horizontalSnapGuides}
+                editor={this}
+              ></MoveableManager>
+            </Viewport>
         </InfiniteViewer>
         <Selecto
           ref={selecto}
@@ -330,6 +349,7 @@ export default class Editor extends React.PureComponent<
     requestAnimationFrame(() => {
       infiniteViewer.current!.scrollCenter();
     });
+
     window.addEventListener("resize", this.onResize);
     const viewport = this.getViewport();
 
@@ -467,6 +487,9 @@ export default class Editor extends React.PureComponent<
       redoChangeText
     );
     this.historyManager.registerType("move", undoMove, redoMove);
+    if (this.props.initialJSX && this.props.initialJSX.length > 0) { 
+      this.appendJSXs(this.props.initialJSX, true)
+    }
   }
   public componentWillUnmount() {
     this.eventBus.off();
@@ -479,7 +502,7 @@ export default class Editor extends React.PureComponent<
   public promiseState(state: Partial<ScenaEditorState>) {
     return new Promise((resolve) => {
       this.setState(state, () => {
-        resolve();
+        resolve("");
       });
     });
   }
@@ -587,13 +610,14 @@ export default class Editor extends React.PureComponent<
 
     targets.forEach(function removeFrame(target) {
       const info = viewport.getInfoByElement(target)!;
-
-      frameMap[info.id!] = moveableData.getFrame(target).get();
-      moveableData.removeFrame(target);
-
-      info.children!.forEach((childInfo) => {
-        removeFrame(childInfo.el!);
-      });
+      if (info && info.attrs && info.attrs.class as string === "moveable") {
+        console.log("deleting " + info)
+        frameMap[info.id!] = moveableData.getFrame(target).get();
+        moveableData.removeFrame(target);
+        info.children!.forEach((childInfo) => {
+          removeFrame(childInfo.el!);
+        });
+      }
     });
 
     return frameMap;
@@ -628,9 +652,10 @@ export default class Editor extends React.PureComponent<
         indexesList[indexesListLength - 1]
       );
       const nextInfo = viewport.getNextInfo(lastInfo.id!);
-
-      scopeId = lastInfo.scopeId!;
-      selectedInfo = nextInfo;
+      if (nextInfo) {
+        scopeId = lastInfo.scopeId!;
+        selectedInfo = nextInfo;
+      }
     }
     // return;
     return viewport.removeTargets(targets).then(({ removed }) => {

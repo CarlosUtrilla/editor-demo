@@ -15,6 +15,7 @@ export interface ScenaEditorState {
     verticalGuides: number[];
     selectedMenu: string;
     zoom: number;
+    showGuides: boolean;
 }
 
 export interface TagAppendInfo {

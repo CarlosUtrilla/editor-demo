@@ -59,7 +59,7 @@ export default class ClipboardManager {
                             "image/png": blob,
                         }),
                     ]);
-                    resolve();
+                    resolve("");
                 });
             });
         });
