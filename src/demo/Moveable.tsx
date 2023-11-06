@@ -72,6 +72,7 @@ class App extends React.Component {
                 debug={true}
                 initialJSX={elements}
                 backgroundImg="https://api.renoshop.mx/productsImg/5a0c0476-36e9-45db-95de-447fa0a23db9.webp"
+                onChange={console.log}
             />
         </div>;
     }

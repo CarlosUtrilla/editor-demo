@@ -21,6 +21,9 @@ export default class HistoryManager {
             props,
         });
         this.redoStack = [];
+        if (this.editor.props.onChange && this.editor.viewport.current) {
+            this.editor.props.onChange(this.editor.viewport.current.getViewportInfos())
+        }
     }
     public undo() {
         const undoAction = this.undoStack.pop();

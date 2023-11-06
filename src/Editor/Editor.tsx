@@ -85,8 +85,9 @@ export default class Editor extends React.PureComponent<
     width: number;
     height: number;
     debug?: boolean;
-    initialJSX?: ElementInfo[]
+    initialJSX?: ElementInfo[];
     backgroundImg?: string;
+    onChange?: (evt: ElementInfo[]) => void;
   },
   Partial<ScenaEditorState>
 > {
