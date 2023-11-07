@@ -35,10 +35,11 @@ export default class MoveablePrintArea extends React.PureComponent<{
 
 											return (
 												<polygon
+													key={p.id}
 													points={`${topLeft} ${topRight} ${bottomRight} ${bottomLeft}`}
 													style={{
 														transform,
-														transformOrigin: `${left + (width/2)}px ${top + (height/2)}px`
+														transformOrigin: `${left + (width / 2)}px ${top + (height / 2)}px`
 													}}
 												/>
 											)

@@ -11,10 +11,12 @@ import Icon from "./Icon";
 import Editor from "../Editor";
 import KeyboardIcon from "./KeyboardIcon";
 import PrintAreaIcon from "./PrintAreaIcon";
+import ImageIcon from "./ImageIcon";
 
 const MENUS: Array<typeof Icon> = [
     MoveToolIcon,
     PrintAreaIcon,
+    ImageIcon,
     TextIcon,
     CropIcon,
     RectIcon,
@@ -49,7 +51,14 @@ export default class Menu extends React.PureComponent<{
             if (!menuRefs[i]) {
                 menuRefs[i] = React.createRef();
             }
-            return <MenuClass ref={menuRefs[i]} key={id} editor={editor} selected={selected === id} onSelect={this.select} />;
+            return (
+                <MenuClass
+                    ref={menuRefs[i]}
+                    key={id} editor={editor}
+                    selected={selected === id}
+                    onSelect={this.select}
+                />
+            );
         });
     }
     public select = (id: string) => {

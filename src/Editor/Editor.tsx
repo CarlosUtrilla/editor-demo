@@ -89,6 +89,7 @@ export default class Editor extends React.PureComponent<
     initialJSX?: ElementInfo[];
     backgroundImg?: string;
     onChange?: (evt: ElementInfo[]) => void;
+    onUploadImage?: (img: File)=> Promise<string>
   },
   Partial<ScenaEditorState>
 > {
@@ -572,11 +573,13 @@ export default class Editor extends React.PureComponent<
       });
   }
   public appendComplete(infos: ElementInfo[], isRestore?: boolean) {
-    !isRestore &&
+    if (!isRestore) {
       this.historyManager.addAction("createElements", {
         infos,
         prevSelected: getIds(this.getSelectedTargets())
       });
+      this.menu.current?.select("MoveTool")
+    }
     const data = this.moveableData;
     const targets = infos
       .map(function registerFrame(info) {

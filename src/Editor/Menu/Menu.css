@@ -21,10 +21,6 @@
     box-sizing: border-box;
 }
 
-.scena-menu svg, .scena-menu .scena-i {
-    pointer-events: none;
-}
-
 .scena-icon {
     width: 2rem;
     position: relative;
@@ -36,6 +32,9 @@
     border: 1px solid transparent;
     border-radius: 3px;
     transition: all ease 0.2s;
+}
+.scena-icon label{
+    cursor: pointer;
 }
 
 .scena-menu .scena-selected {

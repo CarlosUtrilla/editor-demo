@@ -189,9 +189,10 @@ export default class MoveableManager extends React.PureComponent<{
             onRenderStart={e => {
                 e.datas.prevData = moveableData.getFrame(e.target).get();
             }}
-            onRender={e => {
+            onRender={async(e) => {
                 e.datas.isRender = true;
                 eventBus.requestTrigger("render");
+                this.updateRender(e.target)
             }}
             onRenderEnd={async (e) => {
                 eventBus.requestTrigger("render");
@@ -204,16 +205,7 @@ export default class MoveableManager extends React.PureComponent<{
                     prev: e.datas.prevData,
                     next: moveableData.getFrame(e.target).get(),
                 });
-                const viewport = this.editor.getViewport()
-                const element = viewport.getInfoByElement(e.target)
-
-                // update the element adding transform css
-                element.frame = moveableData.getFrame(e.target).get()
-                await viewport.appendJSXs([element], -1)
-
-                if (element.name === "(PrintArea)") {
-                    this.editor.forceUpdate()
-                }
+                this.updateRender(e.target)
             }}
             onRenderGroupStart={e => {
                 e.datas.prevDatas = e.targets.map(target => moveableData.getFrame(target).get());
@@ -268,6 +260,19 @@ export default class MoveableManager extends React.PureComponent<{
     }
     public updateRect() {
         this.getMoveable().updateRect();
+    }
+    private async updateRender(e: HTMLElement | SVGElement) {
+        const { moveableData} = this.editor
+        const viewport = this.editor.getViewport()
+        const element = viewport.getInfoByElement(e)
+
+        // update the element adding transform css
+        element.frame = moveableData.getFrame(e).get()
+        await viewport.appendJSXs([element], -1)
+
+        if (element.name === "(PrintArea)") {
+            this.editor.forceUpdate()
+        }
     }
 }
 export default interface MoveableManager extends EditorInterface { }

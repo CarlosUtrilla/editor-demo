@@ -67,9 +67,9 @@ export default abstract class Icon extends React.PureComponent<{
             this.focusSub();
         }
         const onSelect = this.props.onSelect;
-
+        const iconId = (this.constructor as any).id
         if (onSelect) {
-            onSelect((this.constructor as any).id);
+            onSelect(iconId);
         }
     }
     public onSubClick = (e: any) => {
