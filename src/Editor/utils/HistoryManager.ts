@@ -26,6 +26,9 @@ export default class HistoryManager {
                 this.editor.viewport.current.getViewportInfos()
                     .map(e => {
                         delete e.el
+                        if (e.name === "(PrintArea)" && e.attrs && e.attrs.class) {
+                            e.attrs.class = undefined
+                        }
                         return e
                     })
             )

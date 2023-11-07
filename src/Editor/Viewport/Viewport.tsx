@@ -79,6 +79,7 @@ export default class Viewport extends React.PureComponent<{
             const props: IObject<any> = {
                 key: id,
             };
+
             if (editor.props.isAdmin || (!editor.props.isAdmin && info.name !== "(PrintArea)")) {
                 props.class = "selectable"
             }
