@@ -56,7 +56,6 @@ export default class Viewport extends React.PureComponent<{
     public viewportRef = React.createRef<HTMLDivElement>();
     public render() {
         const style = this.props.style;
-
         return <div className={prefix("viewport-container")} onBlur={this.props.onBlur} style={style}>
             {this.props.children}
             <div className={prefix("viewport")} {...{ [DATA_SCENA_ELEMENT_ID]: "viewport" }} ref={this.viewportRef}>
@@ -217,12 +216,11 @@ export default class Viewport extends React.PureComponent<{
         jsxInfos.forEach((info, i) => {
             const scopeInfo = this.getInfo(scopeId || info.scopeId!);
             const children = scopeInfo.children!;
-
             if (appendIndex > -1) {
-                children.splice(appendIndex + i, 0, info);
+                children.splice(appendIndex + i, 1, info);
                 info.index = appendIndex + i;
             } else if (isNumber(info.index)) {
-                children.splice(info.index, 0, info);
+                children.splice(info.index, 1, info);
             } else {
                 info.index = children.length;
                 children.push(info);

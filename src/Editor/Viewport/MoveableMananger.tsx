@@ -193,17 +193,27 @@ export default class MoveableManager extends React.PureComponent<{
                 e.datas.isRender = true;
                 eventBus.requestTrigger("render");
             }}
-            onRenderEnd={e => {
+            onRenderEnd={async (e) => {
                 eventBus.requestTrigger("render");
 
                 if (!e.datas.isRender) {
                     return;
                 }
                 this.historyManager.addAction("render", {
-                    id: getId(e.target),
+                    id:getId(e.target),
                     prev: e.datas.prevData,
                     next: moveableData.getFrame(e.target).get(),
                 });
+                const viewport = this.editor.getViewport()
+                const element = viewport.getInfoByElement(e.target)
+
+                // update the element adding transform css
+                element.frame = moveableData.getFrame(e.target).get()
+                await viewport.appendJSXs([element], -1)
+
+                if (element.name === "(PrintArea)") {
+                    this.editor.forceUpdate()
+                }
             }}
             onRenderGroupStart={e => {
                 e.datas.prevDatas = e.targets.map(target => moveableData.getFrame(target).get());

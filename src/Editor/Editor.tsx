@@ -31,6 +31,7 @@ import Debugger from "./utils/Debugger";
 import { isMacintosh, DATA_SCENA_ELEMENT_ID } from "./consts";
 import ClipboardManager from "./utils/ClipboardManager";
 import { NameType } from "scenejs";
+import MoveablePrintArea from "./Viewport/MoveablePrintArea";
 
 function undoCreateElements(
   { infos, prevSelected }: IObject<any>,
@@ -143,10 +144,7 @@ export default class Editor extends React.PureComponent<
     ];
     const verticalSnapGuides = [0, width, width / 2, ...state.verticalGuides];
     let unit = 50;
-
-    if (zoom < 0.8) {
-      unit = Math.floor(1 / zoom) * 50;
-    }
+    const printAreas = (this.getViewport()?.getViewportInfos() || []).filter(c=> c.name === "(PrintArea)")
     return (
       <div className={prefix("editor")} ref={this.editorElement}>
         <Tabs ref={tabs} editor={this}></Tabs>
@@ -265,7 +263,8 @@ export default class Editor extends React.PureComponent<
                 verticalGuidelines={verticalSnapGuides}
                 horizontalGuidelines={horizontalSnapGuides}
                 editor={this}
-              ></MoveableManager>
+            ></MoveableManager>
+            <MoveablePrintArea printAreas={printAreas}/>
             </Viewport>
         </InfiniteViewer>
         <Selecto
@@ -488,7 +487,7 @@ export default class Editor extends React.PureComponent<
       redoChangeText
     );
     this.historyManager.registerType("move", undoMove, redoMove);
-    if (this.props.initialJSX && this.props.initialJSX.length > 0) { 
+    if (this.props.initialJSX && this.props.initialJSX.length > 0) {
       this.appendJSXs(this.props.initialJSX, true)
     }
   }
@@ -500,6 +499,7 @@ export default class Editor extends React.PureComponent<
     this.clipboardManager.destroy();
     window.removeEventListener("resize", this.onResize);
   }
+
   public promiseState(state: Partial<ScenaEditorState>) {
     return new Promise((resolve) => {
       this.setState(state, () => {
@@ -564,8 +564,6 @@ export default class Editor extends React.PureComponent<
       scopeId = info.scopeId!;
       appendIndex = indexes[indexes.length - 1] + 1;
     }
-
-    this.console.log("append jsxs", jsxs, appendIndex, scopeId);
 
     return this.getViewport()
       .appendJSXs(jsxs, appendIndex, scopeId)
@@ -799,8 +797,8 @@ export default class Editor extends React.PureComponent<
       return false;
     }
     const maker = selectIcon.maker(this.memory);
-    const scrollTop = -infiniteViewer.getScrollTop() + 30;
-    const scrollLeft = -infiniteViewer.getScrollLeft() + 75;
+    const scrollTop = -infiniteViewer.getScrollTop() + 45;
+    const scrollLeft = -infiniteViewer.getScrollLeft();
     const top = rect.top - scrollTop;
     const left = rect.left - scrollLeft;
 
