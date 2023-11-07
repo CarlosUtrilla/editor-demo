@@ -1,14 +1,13 @@
 import * as React from "react";
 import Icon from "./Icon";
 import Memory from "../utils/Memory";
-import Editor from '../Editor';
 
 export default class ImageIcon extends Icon {
 		public static id = "Image";
     public static maker = (memory: Memory) => ({
         tag: "img",
 				attrs: {
-					src: memory.get("imageUrl") || ""
+					src: memory.get("imageUrl") || "",
 				},
         style: {},
 		});

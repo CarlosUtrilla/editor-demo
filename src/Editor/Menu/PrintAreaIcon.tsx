@@ -8,8 +8,8 @@ export default class PrintAreaIcon extends Icon {
         tag: "div",
         attrs: {},
         style: {
-					"background-color": "transparent",
-					"border": "1px dashed #000"
+            "background-color": "transparent",
+            "border": "1px dashed #000"
         },
     });
     public renderIcon() {

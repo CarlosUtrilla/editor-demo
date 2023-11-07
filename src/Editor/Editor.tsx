@@ -89,7 +89,8 @@ export default class Editor extends React.PureComponent<
     initialJSX?: ElementInfo[];
     backgroundImg?: string;
     onChange?: (evt: ElementInfo[]) => void;
-    onUploadImage?: (img: File)=> Promise<string>
+    onUploadImage?: (img: File)=> Promise<string>,
+    isAdmin?: boolean;
   },
   Partial<ScenaEditorState>
 > {
@@ -252,6 +253,7 @@ export default class Editor extends React.PureComponent<
                 width: `${width}px`,
                 height: `${height}px`,
               }}
+              editor={this}
           >
               {
                 this.props.backgroundImg &&
@@ -272,7 +274,7 @@ export default class Editor extends React.PureComponent<
           ref={selecto}
           dragContainer={".scena-viewer"}
           hitRate={0}
-          selectableTargets={[`.scena-viewport [${DATA_SCENA_ELEMENT_ID}]`]}
+          selectableTargets={[`.scena-viewport [${DATA_SCENA_ELEMENT_ID}].selectable`]}
           selectByClick={true}
           selectFromInside={false}
           toggleContinueSelect={["shift"]}
@@ -593,8 +595,6 @@ export default class Editor extends React.PureComponent<
 
     return Promise.all(targets.map((target) => checkImageLoaded(target))).then(
       () => {
-        this.setSelectedTargets(targets, true);
-
         return targets;
       }
     );

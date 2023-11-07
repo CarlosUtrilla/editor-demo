@@ -3,6 +3,7 @@ import { IObject, isString, isArray } from "@daybrush/utils";
 import { prefix, getId, getScenaAttrs, isScenaFunction, isScenaElement, isNumber, isScenaFunctionElement } from "../utils/utils";
 import { DATA_SCENA_ELEMENT_ID } from "../consts";
 import { ScenaJSXElement, ScenaComponent, ScenaJSXType } from "../types";
+import Editor from "../Editor";
 
 export interface AddedInfo {
     added: ElementInfo[];
@@ -37,6 +38,7 @@ export interface ElementInfo {
     innerHTML?: string;
 }
 export default class Viewport extends React.PureComponent<{
+    editor: Editor,
     style: IObject<any>,
     onBlur: (e: any) => any,
     children: React.ReactNode
@@ -68,13 +70,19 @@ export default class Viewport extends React.PureComponent<{
     }
     public renderChildren(children: ElementInfo[]): ScenaJSXElement[] {
         return children.map(info => {
+            const editor = this.props.editor
             const jsx = info.jsx;
             const nextChildren = info.children!;
             const renderedChildren = this.renderChildren(nextChildren);
             const id = info.id!;
+            console.log("info.name", info.name);
             const props: IObject<any> = {
                 key: id,
             };
+            if (editor.props.isAdmin || (!editor.props.isAdmin && info.name !== "(PrintArea)")) {
+                props.class = "selectable"
+            }
+
             if (isString(jsx)) {
                 props[DATA_SCENA_ELEMENT_ID] = id;
                 return React.createElement(jsx, props, ...renderedChildren) as ScenaJSXElement;

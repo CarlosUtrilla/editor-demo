@@ -46,7 +46,7 @@ export default class Menu extends React.PureComponent<{
         const menuRefs = this.menuRefs;
         const editor = this.props.editor;
 
-        return MENUS.map((MenuClass, i) => {
+        return MENUS.filter(m=> !editor.props.isAdmin ? m.id !== "PrintArea" : true).map((MenuClass, i) => {
             const id = MenuClass.id;
             if (!menuRefs[i]) {
                 menuRefs[i] = React.createRef();

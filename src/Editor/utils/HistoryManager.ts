@@ -22,7 +22,13 @@ export default class HistoryManager {
         });
         this.redoStack = [];
         if (this.editor.props.onChange && this.editor.viewport.current) {
-            this.editor.props.onChange(this.editor.viewport.current.getViewportInfos())
+            this.editor.props.onChange(
+                this.editor.viewport.current.getViewportInfos()
+                    .map(e => {
+                        delete e.el
+                        return e
+                    })
+            )
         }
     }
     public undo() {
