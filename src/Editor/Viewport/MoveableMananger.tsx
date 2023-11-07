@@ -116,7 +116,7 @@ export default class MoveableManager extends React.PureComponent<{
             return selectedTargets.indexOf(el) === -1;
         });
         const isShift = keyManager.shiftKey;
-
+        const targetIsImage = selectedTargets.every(el => el.tagName === 'IMG');
         return <Moveable<DimensionViewableProps>
             ables={[DimensionViewable]}
             ref={this.moveable}
@@ -129,7 +129,7 @@ export default class MoveableManager extends React.PureComponent<{
             dragArea={selectedTargets.length > 1 || selectedMenu !== "Text"}
             checkInput={selectedMenu === "Text"}
             throttleDragRotate={isShift ? 45 : 0}
-            keepRatio={isShift}
+            keepRatio={(targetIsImage && !isShift) || (!targetIsImage && isShift)}
             rotatable={true}
             snappable={true}
             snapCenter={true}
