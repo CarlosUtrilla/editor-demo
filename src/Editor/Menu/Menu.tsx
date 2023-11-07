@@ -10,9 +10,11 @@ import RoundRectIcon from "./RoundRectIcon";
 import Icon from "./Icon";
 import Editor from "../Editor";
 import KeyboardIcon from "./KeyboardIcon";
+import PrintAreaIcon from "./PrintAreaIcon";
 
 const MENUS: Array<typeof Icon> = [
     MoveToolIcon,
+    PrintAreaIcon,
     TextIcon,
     CropIcon,
     RectIcon,

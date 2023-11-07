@@ -26,6 +26,11 @@
 .scena-viewport-container {
     position: relative;
 }
+.scena-viewport-container svg{
+    position: absolute;
+    top: 0;
+    left: 0;
+}
 .scena-viewport-container img{
     position: absolute;
     width: 100%;
@@ -40,6 +45,7 @@
     height: 100%;
     border: 1px solid #eee;
     box-sizing: border-box;
+    clip-path: url(#printAreas);
 }
 
 .scena-guides {
