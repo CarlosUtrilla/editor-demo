@@ -75,7 +75,6 @@ export default class Viewport extends React.PureComponent<{
             const nextChildren = info.children!;
             const renderedChildren = this.renderChildren(nextChildren);
             const id = info.id!;
-            console.log("info.name", info.name);
             const props: IObject<any> = {
                 key: id,
             };

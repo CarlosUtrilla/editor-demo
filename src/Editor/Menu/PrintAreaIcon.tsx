@@ -9,7 +9,9 @@ export default class PrintAreaIcon extends Icon {
         attrs: {},
         style: {
             "background-color": "transparent",
-            "border": "1px dashed #000"
+            "border-width": "1px",
+            "border-style": "dashed",
+            "border-color": memory.get("border-color") || "#000"
         },
     });
     public renderIcon() {

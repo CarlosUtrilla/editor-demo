@@ -348,6 +348,7 @@ export default class Editor extends React.PureComponent<
     const { infiniteViewer, memory, eventBus } = this;
     memory.set("background-color", "#4af");
     memory.set("color", "#333");
+    memory.set("border-color", "#000");
 
     requestAnimationFrame(() => {
       infiniteViewer.current!.scrollCenter();

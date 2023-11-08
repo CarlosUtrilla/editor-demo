@@ -1,5 +1,6 @@
 import { IObject } from "@daybrush/utils";
 import Editor from "../Editor";
+import { ElementInfo } from "../Viewport/Viewport";
 
 export type RestoreCallback = (props: any, editor: Editor) => any;
 export interface HistoryAction {
@@ -22,15 +23,23 @@ export default class HistoryManager {
         });
         this.redoStack = [];
         if (this.editor.props.onChange && this.editor.viewport.current) {
+            const elements = this.editor.viewport.current.getViewportInfos()
+            let stringElements = JSON.stringify(elements, (key, value) => {
+                // Excluir propiedades específicas del objeto que causan referencias circulares
+                if (key.includes('__reactInternalInstance') || value instanceof HTMLDivElement) {
+                    return undefined;
+                }
+                return value;
+            });
+            const parsedElements = JSON.parse(stringElements) as ElementInfo[]
             this.editor.props.onChange(
-                this.editor.viewport.current.getViewportInfos()
-                    .map(e => {
-                        delete e.el
-                        if (e.name === "(PrintArea)" && e.attrs && e.attrs.class) {
-                            e.attrs.class = undefined
-                        }
-                        return e
-                    })
+                parsedElements.map(e => {
+                    delete e.el
+                    if (e.name === "(PrintArea)" && e.attrs && e.attrs.class) {
+                        e.attrs.class = undefined
+                    }
+                    return e
+                })
             )
         }
     }

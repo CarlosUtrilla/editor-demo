@@ -37,7 +37,7 @@ export function between(val: number, min: number, max: number) {
 }
 
 export function getId(el: HTMLElement | SVGElement) {
-    return el.getAttribute(DATA_SCENA_ELEMENT_ID)!;
+    return el.getAttribute(DATA_SCENA_ELEMENT_ID)! || el.dataset.scenaElementId!;
 }
 export function getIds(els: Array<HTMLElement | SVGElement>): string[] {
     return els.map(el => getId(el));

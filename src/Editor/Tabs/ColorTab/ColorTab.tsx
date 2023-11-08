@@ -13,13 +13,16 @@ export default class ColorTab extends Tab {
         const frames = this.moveableData.getSelectedFrames();
         let backgroundColor = this.memory.get("background-color");
         let color = this.memory.get("color");
+        let borderColor = this.memory.get("border-color");
 
         if (frames.length) {
             const backgroundColors = frames.map(frame => frame.get("background-color"));
             const colors = frames.map(frame => frame.get("color"));
+            const borderColors = frames.map(frame => frame.get("border-color"));
 
             backgroundColor = backgroundColors.filter(color => color)[0] || "transparent";
             color = colors.filter(color => color)[0] || "#333";
+            borderColor = borderColors.filter(color => color)[0] || "#000"
         }
 
         return <div className={prefix("current-tab")}>
@@ -35,6 +38,12 @@ export default class ColorTab extends Tab {
                 value={color}
                 updateValue={true}
                 onChange={this.onChangeTextColor} />
+            <TabInputBox type={"full"}
+                label="Border Color"
+                input={ColorBox}
+                value={borderColor}
+                updateValue={true}
+                onChange={this.onChangeBorderColor} />
         </div>;
     }
     public componentDidMount() {
@@ -48,6 +57,10 @@ export default class ColorTab extends Tab {
     public onChangeTextColor = (v: string) => {
         this.memory.set("color", v);
         this.editor.setProperty(["color"], v);
+    }
+     public onChangeBorderColor = (v: string) => {
+        this.memory.set("border-color", v);
+        this.editor.setProperty(["border-color"], v);
     }
     private onRender = () => {
         this.forceUpdate();

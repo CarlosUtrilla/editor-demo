@@ -23,6 +23,7 @@ class App extends React.Component {
                         reader.readAsDataURL(file);
                     })
                 }}
+                isAdmin
             />
         </div>;
     }
