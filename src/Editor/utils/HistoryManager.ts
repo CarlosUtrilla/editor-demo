@@ -25,7 +25,6 @@ export default class HistoryManager {
         if (this.editor.props.onChange && this.editor.viewport.current) {
             const elements = this.editor.viewport.current.getViewportInfos()
             let stringElements = JSON.stringify(elements, (key, value) => {
-                // Excluir propiedades específicas del objeto que causan referencias circulares
                 if (key.includes('__reactInternalInstance') || value instanceof HTMLDivElement) {
                     return undefined;
                 }

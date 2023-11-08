@@ -80,7 +80,7 @@ export default class Viewport extends React.PureComponent<{
             };
 
             if (editor.props.isAdmin || (!editor.props.isAdmin && info.name !== "(PrintArea)")) {
-                props.class = "selectable"
+                props.className = "selectable"
             }
 
             if (isString(jsx)) {
