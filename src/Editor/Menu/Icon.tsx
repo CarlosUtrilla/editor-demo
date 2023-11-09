@@ -4,6 +4,7 @@ import { IObject, camelize } from "@daybrush/utils";
 import Memory from "../utils/Memory";
 import Editor from "../Editor";
 import { EditorInterface } from "../types";
+import Menu from "./Menu";
 
 
 export interface Maker {
@@ -21,7 +22,7 @@ export default abstract class Icon extends React.PureComponent<{
 }> {
     public static id: string | string[];
     public static maker?: (memory: Memory) => Maker;
-    public static makeThen: (target: HTMLElement | SVGElement) => any = () => { };
+    public static makeThen: (target: HTMLElement | SVGElement, id: string, menu: Menu) => any = () => { };
     public keys: string[] = [];
     public abstract renderIcon(): any;
     private subContainer = React.createRef<HTMLDivElement>();

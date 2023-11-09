@@ -541,6 +541,7 @@ export default class Editor extends React.PureComponent<
       this.selecto.current!.setSelectedTargets(targets);
       this.moveableData.setSelectedTargets(targets);
       this.eventBus.trigger("setSelectedTargets");
+      this.menu.current?.forceUpdate()
       return targets;
     });
   }
@@ -819,7 +820,10 @@ export default class Editor extends React.PureComponent<
       attrs: maker.attrs,
       name: `(${selectIcon.id})`,
       frame: style
-    }).then(selectIcon.makeThen);
+    }).then((el) => {
+      selectIcon.makeThen(el, selectIcon.id as string, this.menu.current!)
+      this.menu.current?.forceUpdate()
+    });
     return true;
   }
   private move(deltaX: number, deltaY: number) {
@@ -845,7 +849,7 @@ export default class Editor extends React.PureComponent<
   };
   private onBlur = (e: any) => {
     const target = e.target as HTMLElement | SVGElement;
-
+    this.menu.current?.select("MoveTool")
     if (!checkInput(target)) {
       return;
     }

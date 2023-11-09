@@ -25,6 +25,13 @@ export const HomeMenu: Array<typeof Icon> = [
 	RedoIcon
 ];
 
+export const TextMenu: Array<typeof Icon> = [
+	MoveToolIcon,
+	Divider,
+	TextIcon,
+	Divider
+]
+
 export const CompleteMenu: Array<typeof Icon> = [
 	MoveToolIcon,
 	PrintAreaIcon,

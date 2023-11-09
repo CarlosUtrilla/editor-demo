@@ -1,26 +1,11 @@
 import * as React from "react";
 import { prefix } from "../utils/utils";
-import MoveToolIcon from "./MoveToolIcon";
-import "./Menu.css";
-import TextIcon from "./TextIcon";
 import Icon from "./Icon";
 import Editor from "../Editor";
-import KeyboardIcon from "./KeyboardIcon";
-import PrintAreaIcon from "./PrintAreaIcon";
-import ImageIcon from "./ImageIcon";
-import Divider from "./Divider";
-import ShapesIcon from "./ShapesIcon";
-import { CompleteMenu, HomeMenu } from "./MenusList";
+import { CompleteMenu, HomeMenu, TextMenu } from "./MenusList";
+import "./Menu.css";
 
-const MENUS: Array<typeof Icon> = [
-    MoveToolIcon,
-    Divider,
-    PrintAreaIcon,
-    ShapesIcon,
-    TextIcon,
-    ImageIcon,
-    Divider,
-];
+
 export default class Menu extends React.PureComponent<{
     editor: Editor,
     onSelect: (id: string) => any
@@ -33,17 +18,27 @@ export default class Menu extends React.PureComponent<{
         return (
             <div className={prefix("menu")}>
                 {this.renderMenus()}
-                <div className={prefix("menu-bottom")}>
+                {/* <div className={prefix("menu-bottom")}>
                     <KeyboardIcon editor={this.props.editor} />
-                </div>
+                </div> */}
             </div>
         );
     }
     public renderMenus() {
-        const selected = this.state.selected;
+        let selected = this.state.selected;
         const menuRefs = this.menuRefs;
         const editor = this.props.editor;
-        const menu =  HomeMenu
+        const viewport = editor.getViewport()
+        let menu = HomeMenu
+        const targets = editor.getSelectedTargets().map(target => viewport.getInfoByElement(target))
+        const isTargetsSame = targets.every(t=> t.name === targets[0].name)
+        if ((isTargetsSame && targets.length > 0 )|| selected !== "MoveTool") {
+            const target = selected !== "MoveTool" ? selected: targets[0].name.replaceAll(/\(|\)/g, '')
+            selected = target
+            if (["Text"].includes(target)) {
+                menu = TextMenu
+            }
+        }
         return menu
             .filter(m => !editor.props.isAdmin ? m.id !== "PrintArea" : true)
             .map((MenuClass, i) => {
