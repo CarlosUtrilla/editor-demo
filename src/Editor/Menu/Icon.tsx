@@ -47,7 +47,7 @@ export default abstract class Icon extends React.PureComponent<{
             )
         }
         return (
-            <div className={prefix("icon", this.props.selected ? "selected" : "")}
+            <div className={prefix("icon", this.props.selected ? "selected" : "", iconId === "Divider" ? "divider": "")}
                 onClick={this.onClick}>
                 {this.renderIcon()}
                 {this.renderSubContainer()}

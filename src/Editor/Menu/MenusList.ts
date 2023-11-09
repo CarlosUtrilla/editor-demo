@@ -10,6 +10,8 @@ import RectIcon from "./RectIcon";
 import OvalIcon from "./OvalIcon";
 import RoundRectIcon from "./RoundRectIcon";
 import CircleIcon from "./CircleIcon";
+import UndoIcon from "./UndoIcon";
+import RedoIcon from "./RedoIcon";
 
 export const HomeMenu: Array<typeof Icon> = [
 	MoveToolIcon,
@@ -19,6 +21,8 @@ export const HomeMenu: Array<typeof Icon> = [
 	TextIcon,
 	ImageIcon,
 	Divider,
+	UndoIcon,
+	RedoIcon
 ];
 
 export const CompleteMenu: Array<typeof Icon> = [
@@ -30,5 +34,7 @@ export const CompleteMenu: Array<typeof Icon> = [
 	RectIcon,
 	OvalIcon,
 	CircleIcon,
-	RoundRectIcon
+	RoundRectIcon,
+	UndoIcon,
+	RedoIcon
 ]
