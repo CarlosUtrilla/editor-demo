@@ -31,7 +31,18 @@ export default class Menu extends React.PureComponent<{
         const viewport = editor.getViewport()
         let menu = HomeMenu
         const targets = editor.getSelectedTargets().map(target => viewport.getInfoByElement(target))
-        const isTargetsSame = targets.every(t=> t.name === targets[0].name)
+        if (targets.length <= 0) {
+            const resetProperties = [
+                ["font-weight","normal"],
+                ["font-size", "14px"],
+                ["font-style", "normal"],
+                ["text-decoration", "none"],
+            ]
+            resetProperties.forEach(p => {
+                editor.memory.set(p[0], p[1])
+            })
+        }
+        const isTargetsSame = targets.every(t => t.name === targets[0].name)
         if ((isTargetsSame && targets.length > 0 )|| selected !== "MoveTool") {
             const target = selected !== "MoveTool" ? selected: targets[0].name.replaceAll(/\(|\)/g, '')
             selected = target

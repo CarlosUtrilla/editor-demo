@@ -334,6 +334,18 @@ export default class Editor extends React.PureComponent<
               return;
             }
             this.setSelectedTargets(selected).then(() => {
+             /*  if (selected.length <= 0) {
+                const resetProperties = [
+                  ["font-weight","normal"],
+                  ["font-size", "14px"],
+                  ["font-style", "normal"],
+                  ["text-decoration", "none"],
+                ]
+                resetProperties.forEach(p => {
+                  this.memory.set(p[0], p[1])
+                  this.setProperty([p[0]], p[1], true)
+                })
+              } */
               if (!isDragStart) {
                 return;
               }
@@ -518,12 +530,12 @@ export default class Editor extends React.PureComponent<
     targets: Array<HTMLElement | SVGElement>,
     isRestore?: boolean
   ) {
+    this.console.log("set selected target")
     targets = targets.filter((target) => {
       return targets.every((parnetTarget) => {
         return parnetTarget === target || !parnetTarget.contains(target);
       });
     });
-
     return this.promiseState({
       selectedTargets: targets
     }).then(() => {
@@ -849,7 +861,9 @@ export default class Editor extends React.PureComponent<
   };
   private onBlur = (e: any) => {
     const target = e.target as HTMLElement | SVGElement;
-    this.menu.current?.select("MoveTool")
+    this.resetToolbar()
+
+
     if (!checkInput(target)) {
       return;
     }
@@ -875,6 +889,18 @@ export default class Editor extends React.PureComponent<
     });
     info.innerText = nextText;
   };
+  public resetToolbar() {
+    this.menu.current?.select("MoveTool")
+    /* const resetProperties = [
+      ["font-weight","normal"],
+      ["font-size", "14px"],
+      ["font-style", "normal"],
+      ["text-decoration", "none"],
+    ]
+    resetProperties.forEach(p => {
+      this.setProperty([p[0]], p[1], true)
+    }) */
+  }
   private moveInside() {
     let targets = this.getSelectedTargets();
 

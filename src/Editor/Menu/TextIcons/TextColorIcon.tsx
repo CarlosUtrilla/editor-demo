@@ -1,11 +1,15 @@
+
 import * as React from "react";
 import Icon from "../Icon";
 import ColorIconPicker from "../../Inputs/ColorIconPicker";
+
 export default class TextColorIcon extends Icon {
 	public static id = "TextColor";
 	protected colorInput = React.createRef<ColorIconPicker>();
+	public propertyName = "color"
+	public propertyValue = "#000"
 	public renderIcon() {
-		const color = this.memory.get("color") || "#000"
+		const color = this.getOldValue() || "#000"
 		return (
 			<ColorIconPicker
 				icon={<i className="fa-solid fa-a"></i>}
@@ -15,12 +19,26 @@ export default class TextColorIcon extends Icon {
 			/>
 		);
 	}
+	public onChangeTextColor = (v: string) => {
+        this.memory.set("color", v);
+        this.editor.setProperty(["color"], v, true);
+				this.forceUpdate()
+	}
+	public getOldValue(){
+		const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["none"])
+		return oldValue as string
+	}
 	public onClick = () => {
 		this.colorInput.current?.onClick()
 	};
-	public onChangeTextColor = (v: string) => {
-        this.memory.set("color", v);
-        this.editor.setProperty(["color"], v);
-				this.forceUpdate()
+	private setTargets = () => {
+    this.forceUpdate();
   }
+	componentDidMount(): void {
+		this.onChangeTextColor(this.getOldValue())
+		this.editor.eventBus.on("setSelectedTargets", this.setTargets);
+	}
+	componentWillUnmount(): void {
+		this.editor.eventBus.off("setSelectedTargets", this.setTargets);
+	}
 }

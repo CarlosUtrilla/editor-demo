@@ -13,6 +13,9 @@ import CircleIcon from "./ShapeIcons/CircleIcon";
 import UndoIcon from "./RedoUndo/UndoIcon";
 import RedoIcon from "./RedoUndo/RedoIcon";
 import TextColorIcon from "./TextIcons/TextColorIcon";
+import BoldIcon from "./TextIcons/BoldIcon";
+import ItalicIcon from "./TextIcons/ItalicIcon";
+import UnderlineIcon from "./TextIcons/UnderlinedIcon";
 
 export const HomeMenu: Array<typeof Icon> = [
 	MoveToolIcon,
@@ -31,6 +34,9 @@ export const TextMenu: Array<typeof Icon> = [
 	Divider,
 	TextIcon,
 	Divider,
+	BoldIcon,
+	ItalicIcon,
+	UnderlineIcon,
 	TextColorIcon
 ]
 
@@ -45,5 +51,8 @@ export const CompleteMenu: Array<typeof Icon> = [
 	CircleIcon,
 	RoundRectIcon,
 	UndoIcon,
-	RedoIcon
+	RedoIcon,
+	BoldIcon,
+	ItalicIcon,
+	UnderlineIcon
 ]

@@ -8,6 +8,7 @@ export default class KeyboardIcon extends Icon {
     public static id = "Shortcuts";
     public keys = ["s"];
     public state = {
+        selected: false,
         renderPopup: false,
     }
     public renderIcon() {
