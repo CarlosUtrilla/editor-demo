@@ -3,25 +3,23 @@ import { prefix } from "../utils/utils";
 import MoveToolIcon from "./MoveToolIcon";
 import "./Menu.css";
 import TextIcon from "./TextIcon";
-import CropIcon from "./CropIcon";
-import RectIcon from "./RectIcon";
-import OvalIcon from "./OvalIcon";
-import RoundRectIcon from "./RoundRectIcon";
 import Icon from "./Icon";
 import Editor from "../Editor";
 import KeyboardIcon from "./KeyboardIcon";
 import PrintAreaIcon from "./PrintAreaIcon";
 import ImageIcon from "./ImageIcon";
+import Divider from "./Divider";
+import ShapesIcon from "./ShapesIcon";
+import { CompleteMenu, HomeMenu } from "./MenusList";
 
 const MENUS: Array<typeof Icon> = [
     MoveToolIcon,
+    Divider,
     PrintAreaIcon,
-    ImageIcon,
+    ShapesIcon,
     TextIcon,
-    CropIcon,
-    RectIcon,
-    RoundRectIcon,
-    OvalIcon,
+    ImageIcon,
+    Divider,
 ];
 export default class Menu extends React.PureComponent<{
     editor: Editor,
@@ -45,20 +43,29 @@ export default class Menu extends React.PureComponent<{
         const selected = this.state.selected;
         const menuRefs = this.menuRefs;
         const editor = this.props.editor;
-
-        return MENUS.filter(m=> !editor.props.isAdmin ? m.id !== "PrintArea" : true).map((MenuClass, i) => {
-            const id = MenuClass.id;
-            if (!menuRefs[i]) {
-                menuRefs[i] = React.createRef();
-            }
-            return (
-                <MenuClass
-                    ref={menuRefs[i]}
-                    key={id} editor={editor}
-                    selected={selected === id}
-                    onSelect={this.select}
-                />
-            );
+        const menu =  HomeMenu
+        return menu
+            .filter(m => !editor.props.isAdmin ? m.id !== "PrintArea" : true)
+            .map((MenuClass, i) => {
+                const id = MenuClass.id;
+                if (!menuRefs[i]) {
+                    menuRefs[i] = React.createRef();
+                }
+                if (id === "Divider") {
+                    return (
+                        <MenuClass key={i} editor={editor}/>
+                    )
+                }
+                return (
+                    <MenuClass
+                        ref={menuRefs[i]}
+                        key={i}
+                        editor={editor}
+                        selected={Array.isArray(id) ? id.includes(selected): selected === id}
+                        selectedId={selected}
+                        onSelect={this.select}
+                    />
+                );
         });
     }
     public select = (id: string) => {
@@ -69,7 +76,7 @@ export default class Menu extends React.PureComponent<{
     }
     public getSelected(): typeof Icon | undefined {
         const selected = this.state.selected;
-        return MENUS.filter(m => m.id === selected)[0];
+        return CompleteMenu.filter(m => m.id === selected)[0];
     }
     public blur() {
         this.menuRefs.forEach(ref => {
