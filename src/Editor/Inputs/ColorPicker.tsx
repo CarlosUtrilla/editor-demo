@@ -15,7 +15,7 @@ export default class ColorPicker extends Input {
 
         return (
             <AnyChromePicker
-                width={"180px"}
+                width={"200px"}
                 color={color}
                 onChange={this.onChange}
                 onChangeComplete={this.onChangeComplete}

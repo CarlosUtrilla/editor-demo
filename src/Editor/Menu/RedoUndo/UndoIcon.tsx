@@ -1,5 +1,5 @@
 import * as React from "react";
-import Icon from "./Icon";
+import Icon from "../Icon";
 
 export default class UndoIcon extends Icon {
     public static id = "Undo";

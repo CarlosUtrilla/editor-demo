@@ -3,8 +3,8 @@
 }
 .scena-color-picker {
     position: absolute;
-    top: 100%;
-    right: 0;
+    top: calc(var(--menu) - 0.75rem);
+    left: 0.5rem;
     transform: translateY(10px) translateZ(1px);
     z-index: 10;
 }

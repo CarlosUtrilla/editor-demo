@@ -1,7 +1,7 @@
 import * as React from "react";
-import Icon from "./Icon";
-import Memory from "../utils/Memory";
-import Menu from "./Menu";
+import Icon from "../Icon";
+import Memory from "../../utils/Memory";
+import Menu from "../Menu";
 
 export default class TextIcon extends Icon {
     public static id = "Text";

@@ -1,10 +1,10 @@
 import * as React from "react";
 import Icon from "./Icon";
 import { splitBracket } from "@daybrush/utils";
-import OvalIcon from "./OvalIcon";
-import RectIcon from "./RectIcon";
-import CircleIcon from "./CircleIcon";
-import PolygonIcon from "./PolygonIcon";
+import OvalIcon from "./ShapeIcons/OvalIcon";
+import RectIcon from "./ShapeIcons/RectIcon";
+import CircleIcon from "./ShapeIcons/CircleIcon";
+import PolygonIcon from "./ShapeIcons/PolygonIcon";
 
 export default class CropIcon extends Icon {
     public static id = "Crop";

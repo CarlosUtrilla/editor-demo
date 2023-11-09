@@ -1,5 +1,5 @@
 import * as React from "react";
-import Icon from "./Icon";
+import Icon from "../Icon";
 import RectIcon from "./RectIcon";
 import RoundRectIcon from "./RoundRectIcon";
 import CircleIcon from "./CircleIcon";
