@@ -37,6 +37,7 @@ export default class Menu extends React.PureComponent<{
                 ["font-size", "14px"],
                 ["font-style", "normal"],
                 ["text-decoration", "none"],
+                ["font-family", "Avenir"],
             ]
             resetProperties.forEach(p => {
                 editor.memory.set(p[0], p[1])

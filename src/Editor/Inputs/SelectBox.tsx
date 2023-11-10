@@ -4,16 +4,19 @@ import { isUndefined, IObject } from "@daybrush/utils";
 import { prefix } from "../utils/utils";
 
 export default class SelectBox extends Input<{
-    options: string[]
+    options: string[],
 }, {}, HTMLSelectElement> {
     protected inputAttributes: IObject<any> = {};
     public render() {
         const options = this.props.options || [];
         return (
-            <select ref={this.input as any}
+            <select
+                ref={this.input as any}
                 className={prefix("select")}
                 {...this.inputAttributes}
                 {...this.props.inputProps}
+                value={this.props.value}
+                defaultValue={this.props.value}
                 onInput={this.onInput}>
                 {options.map(value => (<option key={value} value={value}>{value}</option>))}
             </select>

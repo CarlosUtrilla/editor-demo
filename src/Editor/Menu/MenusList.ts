@@ -16,6 +16,7 @@ import TextColorIcon from "./TextIcons/TextColorIcon";
 import BoldIcon from "./TextIcons/BoldIcon";
 import ItalicIcon from "./TextIcons/ItalicIcon";
 import UnderlineIcon from "./TextIcons/UnderlinedIcon";
+import FontFamily from "./TextIcons/FontFamily";
 
 export const HomeMenu: Array<typeof Icon> = [
 	MoveToolIcon,
@@ -33,6 +34,8 @@ export const TextMenu: Array<typeof Icon> = [
 	MoveToolIcon,
 	Divider,
 	TextIcon,
+	Divider,
+	FontFamily,
 	Divider,
 	BoldIcon,
 	ItalicIcon,
@@ -54,5 +57,6 @@ export const CompleteMenu: Array<typeof Icon> = [
 	RedoIcon,
 	BoldIcon,
 	ItalicIcon,
-	UnderlineIcon
+	UnderlineIcon,
+	FontFamily
 ]

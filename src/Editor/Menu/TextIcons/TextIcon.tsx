@@ -15,7 +15,8 @@ export default class TextIcon extends Icon {
             color: memory.get("color"),
             "font-weight": memory.get("font-weight"),
             "font-style": memory.get("font-style"),
-            "text-decoration": memory.get("text-decoration")
+            "text-decoration": memory.get("text-decoration"),
+            "font-family": memory.get("font-family")
         },
     });
     public static makeThen = (target: HTMLElement | SVGElement, id: string, menu: Menu) => {

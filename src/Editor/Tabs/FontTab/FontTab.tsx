@@ -7,7 +7,7 @@ import SelectBox from "../../Inputs/SelectBox";
 import TextBox from "../../Inputs/TextBox";
 
 const FONT_FAMILY_PROPS = {
-    options: ["sans-serif"],
+    options: ["sans-serif", "Avenir"],
 };
 const TEXT_ALIGN_PROPS = {
     options: ["left", "center", "right", "justify"],
