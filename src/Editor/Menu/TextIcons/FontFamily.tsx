@@ -14,7 +14,6 @@ export default class FontFamily extends Icon {
 	public propertyValue = "Avenir"
 	public render() {
 		const value = this.getOldValue()
-		this.console.log(value);
 			return (
 				<div className="scene-font-family">
 					<SelectBox
@@ -28,7 +27,7 @@ export default class FontFamily extends Icon {
 	public renderIcon() {	}
 	public onClick= () => {};
 	public getOldValue(){
-		const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["normal"])
+		const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["Avenir"])
 		return oldValue as string
 	}
 	public onChange = (v: string) => {
