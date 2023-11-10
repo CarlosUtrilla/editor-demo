@@ -14,7 +14,7 @@ const sizes = [
 export default class FontSize extends Icon {
 	public static id = "FontSize";
 	public propertyName = "font-size";
-	public propertyValue = "14px"
+	public propertyValue = "16px"
 	public render() {
 		const value = this.getOldValue()
 		const parsedValue = parseInt((value || "").replace("px", ""))
@@ -45,11 +45,10 @@ export default class FontSize extends Icon {
 	public renderIcon() {	}
 	public onClick = () => { };
 	public getOldValue(){
-		const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["14px"])
+		const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["16px"])
 		return oldValue as string
 	}
 	public onChange = (v: string) => {
-		this.console.log(v)
 		this.memory.set(this.propertyName, v);
 		this.editor.setProperty([this.propertyName], v, true);
 		this.forceUpdate()

@@ -18,6 +18,10 @@ import ItalicIcon from "./TextIcons/ItalicIcon";
 import UnderlineIcon from "./TextIcons/UnderlinedIcon";
 import FontFamily from "./TextIcons/FontFamily";
 import FontSize from "./TextIcons/FontSize";
+import AlignLeftIcon from "./TextIcons/Aligns/AlignLeftIcon";
+import AlignRightIcon from "./TextIcons/Aligns/AlignRightIcon";
+import AlignCenterIcon from "./TextIcons/Aligns/AlignCenter";
+import AlignJustifyIcon from "./TextIcons/Aligns/AlignJustify";
 
 export const HomeMenu: Array<typeof Icon> = [
 	MoveToolIcon,
@@ -43,7 +47,12 @@ export const TextMenu: Array<typeof Icon> = [
 	BoldIcon,
 	ItalicIcon,
 	UnderlineIcon,
-	TextColorIcon
+	TextColorIcon,
+	Divider,
+	AlignLeftIcon,
+	AlignCenterIcon,
+	AlignRightIcon,
+	AlignJustifyIcon
 ]
 
 export const CompleteMenu: Array<typeof Icon> = [

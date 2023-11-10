@@ -35,7 +35,7 @@
     margin: 0;
 }
 
-.scena-icon:not(.scena-divider){
+.scena-icon:not(.scena-divider):not(.scena-sub-icon){
     width: var(--menu);
     height: var(--menu);
 }
@@ -129,6 +129,7 @@
 .scena-sub-icon {
     display: flex;
     align-items: center;
+    justify-content: start;
     gap: 0.5rem;
     white-space: nowrap;
     padding: 0px;
@@ -137,10 +138,8 @@
 }
 
 .scena-sub-icon .scena-icon {
-    position: relative;
-    display: inline-block;
-    vertical-align: middle;
-    margin: 0;
+    width: auto !important;
+    height: auto !important;
 }
 
 .scena-sub-icon-label {
@@ -192,6 +191,7 @@
     color:#fff;
     background: transparent;
     cursor: pointer;
+    padding:0 0.2rem;
 }
 .scene-font-size input{
     width: 2rem;
