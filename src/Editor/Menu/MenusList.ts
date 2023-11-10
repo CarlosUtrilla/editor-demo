@@ -22,6 +22,9 @@ import AlignLeftIcon from "./TextIcons/Aligns/AlignLeftIcon";
 import AlignRightIcon from "./TextIcons/Aligns/AlignRightIcon";
 import AlignCenterIcon from "./TextIcons/Aligns/AlignCenter";
 import AlignJustifyIcon from "./TextIcons/Aligns/AlignJustify";
+import FillIcon from "./ShapeIcons/FillIcon";
+import BorderColorIcon from "./ShapeIcons/BorderColorIcon";
+import StrokeIcon from "./ShapeIcons/StrokeIcon";
 
 export const HomeMenu: Array<typeof Icon> = [
 	MoveToolIcon,
@@ -53,6 +56,16 @@ export const TextMenu: Array<typeof Icon> = [
 	AlignCenterIcon,
 	AlignRightIcon,
 	AlignJustifyIcon
+]
+
+export const ShapesMenu: Array<typeof Icon> = [
+	MoveToolIcon,
+	Divider,
+	ShapesIcon,
+	Divider,
+	FillIcon,
+	BorderColorIcon,
+	StrokeIcon
 ]
 
 export const CompleteMenu: Array<typeof Icon> = [

@@ -2,7 +2,7 @@ import * as React from "react";
 import { prefix } from "../utils/utils";
 import Icon from "./Icon";
 import Editor from "../Editor";
-import { CompleteMenu, HomeMenu, TextMenu } from "./MenusList";
+import { CompleteMenu, HomeMenu, ShapesMenu, TextMenu } from "./MenusList";
 import "./Menu.css";
 
 
@@ -50,6 +50,9 @@ export default class Menu extends React.PureComponent<{
             selected = target
             if (["Text"].includes(target)) {
                 menu = TextMenu
+            }
+            if (["Circle","Oval","Rect","RoundRect"].includes(target)) {
+                menu = ShapesMenu
             }
         }
         return menu

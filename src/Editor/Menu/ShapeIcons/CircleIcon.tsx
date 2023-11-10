@@ -10,6 +10,9 @@ export default class CircleIcon extends Icon {
         style: {
             "background-color": memory.get("background-color"),
             "border-radius": "50%",
+            "border-color": memory.get("border-color"),
+            "border-style": memory.get("border-style"),
+            "border-width": memory.get("border-width")
         },
     });
     public renderIcon() {
