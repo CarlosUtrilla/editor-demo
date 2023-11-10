@@ -30,7 +30,6 @@ export const HomeMenu: Array<typeof Icon> = [
 	MoveToolIcon,
 	Divider,
 	PrintAreaIcon,
-	ShapesIcon,
 	TextIcon,
 	ImageIcon,
 	Divider,
@@ -68,6 +67,13 @@ export const ShapesMenu: Array<typeof Icon> = [
 	StrokeIcon
 ]
 
+export const PrintAreaMenu: Array<typeof Icon> = [
+	MoveToolIcon,
+	Divider,
+	PrintAreaIcon,
+	Divider,
+	BorderColorIcon,
+]
 export const CompleteMenu: Array<typeof Icon> = [
 	MoveToolIcon,
 	PrintAreaIcon,
