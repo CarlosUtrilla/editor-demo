@@ -31,7 +31,6 @@ import Debugger from "./utils/Debugger";
 import { isMacintosh, DATA_SCENA_ELEMENT_ID } from "./consts";
 import ClipboardManager from "./utils/ClipboardManager";
 import { NameType } from "scenejs";
-import MoveablePrintArea from "./Viewport/MoveablePrintArea";
 
 function undoCreateElements(
   { infos, prevSelected }: IObject<any>,
@@ -91,6 +90,7 @@ export default class Editor extends React.PureComponent<
     onChange?: (evt: ElementInfo[]) => void;
     onUploadImage?: (img: File)=> Promise<string>,
     isAdmin?: boolean;
+    fontFamily?: string[];
   },
   Partial<ScenaEditorState>
 > {
@@ -267,14 +267,13 @@ export default class Editor extends React.PureComponent<
                 horizontalGuidelines={horizontalSnapGuides}
                 editor={this}
             ></MoveableManager>
-            <MoveablePrintArea printAreas={printAreas}/>
             </Viewport>
         </InfiniteViewer>
         <Selecto
           ref={selecto}
           dragContainer={".scena-viewer"}
           hitRate={0}
-          selectableTargets={[`.scena-viewport [${DATA_SCENA_ELEMENT_ID}].selectable`]}
+          selectableTargets={selectedMenu === "MoveTool" ?[`.scena-viewport [${DATA_SCENA_ELEMENT_ID}].selectable`]:[]}
           selectByClick={true}
           selectFromInside={false}
           toggleContinueSelect={["shift"]}
@@ -804,7 +803,7 @@ export default class Editor extends React.PureComponent<
       selectedMenu: id
     });
   };
-  private selectEndMaker(rect: Rect) {
+  public selectEndMaker(rect: Rect) {
     const infiniteViewer = this.infiniteViewer.current!;
     const selectIcon = this.menu.current!.getSelected();
     const width = rect.width;

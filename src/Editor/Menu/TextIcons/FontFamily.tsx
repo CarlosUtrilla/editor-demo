@@ -14,11 +14,13 @@ export default class FontFamily extends Icon {
 	public propertyValue = "Avenir"
 	public render() {
 		const value = this.getOldValue()
+
+		const fontFamilyList = this.editor.props.fontFamily ||fontFamily;
 			return (
 				<div className="scene-font-family">
 					<SelectBox
 						onChange={this.onChange}
-						options={fontFamily}
+						options={fontFamilyList.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))}
 						value={value}
 					/>
 				</div>

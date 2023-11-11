@@ -32,25 +32,6 @@ export default abstract class Icon extends React.PureComponent<{
     public render() {
         const iconId = (this.constructor as any).id
         const selected = this.props.selected || this.state.selected
-        if (iconId === "Image") {
-            return (
-                <label
-                    htmlFor='image'
-                    className={prefix("icon", selected ? "selected" : "")}
-                    onClick={this.onClick}
-                >
-					<input
-						type='file'
-						id='image'
-						style={{ display: "none" }}
-						name='image'
-						accept="image/*"
-						onChange={(e)=>this.uploadImage(e, this.editor)}
-					/>
-						{this.renderIcon()}
-                </label>
-            )
-        }
         return (
             <div className={prefix("icon", selected ? "selected" : "", iconId === "Divider" ? "divider": "")}
                 onClick={this.onClick}>
@@ -143,14 +124,6 @@ export default abstract class Icon extends React.PureComponent<{
                 }
                 this.onClick();
             }, (this.constructor as any).id);
-        }
-    }
-    private async uploadImage(e: React.ChangeEvent<HTMLInputElement>, editor: Editor) {
-        const upload = editor.props.onUploadImage;
-        const file = e.target.files ? e.target.files[0] : undefined
-        if (upload && file) { 
-            const image = await upload(file)
-            editor.memory.set("imageUrl", image)
         }
     }
 }
