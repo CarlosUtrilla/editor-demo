@@ -890,15 +890,6 @@ export default class Editor extends React.PureComponent<
   };
   public resetToolbar() {
     this.menu.current?.select("MoveTool")
-    /* const resetProperties = [
-      ["font-weight","normal"],
-      ["font-size", "14px"],
-      ["font-style", "normal"],
-      ["text-decoration", "none"],
-    ]
-    resetProperties.forEach(p => {
-      this.setProperty([p[0]], p[1], true)
-    }) */
   }
   private moveInside() {
     let targets = this.getSelectedTargets();
