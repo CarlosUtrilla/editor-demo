@@ -15,7 +15,10 @@ export interface ScenaEditorState {
     verticalGuides: number[];
     selectedMenu: string;
     zoom: number;
+    minZoom: number;
     showGuides: boolean;
+    width: number;
+    height: number;
 }
 
 export interface TagAppendInfo {

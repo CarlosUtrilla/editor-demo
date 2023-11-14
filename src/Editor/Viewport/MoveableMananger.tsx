@@ -235,17 +235,14 @@ export default class MoveableManager extends React.PureComponent<{
         ></Moveable>
     }
     public renderViewportMoveable() {
-        const moveableData = this.moveableData;
         const viewport = this.editor.getViewport();
         const target = viewport ? viewport.viewportRef.current! : null;
 
         return <Moveable
             ref={this.moveable}
-            rotatable={true}
+            rotatable={false}
             target={target}
             origin={false}
-            onRotateStart={moveableData.onRotateStart}
-            onRotate={moveableData.onRotate}
         ></Moveable>
     }
     public componentDidMount() {

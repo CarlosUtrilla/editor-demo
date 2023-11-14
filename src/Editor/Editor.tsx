@@ -82,8 +82,6 @@ function redoMove({ nextInfos }: MovedResult, editor: Editor) {
 }
 export default class Editor extends React.PureComponent<
   {
-    width: number;
-    height: number;
     debug?: boolean;
     initialJSX?: ElementInfo[];
     backgroundImg?: string;
@@ -94,17 +92,16 @@ export default class Editor extends React.PureComponent<
   },
   Partial<ScenaEditorState>
 > {
-  public static defaultProps = {
-    width: 400,
-    height: 600
-  };
   public state: ScenaEditorState = {
     selectedTargets: [],
     horizontalGuides: [],
     verticalGuides: [],
     zoom: 1,
+    minZoom: 1,
     selectedMenu: "MoveTool",
-    showGuides: false
+    showGuides: false,
+    width: 500,
+    height: 500
   };
   public historyManager = new HistoryManager(this);
   public console = new Debugger(this.props.debug);
@@ -136,8 +133,7 @@ export default class Editor extends React.PureComponent<
       selecto,
       state
     } = this;
-    const { selectedMenu, selectedTargets, zoom, showGuides } = state;
-    const width = 500, height = 500;
+    const { selectedMenu, selectedTargets, zoom, showGuides, minZoom, width, height } = state;
     const horizontalSnapGuides = [
       0,
       height,
@@ -146,7 +142,7 @@ export default class Editor extends React.PureComponent<
     ];
     const verticalSnapGuides = [0, width, width / 2, ...state.verticalGuides];
     let unit = 50;
-    const printAreas = (this.getViewport()?.getViewportInfos() || []).filter(c=> c.name === "(PrintArea)")
+
     return (
       <div className={prefix("editor")} ref={this.editorElement}>
         <Tabs ref={tabs} editor={this}></Tabs>
@@ -164,7 +160,6 @@ export default class Editor extends React.PureComponent<
                 ref={horizontalGuides}
                 type="horizontal"
                 className={prefix("guides", "horizontal")}
-                style={{}}
                 snapThreshold={5}
                 snaps={horizontalSnapGuides}
                 displayDragPos={true}
@@ -183,7 +178,6 @@ export default class Editor extends React.PureComponent<
                 ref={verticalGuides}
                 type="vertical"
                 className={prefix("guides", "vertical")}
-                style={{}}
                 snapThreshold={5}
                 snaps={verticalSnapGuides}
                 displayDragPos={true}
@@ -204,7 +198,8 @@ export default class Editor extends React.PureComponent<
           pinchThreshold={5}
           wheelScale={0.001}
           zoom={zoom}
-          zoomRange={[0,4]}
+          zoomRange={[0, 4]}
+          threshold={0}
           rangeX={[0, 0]}
           rangeY={[0, 0]}
           onDragStart={(e) => {
@@ -229,18 +224,8 @@ export default class Editor extends React.PureComponent<
           onAbortPinch={(e) => {
             selecto.current!.triggerDragStart(e.inputEvent);
           }}
-          onScroll={(e) => {
-            if (horizontalGuides.current) {
-              horizontalGuides.current!.scroll(e.scrollLeft);
-              horizontalGuides.current!.scrollGuides(e.scrollTop);
-            }
-            if (verticalGuides.current) {
-              verticalGuides.current!.scroll(e.scrollTop);
-              verticalGuides.current!.scrollGuides(e.scrollLeft);
-            }
-          }}
           onPinch={(e) => {
-            const zoom = e.zoom >= 1 ? e.zoom : 1
+            const zoom = e.zoom >= minZoom ? e.zoom : minZoom
             this.setState({
               zoom
             });
@@ -257,7 +242,7 @@ export default class Editor extends React.PureComponent<
           >
               {
                 this.props.backgroundImg &&
-                <img src={this.props.backgroundImg} alt=""/>
+                <img src={this.props.backgroundImg} alt="" className="backgroundImage"/>
               }
               <MoveableManager
                 ref={moveableManager}
@@ -333,18 +318,6 @@ export default class Editor extends React.PureComponent<
               return;
             }
             this.setSelectedTargets(selected).then(() => {
-             /*  if (selected.length <= 0) {
-                const resetProperties = [
-                  ["font-weight","normal"],
-                  ["font-size", "14px"],
-                  ["font-style", "normal"],
-                  ["text-decoration", "none"],
-                ]
-                resetProperties.forEach(p => {
-                  this.memory.set(p[0], p[1])
-                  this.setProperty([p[0]], p[1], true)
-                })
-              } */
               if (!isDragStart) {
                 return;
               }
@@ -364,8 +337,8 @@ export default class Editor extends React.PureComponent<
     requestAnimationFrame(() => {
       infiniteViewer.current!.scrollCenter();
     });
-
     window.addEventListener("resize", this.onResize);
+    this.onResize()
     const viewport = this.getViewport();
 
     eventBus.on("blur", () => {
@@ -856,6 +829,20 @@ export default class Editor extends React.PureComponent<
     if (this.horizontalGuides.current && this.verticalGuides.current) {
       this.horizontalGuides.current!.resize();
       this.verticalGuides.current!.resize();
+    }
+    if (this.editorElement.current && this.infiniteViewer.current) {
+      const width = this.editorElement.current.clientWidth;
+      const viewer = this.infiniteViewer.current.getElement();
+      if (width < 500) {
+        const newZoom = width / 500;
+        viewer.style.width = `${500 * newZoom}px`;
+        viewer.style.height = `${500 * newZoom}px`;
+        this.setState({minZoom: newZoom, zoom: newZoom});
+      } else {
+        viewer.style.width = `${500}px`;
+        viewer.style.height = `${500}px`;
+        this.setState({ minZoom: 1, zoom: 1 })
+      }
     }
   };
   private onBlur = (e: any) => {
