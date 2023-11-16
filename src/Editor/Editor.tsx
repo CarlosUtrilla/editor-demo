@@ -146,7 +146,7 @@ export default class Editor extends React.PureComponent<
 
     return (
       <div className={prefix("editor")} ref={this.editorElement}>
-        <Tabs ref={tabs} editor={this}></Tabs>
+        {/* <Tabs ref={tabs} editor={this}></Tabs> */}
         <Menu ref={menu} editor={this} onSelect={this.onMenuChange} />
         {
           showGuides &&
@@ -341,7 +341,7 @@ export default class Editor extends React.PureComponent<
 
     eventBus.on("blur", () => {
       this.menu.current!.blur();
-      this.tabs.current!.blur();
+      /* this.tabs.current!.blur(); */
     });
     eventBus.on("selectLayers", (e: any) => {
       const selected = e.selected as string[];
