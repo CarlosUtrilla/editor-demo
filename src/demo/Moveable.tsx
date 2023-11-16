@@ -23,7 +23,6 @@ class App extends React.Component {
                     })
                 }}
                 isAdmin
-                onValidate={(v)=>console.log("are errors",v)}
             />
         </div>;
     }

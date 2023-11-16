@@ -929,4 +929,21 @@ export default class Editor extends React.PureComponent<
 
     return result;
   }
+  public saveEditor() {
+    const elements = this.getViewport().getViewportInfos()
+    let stringElements = JSON.stringify(elements, (key, value) => {
+        if (key.includes('__reactInternalInstance') || value instanceof HTMLDivElement) {
+            return undefined;
+        }
+        return value;
+    });
+    const parsedElements = JSON.parse(stringElements) as ElementInfo[]
+    return parsedElements.map(e => {
+        delete e.el
+        if (e.name === "(PrintArea)" && e.attrs && e.attrs.class) {
+            e.attrs.class = undefined
+        }
+        return e
+    })
+  }
 }

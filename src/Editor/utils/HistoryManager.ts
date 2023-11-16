@@ -23,23 +23,7 @@ export default class HistoryManager {
         });
         this.redoStack = [];
         if (this.editor.props.onChange && this.editor.viewport.current) {
-            const elements = this.editor.viewport.current.getViewportInfos()
-            let stringElements = JSON.stringify(elements, (key, value) => {
-                if (key.includes('__reactInternalInstance') || value instanceof HTMLDivElement) {
-                    return undefined;
-                }
-                return value;
-            });
-            const parsedElements = JSON.parse(stringElements) as ElementInfo[]
-            this.editor.props.onChange(
-                parsedElements.map(e => {
-                    delete e.el
-                    if (e.name === "(PrintArea)" && e.attrs && e.attrs.class) {
-                        e.attrs.class = undefined
-                    }
-                    return e
-                })
-            )
+            this.editor.props.onChange(this.editor.saveEditor())
         }
     }
     public undo() {
