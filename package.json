@@ -1,6 +1,6 @@
 {
   "name": "reno-capital-editor",
-  "version": "0.1.7",
+  "version": "0.1.10",
   "devDependencies": {
     "@babel/cli": "^7.23.0",
     "@babel/core": "^7.23.3",

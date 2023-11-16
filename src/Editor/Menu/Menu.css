@@ -16,6 +16,7 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    overflow: auto;
 }
 
 .scena-menu-bottom {
@@ -38,6 +39,8 @@
 .scena-icon:not(.scena-divider):not(.scena-sub-icon){
     width: var(--menu);
     height: var(--menu);
+    min-width: var(--menu);
+    min-height: var(--menu);
 }
 
 .scena-icon i:not(.divider){
@@ -77,7 +80,8 @@
     border-radius: 25px;
     width: 100%;
     height: 2px;
-    border: 0.5px solid #fff
+    border: 0.5px solid #fff;
+    box-sizing: content-box;
 }
 .scena-icon .color-picker .picker{
     position: absolute;
