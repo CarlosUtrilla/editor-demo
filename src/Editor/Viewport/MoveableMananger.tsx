@@ -1,6 +1,6 @@
 import * as React from "react";
 import Moveable, { MoveableManagerInterface } from "react-moveable";
-import { getContentElement, connectEditorProps, getId } from "../utils/utils";
+import { getContentElement, connectEditorProps, getId, isDivInsideAnother } from "../utils/utils";
 import Editor from "../Editor";
 import { EditorInterface } from "../types";
 import { IObject } from "@daybrush/utils";
@@ -266,10 +266,7 @@ export default class MoveableManager extends React.PureComponent<{
         // update the element adding transform css
         element.frame = moveableData.getFrame(e).get()
         await viewport.appendJSXs([element], -1)
-
-        if (element.name === "(PrintArea)") {
-            this.editor.forceUpdate()
-        }
+        this.editor.forceUpdate()
     }
 }
 export default interface MoveableManager extends EditorInterface { }

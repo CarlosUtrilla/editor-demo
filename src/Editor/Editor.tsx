@@ -89,6 +89,7 @@ export default class Editor extends React.PureComponent<
     onUploadImage?: (img: File)=> Promise<string>,
     isAdmin?: boolean;
     fontFamily?: string[];
+    onValidate?: (errors: boolean) => void;
   },
   Partial<ScenaEditorState>
 > {
@@ -167,8 +168,6 @@ export default class Editor extends React.PureComponent<
                 zoom={zoom}
                 unit={unit}
                 onChangeGuides={(e) => {
-                  // console.log(this.horizontalSnapGuides, "x");
-
                   this.setState({
                     horizontalGuides: e.guides
                   });
@@ -293,7 +292,6 @@ export default class Editor extends React.PureComponent<
               }
             }
             if (
-              (inputEvent.type === "touchstart" && e.isTrusted) ||
               moveableManager
                 .current!.getMoveable()
                 .isMoveableElement(target) ||

@@ -3,6 +3,7 @@ import { PREFIX, DATA_SCENA_ELEMENT_ID } from "../consts";
 import { EDITOR_PROPERTIES } from "../consts";
 import { ScenaFunctionComponent, ScenaProps, ScenaComponent, ScenaJSXElement, ScenaFunctionJSXElement } from "../types";
 import { IObject } from "@daybrush/utils";
+import { ElementInfo } from "../Viewport/Viewport";
 
 export function prefix(...classNames: string[]) {
     return prefixNames(PREFIX, ...classNames);
@@ -111,4 +112,34 @@ export function isScenaFunctionElement(value: any): value is ScenaFunctionJSXEle
 
 export function isNumber(value: any): value is number {
     return typeof value === "number";
+}
+
+export function inRange(number: number, start: number, end?: number) {
+    if (end === undefined) {
+        end = start;
+        start = 0;
+    }
+
+    if (start > end) {
+        const temp = start;
+        start = end;
+        end = temp;
+    }
+
+    return number >= start && number < end;
+}
+
+export function isDivInsideAnother(div1: any, div2: any) {
+    // Obtener las coordenadas y dimensiones del primer div
+    var rect1 = div1.getBoundingClientRect();
+
+    // Obtener las coordenadas y dimensiones del segundo div
+    var rect2 = div2.getBoundingClientRect();
+    // Verificar si el primer div está dentro del área del segundo div
+    return (
+        rect1.left >= rect2.left &&
+        rect1.right <= rect2.right &&
+        rect1.top >= rect2.top &&
+        rect1.bottom <= rect2.bottom
+    );
 }

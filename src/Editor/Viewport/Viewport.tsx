@@ -1,6 +1,6 @@
 import * as React from "react";
 import { IObject, isString, isArray } from "@daybrush/utils";
-import { prefix, getId, getScenaAttrs, isScenaFunction, isScenaElement, isNumber, isScenaFunctionElement } from "../utils/utils";
+import { prefix, getId, getScenaAttrs, isScenaFunction, isScenaElement, isNumber, isScenaFunctionElement, isDivInsideAnother } from "../utils/utils";
 import { DATA_SCENA_ELEMENT_ID } from "../consts";
 import { ScenaJSXElement, ScenaComponent, ScenaJSXType } from "../types";
 import Editor from "../Editor";
@@ -69,7 +69,8 @@ export default class Viewport extends React.PureComponent<{
         this.ids.viewport.el = this.viewportRef.current!;
     }
     public renderChildren(children: ElementInfo[]): ScenaJSXElement[] {
-        return children.map(info => {
+        let areErrors = false
+        const renders = children.map((info, _, allInfos) => {
             const editor = this.props.editor
             const jsx = info.jsx;
             const nextChildren = info.children!;
@@ -78,9 +79,24 @@ export default class Viewport extends React.PureComponent<{
             const props: IObject<any> = {
                 key: id,
             };
-
             if (editor.props.isAdmin || (!editor.props.isAdmin && info.name !== "(PrintArea)")) {
                 props.className = "selectable"
+            }
+
+            if (info.name !== "(PrintArea)" && info.el) {
+                const printAreas = allInfos.filter(e => e.name === "(PrintArea)");
+                const isOnArea = printAreas.some(p => {
+                    return p.el && isDivInsideAnother(info.el, p.el)
+                })
+                if (!props.style) {
+                    props.style = {}
+                }
+                if (!isOnArea) {
+                    props.style.border = "1px dashed #f00"
+                    areErrors = true
+                } else {
+                    props.style.border = undefined
+                }
             }
 
             if (isString(jsx)) {
@@ -107,6 +123,9 @@ export default class Viewport extends React.PureComponent<{
                 ...this.renderChildren(nextChildren),
             ) as ScenaJSXElement;
         });
+        const onValidate = this.props.editor.props.onValidate;
+        onValidate && onValidate(areErrors)
+        return renders;
     }
     public getJSX(id: string) {
         return this.jsxs[id];
@@ -219,8 +238,7 @@ export default class Viewport extends React.PureComponent<{
         });
     }
     public appendJSXs(jsxs: ElementInfo[], appendIndex: number, scopeId?: string): Promise<AddedInfo> {
-        const jsxInfos = this.registerChildren(jsxs, scopeId);
-
+        const jsxInfos = this.registerChildren(jsxs, scopeId)
         jsxInfos.forEach((info, i) => {
             const scopeInfo = this.getInfo(scopeId || info.scopeId!);
             const children = scopeInfo.children!;
@@ -274,7 +292,7 @@ export default class Viewport extends React.PureComponent<{
             });
         });
     }
-    public getIndex(id: string | HTMLElement) {
+    public getIndex(id: string | HTMLElement | SVGElement) {
         const indexes = this.getIndexes(id);
         const length = indexes.length;
         return length ? indexes[length - 1] : -1;
