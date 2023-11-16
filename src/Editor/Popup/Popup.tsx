@@ -8,7 +8,8 @@ import KeyManager from "../KeyManager/KeyManager";
 @connectEditorProps
 export default class Popup extends React.PureComponent<{
     editor: Editor,
-    onClose: () => any,
+        onClose: () => any,
+    children: React.ReactNode
 }> {
     public overlayElement = React.createRef<HTMLDivElement>();
     public popupKeyManager = new KeyManager(this.console);

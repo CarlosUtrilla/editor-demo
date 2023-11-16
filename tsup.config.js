@@ -1,7 +1,6 @@
 export default {
-  entryPoints: ['./src/index.ts'],
+  entryPoints: ['./src/Editor/index.ts'],
   format: ['cjs', 'esm'],
   dts: true,
-	clean: true,
-  external: ['react', 'react-dom'], // Lista de dependencias que no deben incluirse en el paquete
+	clean: true
 };

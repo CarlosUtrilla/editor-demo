@@ -1,5 +1,5 @@
 import * as React from "react";
-import Moveable, { MoveableManagerInterface } from "react-moveable";
+import Moveable, { Able, MoveableManagerInterface } from "react-moveable";
 import { getContentElement, connectEditorProps, getId, isDivInsideAnother } from "../utils/utils";
 import Editor from "../Editor";
 import { EditorInterface } from "../types";
@@ -61,12 +61,11 @@ function redoRenders({ infos }: IObject<any>, editor: Editor) {
 export interface DimensionViewableProps {
     dimensionViewable?: boolean;
 }
-const DimensionViewable = {
+const DimensionViewable: Able = {
     name: "dimensionViewable",
-    props: {
-        dimensionViewable: Boolean,
-    },
-    events: {},
+    props: [
+       "dimensionViewable"
+    ],
     render(moveable: MoveableManagerInterface) {
         const { left, top } = moveable.state;
 
@@ -132,7 +131,6 @@ export default class MoveableManager extends React.PureComponent<{
             keepRatio={(targetIsImage && !isShift) || (!targetIsImage && isShift)}
             rotatable={true}
             snappable={true}
-            snapCenter={true}
             snapGap={false}
             roundable={true}
             verticalGuidelines={verticalGuidelines}
