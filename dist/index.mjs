@@ -2481,6 +2481,7 @@ var ImageIcon = class extends Icon {
           style: { display: "none" },
           name: "image",
           accept: "image/*",
+          value: "",
           onChange: (e) => this.uploadImage(e, this.editor)
         }
       ),
@@ -2490,34 +2491,8 @@ var ImageIcon = class extends Icon {
   renderIcon() {
   }
   async uploadImage(e, editor) {
-    const upload = editor.props.onUploadImage;
     const file = e.target.files ? e.target.files[0] : void 0;
-    if (upload && file) {
-      const image = await upload(file);
-      const imageLoad = new Image();
-      editor.memory.set("imageUrl", image);
-      imageLoad.onload = () => {
-        let width = imageLoad.width;
-        let height = imageLoad.height;
-        const MAX_SIZE = 150;
-        if (width >= height) {
-          height = MAX_SIZE / width * height;
-          width = MAX_SIZE;
-        } else {
-          width = MAX_SIZE / height * width;
-          height = MAX_SIZE;
-        }
-        this.editor.selectEndMaker({
-          top: 250 - height / 2 + 45,
-          left: 250 - width / 2,
-          bottom: 0,
-          right: 0,
-          width,
-          height
-        });
-      };
-      imageLoad.src = image;
-    }
+    editor.addImage(file);
   }
 };
 ImageIcon.id = "Image";
@@ -5484,6 +5459,38 @@ var Editor = class extends React36.PureComponent {
       }
       return e;
     });
+  }
+  async addImage(file) {
+    const upload = this.props.onUploadImage;
+    if (this.state.selectedMenu !== "Image") {
+      this.menu.current?.select("Image");
+    }
+    if (upload && file) {
+      const image = await upload(file);
+      const imageLoad = new Image();
+      this.memory.set("imageUrl", image);
+      imageLoad.onload = () => {
+        let width = imageLoad.width;
+        let height = imageLoad.height;
+        const MAX_SIZE = 150;
+        if (width >= height) {
+          height = MAX_SIZE / width * height;
+          width = MAX_SIZE;
+        } else {
+          width = MAX_SIZE / height * width;
+          height = MAX_SIZE;
+        }
+        this.selectEndMaker({
+          top: 250 - height / 2 + 45,
+          left: 250 - width / 2,
+          bottom: 0,
+          right: 0,
+          width,
+          height
+        });
+      };
+      imageLoad.src = image;
+    }
   }
 };
 

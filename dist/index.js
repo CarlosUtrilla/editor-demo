@@ -2949,6 +2949,7 @@ var ImageIcon = /*#__PURE__*/ function(Icon) {
                     },
                     name: "image",
                     accept: "image/*",
+                    value: "",
                     onChange: function(e) {
                         return _this.uploadImage(e, _this.editor);
                     }
@@ -2964,53 +2965,14 @@ var ImageIcon = /*#__PURE__*/ function(Icon) {
         {
             key: "uploadImage",
             value: function uploadImage(e, editor) {
-                var _this = this;
                 return _async_to_generator(function() {
-                    var upload, file, image, imageLoad;
+                    var file;
                     return _ts_generator(this, function(_state) {
-                        switch(_state.label){
-                            case 0:
-                                upload = editor.props.onUploadImage;
-                                file = e.target.files ? e.target.files[0] : void 0;
-                                if (!(upload && file)) return [
-                                    3,
-                                    2
-                                ];
-                                return [
-                                    4,
-                                    upload(file)
-                                ];
-                            case 1:
-                                image = _state.sent();
-                                imageLoad = new Image();
-                                editor.memory.set("imageUrl", image);
-                                imageLoad.onload = function() {
-                                    var width = imageLoad.width;
-                                    var height = imageLoad.height;
-                                    var MAX_SIZE = 150;
-                                    if (width >= height) {
-                                        height = MAX_SIZE / width * height;
-                                        width = MAX_SIZE;
-                                    } else {
-                                        width = MAX_SIZE / height * width;
-                                        height = MAX_SIZE;
-                                    }
-                                    _this.editor.selectEndMaker({
-                                        top: 250 - height / 2 + 45,
-                                        left: 250 - width / 2,
-                                        bottom: 0,
-                                        right: 0,
-                                        width: width,
-                                        height: height
-                                    });
-                                };
-                                imageLoad.src = image;
-                                _state.label = 2;
-                            case 2:
-                                return [
-                                    2
-                                ];
-                        }
+                        file = e.target.files ? e.target.files[0] : void 0;
+                        editor.addImage(file);
+                        return [
+                            2
+                        ];
                     });
                 })();
             }
@@ -7324,6 +7286,63 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                     }
                     return e;
                 });
+            }
+        },
+        {
+            key: "addImage",
+            value: function addImage(file) {
+                var _this = this;
+                return _async_to_generator(function() {
+                    var upload, _this_menu_current, image, imageLoad;
+                    return _ts_generator(this, function(_state) {
+                        switch(_state.label){
+                            case 0:
+                                upload = _this.props.onUploadImage;
+                                if (_this.state.selectedMenu !== "Image") {
+                                    ;
+                                    (_this_menu_current = _this.menu.current) === null || _this_menu_current === void 0 ? void 0 : _this_menu_current.select("Image");
+                                }
+                                if (!(upload && file)) return [
+                                    3,
+                                    2
+                                ];
+                                return [
+                                    4,
+                                    upload(file)
+                                ];
+                            case 1:
+                                image = _state.sent();
+                                imageLoad = new Image();
+                                _this.memory.set("imageUrl", image);
+                                imageLoad.onload = function() {
+                                    var width = imageLoad.width;
+                                    var height = imageLoad.height;
+                                    var MAX_SIZE = 150;
+                                    if (width >= height) {
+                                        height = MAX_SIZE / width * height;
+                                        width = MAX_SIZE;
+                                    } else {
+                                        width = MAX_SIZE / height * width;
+                                        height = MAX_SIZE;
+                                    }
+                                    _this.selectEndMaker({
+                                        top: 250 - height / 2 + 45,
+                                        left: 250 - width / 2,
+                                        bottom: 0,
+                                        right: 0,
+                                        width: width,
+                                        height: height
+                                    });
+                                };
+                                imageLoad.src = image;
+                                _state.label = 2;
+                            case 2:
+                                return [
+                                    2
+                                ];
+                        }
+                    });
+                })();
             }
         }
     ]);

@@ -375,6 +375,7 @@ declare class Editor extends React$1.PureComponent<{
     private moveOutside;
     private moveComplete;
     saveEditor(): ElementInfo[];
+    addImage(file: File | undefined): Promise<void>;
 }
 
 declare function makeScenaFunctionComponent<T = IObject<any>>(id: string, component: (props: ScenaProps & T) => React.ReactElement<any, any>): ScenaFunctionComponent<T>;
