@@ -129,6 +129,7 @@
   outline: none;
   display: block;
   width: 100%;
+  min-width: max-content;
   height: 30px;
   padding: 5px;
   background: #000;
@@ -184,6 +185,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  overflow: auto;
 }
 .scena-menu-bottom {
   box-sizing: border-box;
@@ -203,6 +205,8 @@
 .scena-icon:not(.scena-divider):not(.scena-sub-icon) {
   width: var(--menu);
   height: var(--menu);
+  min-width: var(--menu);
+  min-height: var(--menu);
 }
 .scena-icon i:not(.divider) {
   display: block;
@@ -241,6 +245,7 @@
   width: 100%;
   height: 2px;
   border: 0.5px solid #fff;
+  box-sizing: content-box;
 }
 .scena-icon .color-picker .picker {
   position: absolute;

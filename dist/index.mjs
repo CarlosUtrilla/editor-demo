@@ -4266,14 +4266,8 @@ var MoveableManager = class extends React34.PureComponent {
         onScale: moveableData.onScale,
         onScaleGroupStart: moveableData.onScaleGroupStart,
         onScaleGroup: moveableData.onScaleGroup,
-        onResizeStart: (e) => {
-          this.console.log(e);
-          moveableData.onResizeStart(e);
-        },
-        onResize: (e) => {
-          this.console.log(e);
-          moveableData.onResize(e);
-        },
+        onResizeStart: moveableData.onResizeStart,
+        onResize: moveableData.onResize,
         onResizeGroupStart: moveableData.onResizeGroupStart,
         onResizeGroup: moveableData.onResizeGroup,
         onRotateStart: moveableData.onRotateStart,
