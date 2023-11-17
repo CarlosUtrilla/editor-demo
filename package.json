@@ -30,7 +30,7 @@
   },
   "homepage": "./",
   "scripts": {
-    "start": "PORT=3002 react-scripts start",
+    "start": "react-scripts start",
     "build": "tsup",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

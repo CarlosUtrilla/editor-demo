@@ -946,4 +946,39 @@ export default class Editor extends React.PureComponent<
         return e
     })
   }
+  public async addImage(file: File | undefined) {
+    const upload = this.props.onUploadImage;
+    if (this.state.selectedMenu !== "Image") {
+      this.menu.current?.select("Image")
+    }
+    if (upload && file) {
+					const image = await upload(file)
+					const imageLoad = new Image();
+					this.memory.set("imageUrl", image)
+
+					imageLoad.onload = () => {
+						let width = imageLoad.width;
+						let height = imageLoad.height
+						const MAX_SIZE = 150;
+						if (width >= height) {
+							height = (MAX_SIZE / width) * height;
+							width = MAX_SIZE;
+						} else {
+							width = (MAX_SIZE / height) * width;
+							height = MAX_SIZE;
+						}
+
+						this.selectEndMaker({
+							top: 250 - (height / 2) + 45,
+							left: 250 - (width / 2),
+							bottom: 0,
+							right: 0,
+							width,
+							height
+						})
+					};
+
+					imageLoad.src = image;
+        }
+  }
 }
