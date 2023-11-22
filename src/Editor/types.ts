@@ -19,6 +19,7 @@ export interface ScenaEditorState {
     showGuides: boolean;
     width: number;
     height: number;
+    loadedViewer: boolean;
 }
 
 export interface TagAppendInfo {

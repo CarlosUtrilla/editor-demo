@@ -102,7 +102,8 @@ export default class Editor extends React.PureComponent<
     selectedMenu: "MoveTool",
     showGuides: false,
     width: 500,
-    height: 500
+    height: 500,
+    loadedViewer: false,
   };
   public historyManager = new HistoryManager(this);
   public console = new Debugger(this.props.debug);
@@ -255,8 +256,9 @@ export default class Editor extends React.PureComponent<
         </InfiniteViewer>
         <Selecto
           ref={selecto}
-          dragContainer={".scena-viewer"}
           hitRate={0}
+          rootContainer={infiniteViewer.current && infiniteViewer.current.getContainer()}
+          container={infiniteViewer.current && infiniteViewer.current.getContainer()}
           selectableTargets={selectedMenu === "MoveTool" ?[`.scena-viewport [${DATA_SCENA_ELEMENT_ID}].selectable`]:[]}
           selectByClick={true}
           selectFromInside={false}
@@ -331,6 +333,7 @@ export default class Editor extends React.PureComponent<
     memory.set("background-color", "#4af");
     memory.set("color", "#333");
     memory.set("border-color", "#000");
+
 
     requestAnimationFrame(() => {
       infiniteViewer.current!.scrollCenter();
@@ -475,6 +478,9 @@ export default class Editor extends React.PureComponent<
     this.historyManager.registerType("move", undoMove, redoMove);
     if (this.props.initialJSX && this.props.initialJSX.length > 0) {
       this.appendJSXs(this.props.initialJSX, true)
+    }
+    if (!this.state.loadedViewer) {
+      this.forceUpdate()
     }
   }
   public componentWillUnmount() {
@@ -784,11 +790,12 @@ export default class Editor extends React.PureComponent<
       return false;
     }
     const maker = selectIcon.maker(this.memory);
-    const scrollTop = -infiniteViewer.getScrollTop() + 45;
-    const scrollLeft = -infiniteViewer.getScrollLeft();
+    const viwerPosition = infiniteViewer.getContainer().getBoundingClientRect()
+    const scrollTop = viwerPosition.y
+    const scrollLeft = viwerPosition.x
     const top = rect.top - scrollTop;
     const left = rect.left - scrollLeft;
-
+    this.console.log(top,left, viwerPosition)
     const style = {
       top: `${top}px`,
       left: `${left}px`,

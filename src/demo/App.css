@@ -6,6 +6,11 @@ html, body, #root, .app, .editor {
     width: 100%;
     height: 100%;
 }
+.container{
+    position: absolute;
+    left: 200px;
+    top: 200px;
+}
 .bottom {
     position: absolute;
     bottom: 0;
