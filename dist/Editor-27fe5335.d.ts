@@ -320,7 +320,10 @@ declare class Editor extends React.PureComponent<{
     initialJSX?: ElementInfo[];
     backgroundImg?: string;
     onChange?: (evt: ElementInfo[]) => void;
-    onUploadImage?: (img: File) => Promise<string>;
+    onUploadImage?: (img: File) => Promise<{
+        url: string;
+        options?: any;
+    }>;
     isAdmin?: boolean;
     fontFamily?: string[];
     onValidate?: (errors: boolean) => void;
@@ -366,7 +369,7 @@ declare class Editor extends React.PureComponent<{
     appendBlob(blob: Blob): Promise<HTMLElement | SVGElement>;
     moves(movedInfos: MovedInfo[], isRestore?: boolean): Promise<MovedResult>;
     private onMenuChange;
-    selectEndMaker(rect: Rect): boolean;
+    selectEndMaker(rect: Rect, extraProps?: any): boolean;
     private move;
     private checkBlur;
     private onResize;

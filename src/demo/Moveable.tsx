@@ -7,11 +7,11 @@ const elements = []as ElementInfo[]
 class App extends React.Component {
     public editor = React.createRef<Editor>();
 
-    uploadFile(file: File): Promise<string>{
+    uploadFile(file: File): Promise<{ url:string, options?: any }>{
         return new Promise((resolve) => {
             var reader = new FileReader();
             reader.onload = function (e) {
-                resolve(e.target?.result as string || "")
+                resolve({ url: e.target?.result as string || "", options: {colors: 2} })
             };
             reader.readAsDataURL(file);
         })

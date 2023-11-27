@@ -2245,6 +2245,7 @@ var Editor = class extends React35.PureComponent {
       {
         ref: selecto,
         hitRate: 0,
+        dragContainer: ".scena-viewer",
         rootContainer: infiniteViewer.current && infiniteViewer.current.getContainer(),
         container: infiniteViewer.current && infiniteViewer.current.getContainer(),
         selectableTargets: selectedMenu === "MoveTool" ? [`.scena-viewport [${DATA_SCENA_ELEMENT_ID}].selectable`] : [],
@@ -2684,7 +2685,7 @@ var Editor = class extends React35.PureComponent {
     const frameMap = this.removeFrames(movedInfos.map(({ info }) => info.el));
     return this.getViewport().moves(movedInfos).then((result) => this.moveComplete(result, frameMap, isRestore));
   }
-  selectEndMaker(rect) {
+  selectEndMaker(rect, extraProps) {
     const infiniteViewer = this.infiniteViewer.current;
     const selectIcon = this.menu.current.getSelected();
     const width = rect.width;
@@ -2711,7 +2712,8 @@ var Editor = class extends React35.PureComponent {
       jsx: maker.tag,
       attrs: maker.attrs,
       name: `(${selectIcon.id})`,
-      frame: style
+      frame: style,
+      ...extraProps && { ...extraProps }
     }).then((el) => {
       selectIcon.makeThen(el, selectIcon.id, this.menu.current);
       this.menu.current?.forceUpdate();
@@ -2774,7 +2776,7 @@ var Editor = class extends React35.PureComponent {
   saveEditor() {
     const elements = this.getViewport().getViewportInfos();
     let stringElements = JSON.stringify(elements, (key, value) => {
-      if (key.includes("__reactInternalInstance") || value instanceof HTMLDivElement) {
+      if (key.includes("__reactInternalInstance") || key.includes("__reactFiber") || value instanceof HTMLDivElement) {
         return void 0;
       }
       return value;
@@ -2796,7 +2798,7 @@ var Editor = class extends React35.PureComponent {
     if (upload && file) {
       const image = await upload(file);
       const imageLoad = new Image();
-      this.memory.set("imageUrl", image);
+      this.memory.set("imageUrl", image.url);
       imageLoad.onload = () => {
         let width = imageLoad.width;
         let height = imageLoad.height;
@@ -2808,16 +2810,20 @@ var Editor = class extends React35.PureComponent {
           width = MAX_SIZE / height * width;
           height = MAX_SIZE;
         }
+        const bounds = this.infiniteViewer.current.getContainer().getBoundingClientRect();
         this.selectEndMaker({
-          top: 250 - height / 2 + 45,
-          left: 250 - width / 2,
+          top: bounds.y + 250 - height / 2,
+          left: bounds.x + 250 - width / 2,
           bottom: 0,
           right: 0,
           width,
           height
+        }, {
+          url: image.url,
+          ...image.options
         });
       };
-      imageLoad.src = image;
+      imageLoad.src = image.url;
     }
   }
 };

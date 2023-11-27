@@ -6644,6 +6644,7 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                 }))), /* @__PURE__ */ React36.createElement(import_react_selecto.default, {
                     ref: selecto,
                     hitRate: 0,
+                    dragContainer: ".scena-viewer",
                     rootContainer: infiniteViewer.current && infiniteViewer.current.getContainer(),
                     container: infiniteViewer.current && infiniteViewer.current.getContainer(),
                     selectableTargets: selectedMenu === "MoveTool" ? [
@@ -7154,7 +7155,7 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
         },
         {
             key: "selectEndMaker",
-            value: function selectEndMaker(rect) {
+            value: function selectEndMaker(rect, extraProps) {
                 var _this = this;
                 var infiniteViewer = this.infiniteViewer.current;
                 var selectIcon = this.menu.current.getSelected();
@@ -7177,12 +7178,12 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                     width: "".concat(width, "px"),
                     height: "".concat(height, "px")
                 }, maker.style);
-                this.appendJSX({
+                this.appendJSX(_object_spread({
                     jsx: maker.tag,
                     attrs: maker.attrs,
                     name: "(".concat(selectIcon.id, ")"),
                     frame: style
-                }).then(function(el) {
+                }, extraProps && _object_spread({}, extraProps))).then(function(el) {
                     var _this_menu_current;
                     selectIcon.makeThen(el, selectIcon.id, _this.menu.current);
                     (_this_menu_current = _this.menu.current) === null || _this_menu_current === void 0 ? void 0 : _this_menu_current.forceUpdate();
@@ -7280,7 +7281,7 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
             value: function saveEditor() {
                 var elements = this.getViewport().getViewportInfos();
                 var stringElements = JSON.stringify(elements, function(key, value) {
-                    if (key.includes("__reactInternalInstance") || _instanceof(value, HTMLDivElement)) {
+                    if (key.includes("__reactInternalInstance") || key.includes("__reactFiber") || _instanceof(value, HTMLDivElement)) {
                         return void 0;
                     }
                     return value;
@@ -7320,7 +7321,7 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                             case 1:
                                 image = _state.sent();
                                 imageLoad = new Image();
-                                _this.memory.set("imageUrl", image);
+                                _this.memory.set("imageUrl", image.url);
                                 imageLoad.onload = function() {
                                     var width = imageLoad.width;
                                     var height = imageLoad.height;
@@ -7332,16 +7333,19 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                                         width = MAX_SIZE / height * width;
                                         height = MAX_SIZE;
                                     }
+                                    var bounds = _this.infiniteViewer.current.getContainer().getBoundingClientRect();
                                     _this.selectEndMaker({
-                                        top: 250 - height / 2 + 45,
-                                        left: 250 - width / 2,
+                                        top: bounds.y + 250 - height / 2,
+                                        left: bounds.x + 250 - width / 2,
                                         bottom: 0,
                                         right: 0,
                                         width: width,
                                         height: height
-                                    });
+                                    }, _object_spread({
+                                        url: image.url
+                                    }, image.options));
                                 };
-                                imageLoad.src = image;
+                                imageLoad.src = image.url;
                                 _state.label = 2;
                             case 2:
                                 return [

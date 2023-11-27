@@ -51,9 +51,6 @@ export default class Menu extends React.PureComponent<{
             if (["Text"].includes(target)) {
                 menu = TextMenu
             }
-            /* if (["Circle","Oval","Rect","RoundRect"].includes(target)) {
-                menu = ShapesMenu
-            } */
             if (["PrintArea"].includes(target)) {
                 menu = PrintAreaMenu
             }
