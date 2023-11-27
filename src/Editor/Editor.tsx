@@ -939,7 +939,7 @@ export default class Editor extends React.PureComponent<
   public saveEditor() {
     const elements = this.getViewport().getViewportInfos()
     let stringElements = JSON.stringify(elements, (key, value) => {
-        if (key.includes('__reactInternalInstance') || value instanceof HTMLDivElement) {
+        if (key.includes('__reactInternalInstance') || key.includes('__reactFiber')|| value instanceof HTMLDivElement) {
             return undefined;
         }
         return value;

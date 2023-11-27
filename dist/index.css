@@ -138,6 +138,7 @@
   border: 0;
   box-sizing: border-box;
   text-align: center;
+  font-size: 13px;
 }
 
 /* src/Editor/Inputs/ColorBox.css */

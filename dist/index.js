@@ -6439,7 +6439,8 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
             selectedMenu: "MoveTool",
             showGuides: false,
             width: 500,
-            height: 500
+            height: 500,
+            loadedViewer: false
         };
         _this.historyManager = new HistoryManager(_assert_this_initialized(_this));
         _this.console = new Debugger(_this.props.debug);
@@ -6642,8 +6643,9 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                     editor: this
                 }))), /* @__PURE__ */ React36.createElement(import_react_selecto.default, {
                     ref: selecto,
-                    dragContainer: ".scena-viewer",
                     hitRate: 0,
+                    rootContainer: infiniteViewer.current && infiniteViewer.current.getContainer(),
+                    container: infiniteViewer.current && infiniteViewer.current.getContainer(),
                     selectableTargets: selectedMenu === "MoveTool" ? [
                         ".scena-viewport [".concat(DATA_SCENA_ELEMENT_ID, "].selectable")
                     ] : [],
@@ -6819,6 +6821,9 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                 this.historyManager.registerType("move", undoMove, redoMove);
                 if (this.props.initialJSX && this.props.initialJSX.length > 0) {
                     this.appendJSXs(this.props.initialJSX, true);
+                }
+                if (!this.state.loadedViewer) {
+                    this.forceUpdate();
                 }
             }
         },
@@ -7159,10 +7164,12 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                     return false;
                 }
                 var maker = selectIcon.maker(this.memory);
-                var scrollTop = -infiniteViewer.getScrollTop() + 45;
-                var scrollLeft = -infiniteViewer.getScrollLeft();
+                var viwerPosition = infiniteViewer.getContainer().getBoundingClientRect();
+                var scrollTop = viwerPosition.y;
+                var scrollLeft = viwerPosition.x;
                 var top = rect.top - scrollTop;
                 var left = rect.left - scrollLeft;
+                this.console.log(top, left, viwerPosition);
                 var style = _object_spread({
                     top: "".concat(top, "px"),
                     left: "".concat(left, "px"),
