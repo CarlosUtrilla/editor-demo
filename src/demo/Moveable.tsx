@@ -6,7 +6,9 @@ import { ElementInfo } from "../Editor/Viewport/Viewport";
 const elements = []as ElementInfo[]
 class App extends React.Component {
     public editor = React.createRef<Editor>();
-
+    public state = {
+        img: ""
+    }
     uploadFile(file: File): Promise<{ url:string, options?: any }>{
         return new Promise((resolve) => {
             var reader = new FileReader();
@@ -15,6 +17,14 @@ class App extends React.Component {
             };
             reader.readAsDataURL(file);
         })
+    }
+    handleScreen = async () => {
+        const file = await this.editor.current?.getScreenshot("image")
+        var reader = new FileReader();
+        reader.onload =  (e)=> {
+            this.setState({img: e.target?.result as string})
+        };
+        reader.readAsDataURL(file!);
     }
     public render() {
         return <div className="app">
@@ -28,6 +38,8 @@ class App extends React.Component {
                     isAdmin
                 />
             </div>
+            <button onClick={this.handleScreen}>screen</button>
+            <img src={this.state.img}/>
         </div>;
     }
 }

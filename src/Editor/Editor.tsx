@@ -28,9 +28,10 @@ import Shortcuts from 'shortcuts';
 import { ScenaEditorState, SavedScenaData, ScenaJSXElement } from "./types";
 import HistoryManager from "./utils/HistoryManager";
 import Debugger from "./utils/Debugger";
-import { isMacintosh, DATA_SCENA_ELEMENT_ID } from "./consts";
+import { DATA_SCENA_ELEMENT_ID } from "./consts";
 import ClipboardManager from "./utils/ClipboardManager";
 import { NameType } from "scenejs";
+import html2canvas from "html2canvas";
 
 function undoCreateElements(
   { infos, prevSelected }: IObject<any>,
@@ -105,6 +106,7 @@ export default class Editor extends React.PureComponent<
     height: 500,
     loadedViewer: false,
     isShift: false,
+    isScreenshot: false,
   };
   public historyManager = new HistoryManager(this);
   public console = new Debugger(this.props.debug);
@@ -245,12 +247,9 @@ export default class Editor extends React.PureComponent<
                 width: `${width}px`,
                 height: `${height}px`,
               }}
-              editor={this}
+            editor={this}
+            background={this.props.backgroundImg}
           >
-              {
-                this.props.backgroundImg &&
-                <img src={this.props.backgroundImg} alt="" className="backgroundImage"/>
-              }
               <MoveableManager
                 ref={moveableManager}
                 selectedTargets={selectedTargets}
@@ -1008,5 +1007,20 @@ export default class Editor extends React.PureComponent<
 
 					imageLoad.src = image.url;
         }
+  }
+
+  public async getScreenshot(fileName: string) {
+    return new Promise<File>((resolve) => {
+      const zoom = this.state.zoom
+      this.setState({ isScreenshot: true, zoom: 1 }, async () => {
+        const viewer = document.getElementById("scene-viewport")!;
+        const canvas = await html2canvas(viewer,{allowTaint: true, useCORS: true});
+        canvas.toBlob((blob) => {
+          let file = new File([blob!], fileName+".png", { type: "image/png" })
+          resolve(file)
+          this.setState({ isScreenshot: false, zoom})
+        }, 'image/jpeg')
+      })
+    })
   }
 }
