@@ -8,7 +8,7 @@ import { IObject } from '@daybrush/utils';
 import Component from '@egjs/component';
 import MoveableHelper from 'moveable-helper';
 import { Frame, NameType } from 'scenejs';
-import KeyController from 'keycon';
+import Shortcuts from 'shortcuts';
 
 declare class Memory {
     map: Map<any, any>;
@@ -73,30 +73,6 @@ declare class MoveableManager extends React.PureComponent<{
 interface MoveableManager extends EditorInterface {
 }
 
-declare class Debugger {
-    private isDebug?;
-    constructor(isDebug?: boolean | undefined);
-    log(...args: any[]): void;
-}
-
-declare class KeyManager {
-    private console;
-    constructor(console: Debugger);
-    keycon: KeyController;
-    keylist: Array<[string[], string]>;
-    isEnable: boolean;
-    enable(): void;
-    disable(): void;
-    keydown(keys: string[], callback: (e: any) => any, description?: any): void;
-    keyup(keys: string[], callback: (e: any) => any, description?: any): void;
-    get altKey(): boolean;
-    get shiftKey(): boolean;
-    get metaKey(): boolean;
-    get ctrlKey(): boolean;
-    destroy(): void;
-    private addCallback;
-}
-
 type RestoreCallback = (props: any, editor: Editor) => any;
 declare class HistoryManager {
     private editor;
@@ -110,6 +86,12 @@ declare class HistoryManager {
     redo(): void;
 }
 
+declare class Debugger {
+    private isDebug?;
+    constructor(isDebug?: boolean | undefined);
+    log(...args: any[]): void;
+}
+
 interface ScenaEditorState {
     selectedTargets: Array<SVGElement | HTMLElement>;
     horizontalGuides: number[];
@@ -121,13 +103,14 @@ interface ScenaEditorState {
     width: number;
     height: number;
     loadedViewer: boolean;
+    isShift: boolean;
 }
 interface EditorInterface {
     editor: Editor;
     memory: Memory;
     eventBus: EventBus;
     moveableData: MoveableData;
-    keyManager: KeyManager;
+    keyManager: Shortcuts;
     historyManager: HistoryManager;
     console: Debugger;
     moveableManager: React.RefObject<MoveableManager>;
@@ -334,7 +317,7 @@ declare class Editor extends React.PureComponent<{
     eventBus: EventBus;
     memory: Memory;
     moveableData: MoveableData;
-    keyManager: KeyManager;
+    keyManager: Shortcuts;
     clipboardManager: ClipboardManager;
     horizontalGuides: React.RefObject<Guides>;
     verticalGuides: React.RefObject<Guides>;

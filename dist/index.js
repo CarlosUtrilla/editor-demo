@@ -2886,12 +2886,14 @@ var Icon = /*#__PURE__*/ function(_React_PureComponent) {
                 var _this = this;
                 var keys = this.keys;
                 if (keys.length) {
-                    this.keyManager.keydown(keys, function(e) {
-                        if (e.ctrlKey || e.metaKey) {
-                            return false;
+                    this.keyManager.add([
+                        {
+                            shortcut: keys.join("+"),
+                            handler: function(e) {
+                                _this.onClick();
+                            }
                         }
-                        _this.onClick();
-                    }, this.constructor.id);
+                    ]);
                 }
             }
         }
@@ -5646,11 +5648,11 @@ var MoveableManager = /*#__PURE__*/ function(_React34_PureComponent) {
                 if (!selectedTargets.length) {
                     return this.renderViewportMoveable();
                 }
-                var moveableData = editor.moveableData, keyManager = editor.keyManager, eventBus = editor.eventBus, selecto = editor.selecto, memory = editor.memory;
+                var moveableData = editor.moveableData, eventBus = editor.eventBus, selecto = editor.selecto, memory = editor.memory;
                 var elementGuidelines = _to_consumable_array(moveableData.getTargets()).filter(function(el) {
                     return selectedTargets.indexOf(el) === -1;
                 });
-                var isShift = keyManager.shiftKey;
+                var isShift = editor.state.isShift;
                 var targetIsImage = selectedTargets.every(function(el) {
                     return el.tagName === "IMG";
                 });
@@ -5804,19 +5806,8 @@ var MoveableManager = /*#__PURE__*/ function(_React34_PureComponent) {
         {
             key: "componentDidMount",
             value: function componentDidMount() {
-                var _this = this;
                 this.historyManager.registerType("render", undoRender, redoRender);
                 this.historyManager.registerType("renders", undoRenders, redoRenders);
-                this.keyManager.keydown([
-                    "shift"
-                ], function() {
-                    _this.forceUpdate();
-                });
-                this.keyManager.keyup([
-                    "shift"
-                ], function() {
-                    _this.forceUpdate();
-                });
             }
         },
         {
@@ -5989,103 +5980,8 @@ var MoveableData = /*#__PURE__*/ function(_import_moveable_helper_default) {
     ]);
     return MoveableData;
 }(import_moveable_helper.default);
-// src/Editor/KeyManager/KeyManager.ts
-var import_keycon = __toESM(require("keycon"));
-function check(e) {
-    var inputEvent = e.inputEvent;
-    var target = inputEvent.target;
-    if (checkInput(target)) {
-        return false;
-    }
-    return true;
-}
-var KeyManager = /*#__PURE__*/ function() {
-    function KeyManager(console2) {
-        _class_call_check(this, KeyManager);
-        this.console = console2;
-        this.keycon = new import_keycon.default();
-        this.keylist = [];
-        this.isEnable = true;
-    }
-    _create_class(KeyManager, [
-        {
-            key: "enable",
-            value: function enable() {
-                this.isEnable = true;
-            }
-        },
-        {
-            key: "disable",
-            value: function disable() {
-                this.isEnable = false;
-            }
-        },
-        {
-            key: "keydown",
-            value: function keydown(keys, callback, description) {
-                this.keycon.keydown(keys, this.addCallback("keydown", keys, callback, description));
-            }
-        },
-        {
-            key: "keyup",
-            value: function keyup(keys, callback, description) {
-                this.keycon.keyup(keys, this.addCallback("keyup", keys, callback, description));
-            }
-        },
-        {
-            key: "altKey",
-            get: function get() {
-                return this.keycon.altKey;
-            }
-        },
-        {
-            key: "shiftKey",
-            get: function get() {
-                return this.keycon.shiftKey;
-            }
-        },
-        {
-            key: "metaKey",
-            get: function get() {
-                return this.keycon.metaKey;
-            }
-        },
-        {
-            key: "ctrlKey",
-            get: function get() {
-                return this.keycon.ctrlKey;
-            }
-        },
-        {
-            key: "destroy",
-            value: function destroy() {
-                this.keycon.destroy();
-            }
-        },
-        {
-            key: "addCallback",
-            value: function addCallback(type, keys, callback, description) {
-                var _this = this;
-                if (description) {
-                    this.keylist.push([
-                        keys,
-                        description
-                    ]);
-                }
-                return function(e) {
-                    if (!_this.isEnable || !check(e)) {
-                        return false;
-                    }
-                    var result = callback(e);
-                    if (result !== false && description) {
-                        _this.console.log("".concat(type, ": ").concat(keys.join(" + ")), description);
-                    }
-                };
-            }
-        }
-    ]);
-    return KeyManager;
-}();
+// src/Editor/Editor.tsx
+var import_shortcuts = __toESM(require("shortcuts"));
 // src/Editor/utils/HistoryManager.ts
 var HistoryManager = /*#__PURE__*/ function() {
     function HistoryManager(editor) {
@@ -6440,14 +6336,21 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
             showGuides: false,
             width: 500,
             height: 500,
-            loadedViewer: false
+            loadedViewer: false,
+            isShift: false
         };
         _this.historyManager = new HistoryManager(_assert_this_initialized(_this));
         _this.console = new Debugger(_this.props.debug);
         _this.eventBus = new EventBus_default();
         _this.memory = new Memory();
         _this.moveableData = new MoveableData(_this.memory);
-        _this.keyManager = new KeyManager(_this.console);
+        _this.keyManager = new import_shortcuts.default({
+            capture: true,
+            target: window,
+            shouldHandleEvent: function shouldHandleEvent(event) {
+                return true;
+            }
+        });
         _this.clipboardManager = new ClipboardManager(_assert_this_initialized(_this));
         _this.horizontalGuides = React36.createRef();
         _this.verticalGuides = React36.createRef();
@@ -6735,86 +6638,90 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                 eventBus.on("update", function() {
                     _this.forceUpdate();
                 });
-                this.keyManager.keydown([
-                    "left"
-                ], function(e) {
-                    _this.move(-10, 0);
-                    e.inputEvent.preventDefault();
-                }, "Move Left");
-                this.keyManager.keydown([
-                    "up"
-                ], function(e) {
-                    _this.move(0, -10);
-                    e.inputEvent.preventDefault();
-                }, "Move Up");
-                this.keyManager.keydown([
-                    "right"
-                ], function(e) {
-                    _this.move(10, 0);
-                    e.inputEvent.preventDefault();
-                }, "Move Right");
-                this.keyManager.keydown([
-                    "down"
-                ], function(e) {
-                    _this.move(0, 10);
-                    e.inputEvent.preventDefault();
-                }, "Move Down");
-                this.keyManager.keyup([
-                    "backspace"
-                ], function() {
-                    _this.removeElements(_this.getSelectedTargets());
-                }, "Delete");
-                this.keyManager.keydown([
-                    isMacintosh ? "meta" : "ctrl",
-                    "x"
-                ], function() {}, "Cut");
-                this.keyManager.keydown([
-                    isMacintosh ? "meta" : "ctrl",
-                    "c"
-                ], function() {}, "Copy");
-                this.keyManager.keydown([
-                    isMacintosh ? "meta" : "ctrl",
-                    "v"
-                ], function() {}, "Paste");
-                this.keyManager.keydown([
-                    isMacintosh ? "meta" : "ctrl",
-                    "z"
-                ], function() {
-                    _this.historyManager.undo();
-                }, "Undo");
-                this.keyManager.keydown([
-                    isMacintosh ? "meta" : "ctrl",
-                    "shift",
-                    "z"
-                ], function() {
-                    _this.historyManager.redo();
-                }, "Redo");
-                this.keyManager.keydown([
-                    isMacintosh ? "meta" : "ctrl",
-                    "a"
-                ], function(e) {
-                    _this.setSelectedTargets(_this.getViewportInfos().map(function(info) {
-                        return info.el;
-                    }));
-                    e.inputEvent.preventDefault();
-                }, "Select All");
-                this.keyManager.keydown([
-                    isMacintosh ? "meta" : "ctrl",
-                    "alt",
-                    "g"
-                ], function(e) {
-                    e.inputEvent.preventDefault();
-                    _this.moveInside();
-                }, "Move Inside");
-                this.keyManager.keydown([
-                    isMacintosh ? "meta" : "ctrl",
-                    "shift",
-                    "alt",
-                    "g"
-                ], function(e) {
-                    e.inputEvent.preventDefault();
-                    _this.moveOutside();
-                }, "Move Outside");
+                this.keyManager.add([
+                    {
+                        shortcut: "Left",
+                        handler: function(e) {
+                            _this.move(-10, 0);
+                            e && e.preventDefault();
+                        }
+                    },
+                    {
+                        shortcut: "Up",
+                        handler: function(e) {
+                            _this.move(0, -10);
+                            e && e.preventDefault();
+                        }
+                    },
+                    {
+                        shortcut: "Right",
+                        handler: function(e) {
+                            _this.move(10, 0);
+                            e && e.preventDefault();
+                        }
+                    },
+                    {
+                        shortcut: "Down",
+                        handler: function(e) {
+                            _this.move(0, 10);
+                            e && e.preventDefault();
+                        }
+                    },
+                    {
+                        shortcut: "Backspace",
+                        handler: function() {
+                            _this.removeElements(_this.getSelectedTargets());
+                        }
+                    },
+                    {
+                        shortcut: "CmdOrCtrl+x",
+                        handler: function() {}
+                    },
+                    {
+                        shortcut: "CmdOrCtrl+c",
+                        handler: function() {}
+                    },
+                    {
+                        shortcut: "CmdOrCtrl+v",
+                        handler: function() {}
+                    },
+                    {
+                        shortcut: "CmdOrCtrl+z",
+                        handler: function() {
+                            _this.historyManager.undo();
+                        }
+                    },
+                    {
+                        shortcut: "CmdOrCtrl+Shift+z",
+                        handler: function() {
+                            _this.historyManager.redo();
+                        }
+                    },
+                    {
+                        shortcut: "CmdOrCtrl+a",
+                        handler: function(e) {
+                            _this.setSelectedTargets(_this.getViewportInfos().map(function(info) {
+                                return info.el;
+                            }));
+                            e && e.preventDefault();
+                        }
+                    }
+                ]);
+                this.keyManager.start();
+                document.addEventListener("keydown", function(e) {
+                    if (e.key === "Shift") {
+                        _this.setState({
+                            isShift: true
+                        });
+                    }
+                });
+                document.addEventListener("keyup", function(e) {
+                    if (e.key === "Shift") {
+                        _this.setState({
+                            isShift: false
+                        });
+                    }
+                });
                 this.historyManager.registerType("createElements", undoCreateElements, restoreElements);
                 this.historyManager.registerType("removeElements", restoreElements, undoCreateElements);
                 this.historyManager.registerType("selectTargets", undoSelectTargets, redoSelectTargets);
@@ -6831,12 +6738,28 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
         {
             key: "componentWillUnmount",
             value: function componentWillUnmount() {
+                var _this = this;
                 this.eventBus.off();
                 this.memory.clear();
                 this.moveableData.clear();
-                this.keyManager.destroy();
+                this.keyManager.stop();
+                this.keyManager.reset();
                 this.clipboardManager.destroy();
                 window.removeEventListener("resize", this.onResize);
+                document.removeEventListener("keydown", function(e) {
+                    if (e.key === "Shift") {
+                        _this.setState({
+                            isShift: true
+                        });
+                    }
+                });
+                document.removeEventListener("keyup", function(e) {
+                    if (e.key === "Shift") {
+                        _this.setState({
+                            isShift: false
+                        });
+                    }
+                });
             }
         },
         {

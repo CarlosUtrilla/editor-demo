@@ -13,7 +13,7 @@ function check(e: any) {
 }
 export default class KeyManager {
     constructor(private console: Debugger) { }
-    public keycon = new KeyController();
+    public keycon = new KeyController(window);
     public keylist: Array<[string[], string]> = [];
     public isEnable = true;
 
@@ -52,11 +52,12 @@ export default class KeyManager {
             ]);
         }
         return (e: any) => {
+            this.console.log("onKey", e, this.isEnable, check(e))
             if (!this.isEnable || !check(e)) {
                 return false;
             }
             const result = callback(e);
-
+            this.console.log("onKeyResult", result)
             if (result !== false && description) {
                 this.console.log(`${type}: ${keys.join(" + ")}`, description);
             }

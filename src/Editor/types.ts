@@ -3,11 +3,11 @@ import Memory from "./utils/Memory";
 import EventBus from "./utils/EventBus";
 import MoveableData from "./utils/MoveableData";
 import MoveableManager from "./Viewport/MoveableMananger";
-import KeyManager from "./KeyManager/KeyManager";
 import Editor from "./Editor";
 import HistoryManager from "./utils/HistoryManager";
 import Debugger from "./utils/Debugger";
 import * as React from "react";
+import Shortcuts from "shortcuts";
 
 export interface ScenaEditorState {
     selectedTargets: Array<SVGElement | HTMLElement>;
@@ -20,6 +20,7 @@ export interface ScenaEditorState {
     width: number;
     height: number;
     loadedViewer: boolean;
+    isShift: boolean;
 }
 
 export interface TagAppendInfo {
@@ -35,7 +36,7 @@ export interface EditorInterface {
     memory: Memory;
     eventBus: EventBus;
     moveableData: MoveableData;
-    keyManager: KeyManager;
+    keyManager: Shortcuts;
     historyManager: HistoryManager;
     console: Debugger;
     moveableManager: React.RefObject<MoveableManager>;

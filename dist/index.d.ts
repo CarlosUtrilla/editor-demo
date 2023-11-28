@@ -1,4 +1,4 @@
-import { S as ScenaProps, a as ScenaFunctionComponent, E as Editor } from './Editor-27fe5335.js';
+import { S as ScenaProps, a as ScenaFunctionComponent, E as Editor } from './Editor-c92ba88b.js';
 import { IObject } from '@daybrush/utils';
 import 'react-moveable';
 import 'react';
@@ -8,7 +8,7 @@ import 'react-selecto';
 import '@egjs/component';
 import 'moveable-helper';
 import 'scenejs';
-import 'keycon';
+import 'shortcuts';
 
 declare function makeScenaFunctionComponent<T = IObject<any>>(id: string, component: (props: ScenaProps & T) => React.ReactElement<any, any>): ScenaFunctionComponent<T>;
 

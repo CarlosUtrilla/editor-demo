@@ -2704,7 +2704,6 @@ export {
   __decorateClass,
   require_react,
   DATA_SCENA_ELEMENT_ID,
-  isMacintosh,
   TYPE_SCENA_LAYERS,
   prefix,
   getContentElement,

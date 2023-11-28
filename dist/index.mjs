@@ -12,11 +12,10 @@ import {
   getIds,
   getParnetScenaElement,
   getScenaAttrs,
-  isMacintosh,
   makeScenaFunctionComponent,
   prefix,
   require_react
-} from "./chunk-3NATN23E.mjs";
+} from "./chunk-ZP7TF6VQ.mjs";
 
 // src/Editor/Editor.tsx
 var React35 = __toESM(require_react());
@@ -134,12 +133,14 @@ var Icon = class extends React.PureComponent {
   componentDidMount() {
     const keys = this.keys;
     if (keys.length) {
-      this.keyManager.keydown(keys, (e) => {
-        if (e.ctrlKey || e.metaKey) {
-          return false;
+      this.keyManager.add([
+        {
+          shortcut: keys.join("+"),
+          handler: (e) => {
+            this.onClick();
+          }
         }
-        this.onClick();
-      }, this.constructor.id);
+      ]);
     }
   }
 };
@@ -1519,7 +1520,6 @@ var MoveableManager = class extends React33.PureComponent {
     }
     const {
       moveableData,
-      keyManager,
       eventBus,
       selecto,
       memory
@@ -1527,7 +1527,7 @@ var MoveableManager = class extends React33.PureComponent {
     const elementGuidelines = [...moveableData.getTargets()].filter((el) => {
       return selectedTargets.indexOf(el) === -1;
     });
-    const isShift = keyManager.shiftKey;
+    const isShift = editor.state.isShift;
     const targetIsImage = selectedTargets.every((el) => el.tagName === "IMG");
     return /* @__PURE__ */ React33.createElement(
       Moveable,
@@ -1653,12 +1653,6 @@ var MoveableManager = class extends React33.PureComponent {
   componentDidMount() {
     this.historyManager.registerType("render", undoRender, redoRender);
     this.historyManager.registerType("renders", undoRenders, redoRenders);
-    this.keyManager.keydown(["shift"], () => {
-      this.forceUpdate();
-    });
-    this.keyManager.keyup(["shift"], () => {
-      this.forceUpdate();
-    });
   }
   updateRect() {
     this.getMoveable().updateRect();
@@ -1746,68 +1740,8 @@ var MoveableData = class extends MoveableHelper {
   }
 };
 
-// src/Editor/KeyManager/KeyManager.ts
-import KeyController from "keycon";
-function check(e) {
-  const inputEvent = e.inputEvent;
-  const target = inputEvent.target;
-  if (checkInput(target)) {
-    return false;
-  }
-  return true;
-}
-var KeyManager = class {
-  constructor(console2) {
-    this.console = console2;
-    this.keycon = new KeyController();
-    this.keylist = [];
-    this.isEnable = true;
-  }
-  enable() {
-    this.isEnable = true;
-  }
-  disable() {
-    this.isEnable = false;
-  }
-  keydown(keys, callback, description) {
-    this.keycon.keydown(keys, this.addCallback("keydown", keys, callback, description));
-  }
-  keyup(keys, callback, description) {
-    this.keycon.keyup(keys, this.addCallback("keyup", keys, callback, description));
-  }
-  get altKey() {
-    return this.keycon.altKey;
-  }
-  get shiftKey() {
-    return this.keycon.shiftKey;
-  }
-  get metaKey() {
-    return this.keycon.metaKey;
-  }
-  get ctrlKey() {
-    return this.keycon.ctrlKey;
-  }
-  destroy() {
-    this.keycon.destroy();
-  }
-  addCallback(type, keys, callback, description) {
-    if (description) {
-      this.keylist.push([
-        keys,
-        description
-      ]);
-    }
-    return (e) => {
-      if (!this.isEnable || !check(e)) {
-        return false;
-      }
-      const result = callback(e);
-      if (result !== false && description) {
-        this.console.log(`${type}: ${keys.join(" + ")}`, description);
-      }
-    };
-  }
-};
+// src/Editor/Editor.tsx
+import Shortcuts from "shortcuts";
 
 // src/Editor/utils/HistoryManager.ts
 var HistoryManager = class {
@@ -2048,14 +1982,21 @@ var Editor = class extends React35.PureComponent {
       showGuides: false,
       width: 500,
       height: 500,
-      loadedViewer: false
+      loadedViewer: false,
+      isShift: false
     };
     this.historyManager = new HistoryManager(this);
     this.console = new Debugger(this.props.debug);
     this.eventBus = new EventBus_default();
     this.memory = new Memory();
     this.moveableData = new MoveableData(this.memory);
-    this.keyManager = new KeyManager(this.console);
+    this.keyManager = new Shortcuts({
+      capture: true,
+      target: window,
+      shouldHandleEvent(event) {
+        return true;
+      }
+    });
     this.clipboardManager = new ClipboardManager(this);
     this.horizontalGuides = React35.createRef();
     this.verticalGuides = React35.createRef();
@@ -2325,103 +2266,89 @@ var Editor = class extends React35.PureComponent {
     eventBus.on("update", () => {
       this.forceUpdate();
     });
-    this.keyManager.keydown(
-      ["left"],
-      (e) => {
-        this.move(-10, 0);
-        e.inputEvent.preventDefault();
+    this.keyManager.add([
+      {
+        shortcut: "Left",
+        handler: (e) => {
+          this.move(-10, 0);
+          e && e.preventDefault();
+        }
       },
-      "Move Left"
-    );
-    this.keyManager.keydown(
-      ["up"],
-      (e) => {
-        this.move(0, -10);
-        e.inputEvent.preventDefault();
+      {
+        shortcut: "Up",
+        handler: (e) => {
+          this.move(0, -10);
+          e && e.preventDefault();
+        }
       },
-      "Move Up"
-    );
-    this.keyManager.keydown(
-      ["right"],
-      (e) => {
-        this.move(10, 0);
-        e.inputEvent.preventDefault();
+      {
+        shortcut: "Right",
+        handler: (e) => {
+          this.move(10, 0);
+          e && e.preventDefault();
+        }
       },
-      "Move Right"
-    );
-    this.keyManager.keydown(
-      ["down"],
-      (e) => {
-        this.move(0, 10);
-        e.inputEvent.preventDefault();
+      {
+        shortcut: "Down",
+        handler: (e) => {
+          this.move(0, 10);
+          e && e.preventDefault();
+        }
       },
-      "Move Down"
-    );
-    this.keyManager.keyup(
-      ["backspace"],
-      () => {
-        this.removeElements(this.getSelectedTargets());
+      {
+        shortcut: "Backspace",
+        handler: () => {
+          this.removeElements(this.getSelectedTargets());
+        }
       },
-      "Delete"
-    );
-    this.keyManager.keydown(
-      [isMacintosh ? "meta" : "ctrl", "x"],
-      () => {
+      {
+        shortcut: "CmdOrCtrl+x",
+        handler: () => {
+        }
       },
-      "Cut"
-    );
-    this.keyManager.keydown(
-      [isMacintosh ? "meta" : "ctrl", "c"],
-      () => {
+      {
+        shortcut: "CmdOrCtrl+c",
+        handler: () => {
+        }
       },
-      "Copy"
-    );
-    this.keyManager.keydown(
-      [isMacintosh ? "meta" : "ctrl", "v"],
-      () => {
+      {
+        shortcut: "CmdOrCtrl+v",
+        handler: () => {
+        }
       },
-      "Paste"
-    );
-    this.keyManager.keydown(
-      [isMacintosh ? "meta" : "ctrl", "z"],
-      () => {
-        this.historyManager.undo();
+      {
+        shortcut: "CmdOrCtrl+z",
+        handler: () => {
+          this.historyManager.undo();
+        }
       },
-      "Undo"
-    );
-    this.keyManager.keydown(
-      [isMacintosh ? "meta" : "ctrl", "shift", "z"],
-      () => {
-        this.historyManager.redo();
+      {
+        shortcut: "CmdOrCtrl+Shift+z",
+        handler: () => {
+          this.historyManager.redo();
+        }
       },
-      "Redo"
-    );
-    this.keyManager.keydown(
-      [isMacintosh ? "meta" : "ctrl", "a"],
-      (e) => {
-        this.setSelectedTargets(
-          this.getViewportInfos().map((info) => info.el)
-        );
-        e.inputEvent.preventDefault();
-      },
-      "Select All"
-    );
-    this.keyManager.keydown(
-      [isMacintosh ? "meta" : "ctrl", "alt", "g"],
-      (e) => {
-        e.inputEvent.preventDefault();
-        this.moveInside();
-      },
-      "Move Inside"
-    );
-    this.keyManager.keydown(
-      [isMacintosh ? "meta" : "ctrl", "shift", "alt", "g"],
-      (e) => {
-        e.inputEvent.preventDefault();
-        this.moveOutside();
-      },
-      "Move Outside"
-    );
+      {
+        shortcut: "CmdOrCtrl+a",
+        handler: (e) => {
+          this.setSelectedTargets(
+            this.getViewportInfos().map((info) => info.el)
+          );
+          e && e.preventDefault();
+        }
+      }
+    ]);
+    this.keyManager.start();
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Shift") {
+        this.setState({ isShift: true });
+      }
+    });
+    document.addEventListener("keyup", (e) => {
+      if (e.key === "Shift") {
+        this.setState({ isShift: false });
+      }
+    });
     this.historyManager.registerType(
       "createElements",
       undoCreateElements,
@@ -2454,9 +2381,20 @@ var Editor = class extends React35.PureComponent {
     this.eventBus.off();
     this.memory.clear();
     this.moveableData.clear();
-    this.keyManager.destroy();
+    this.keyManager.stop();
+    this.keyManager.reset();
     this.clipboardManager.destroy();
     window.removeEventListener("resize", this.onResize);
+    document.removeEventListener("keydown", (e) => {
+      if (e.key === "Shift") {
+        this.setState({ isShift: true });
+      }
+    });
+    document.removeEventListener("keyup", (e) => {
+      if (e.key === "Shift") {
+        this.setState({ isShift: false });
+      }
+    });
   }
   promiseState(state) {
     return new Promise((resolve) => {

@@ -106,7 +106,6 @@ export default class MoveableManager extends React.PureComponent<{
         }
         const {
             moveableData,
-            keyManager,
             eventBus,
             selecto,
             memory,
@@ -114,7 +113,7 @@ export default class MoveableManager extends React.PureComponent<{
         const elementGuidelines = [...moveableData.getTargets()].filter(el => {
             return selectedTargets.indexOf(el) === -1;
         });
-        const isShift = keyManager.shiftKey;
+        const isShift = editor.state.isShift;
         const targetIsImage = selectedTargets.every(el => el.tagName === 'IMG');
         return <Moveable<DimensionViewableProps>
             ables={[DimensionViewable]}
@@ -246,12 +245,6 @@ export default class MoveableManager extends React.PureComponent<{
     public componentDidMount() {
         this.historyManager.registerType("render", undoRender, redoRender);
         this.historyManager.registerType("renders", undoRenders, redoRenders);
-        this.keyManager.keydown(["shift"], () => {
-            this.forceUpdate();
-        });
-        this.keyManager.keyup(["shift"], () => {
-            this.forceUpdate();
-        });
     }
     public updateRect() {
         this.getMoveable().updateRect();
