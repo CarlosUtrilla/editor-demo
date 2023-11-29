@@ -5000,14 +5000,19 @@ var Viewport = /*#__PURE__*/ function(_React33_PureComponent) {
             key: "render",
             value: function render() {
                 var style = this.props.style;
+                var background = this.props.background;
                 return /* @__PURE__ */ React33.createElement("div", {
                     className: prefix("viewport-container"),
                     onBlur: this.props.onBlur,
                     style: style
                 }, this.props.children, /* @__PURE__ */ React33.createElement("div", _object_spread_props(_object_spread({
-                    className: prefix("viewport")
+                    className: prefix("viewport"),
+                    id: "scene-viewport"
                 }, _define_property({}, DATA_SCENA_ELEMENT_ID, "viewport")), {
-                    ref: this.viewportRef
+                    ref: this.viewportRef,
+                    style: _object_spread({}, background && {
+                        backgroundImage: "url(".concat(background, ")")
+                    })
                 }), this.renderChildren(this.getViewportInfos())));
             }
         },
@@ -5029,6 +5034,10 @@ var Viewport = /*#__PURE__*/ function(_React33_PureComponent) {
                     var nextChildren = info.children;
                     var renderedChildren = _this.renderChildren(nextChildren);
                     var id = info.id;
+                    var isScreenshot = editor.state.isScreenshot;
+                    if (isScreenshot && info.name === "(PrintArea)") {
+                        return /* @__PURE__ */ React33.createElement("div", null);
+                    }
                     var props = {
                         key: id
                     };
@@ -5045,7 +5054,7 @@ var Viewport = /*#__PURE__*/ function(_React33_PureComponent) {
                         if (!props.style) {
                             props.style = {};
                         }
-                        if (!isOnArea) {
+                        if (!isOnArea && !isScreenshot) {
                             props.style.border = "1px dashed #f00";
                             areErrors = true;
                         } else {
@@ -6272,6 +6281,7 @@ var ClipboardManager = /*#__PURE__*/ function() {
     return ClipboardManager;
 }();
 // src/Editor/Editor.tsx
+var import_html2canvas2 = __toESM(require("html2canvas"));
 function undoCreateElements(param, editor) {
     var infos = param.infos, prevSelected = param.prevSelected;
     var res = editor.removeByIds(infos.map(function(info) {
@@ -6337,7 +6347,8 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
             width: 500,
             height: 500,
             loadedViewer: false,
-            isShift: false
+            isShift: false,
+            isScreenshot: false
         };
         _this.historyManager = new HistoryManager(_assert_this_initialized(_this));
         _this.console = new Debugger(_this.props.debug);
@@ -6532,12 +6543,9 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                         width: "".concat(width, "px"),
                         height: "".concat(height, "px")
                     },
-                    editor: this
-                }, this.props.backgroundImg && /* @__PURE__ */ React36.createElement("img", {
-                    src: this.props.backgroundImg,
-                    alt: "",
-                    className: "backgroundImage"
-                }), /* @__PURE__ */ React36.createElement(MoveableManager, {
+                    editor: this,
+                    background: this.props.backgroundImg
+                }, /* @__PURE__ */ React36.createElement(MoveableManager, {
                     ref: moveableManager,
                     selectedTargets: selectedTargets,
                     selectedMenu: selectedMenu,
@@ -6728,7 +6736,16 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                 this.historyManager.registerType("changeText", undoChangeText, redoChangeText);
                 this.historyManager.registerType("move", undoMove, redoMove);
                 if (this.props.initialJSX && this.props.initialJSX.length > 0) {
-                    this.appendJSXs(this.props.initialJSX, true);
+                    var initialJSX = this.props.initialJSX;
+                    if (this.props.isAdmin) {
+                        initialJSX = initialJSX.map(function(jsx) {
+                            if (jsx.name === "(PrintArea)" && jsx.attrs && jsx.attrs.class === void 0) {
+                                jsx.attrs.class = "selectable";
+                            }
+                            return jsx;
+                        });
+                    }
+                    this.appendJSXs(initialJSX, true);
                 }
                 if (!this.state.loadedViewer) {
                     this.forceUpdate();
@@ -7275,6 +7292,58 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                                     2
                                 ];
                         }
+                    });
+                })();
+            }
+        },
+        {
+            key: "getScreenshot",
+            value: function getScreenshot(fileName) {
+                var _this = this;
+                return _async_to_generator(function() {
+                    return _ts_generator(this, function(_state) {
+                        return [
+                            2,
+                            new Promise(function(resolve) {
+                                var zoom = _this.state.zoom;
+                                _this.setState({
+                                    isScreenshot: true,
+                                    zoom: 1
+                                }, /*#__PURE__*/ _async_to_generator(function() {
+                                    var viewer, canvas;
+                                    return _ts_generator(this, function(_state) {
+                                        switch(_state.label){
+                                            case 0:
+                                                viewer = document.getElementById("scene-viewport");
+                                                return [
+                                                    4,
+                                                    (0, import_html2canvas2.default)(viewer, {
+                                                        allowTaint: true,
+                                                        useCORS: true
+                                                    })
+                                                ];
+                                            case 1:
+                                                canvas = _state.sent();
+                                                canvas.toBlob(function(blob) {
+                                                    var file = new File([
+                                                        blob
+                                                    ], fileName + ".png", {
+                                                        type: "image/png"
+                                                    });
+                                                    resolve(file);
+                                                    _this.setState({
+                                                        isScreenshot: false,
+                                                        zoom: zoom
+                                                    });
+                                                }, "image/jpeg");
+                                                return [
+                                                    2
+                                                ];
+                                        }
+                                    });
+                                }));
+                            })
+                        ];
                     });
                 })();
             }

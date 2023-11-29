@@ -2347,7 +2347,20 @@ var Viewport = class extends React.PureComponent {
   }
   render() {
     const style = this.props.style;
-    return /* @__PURE__ */ React.createElement("div", { className: prefix("viewport-container"), onBlur: this.props.onBlur, style }, this.props.children, /* @__PURE__ */ React.createElement("div", { className: prefix("viewport"), ...{ [DATA_SCENA_ELEMENT_ID]: "viewport" }, ref: this.viewportRef }, this.renderChildren(this.getViewportInfos())));
+    const { background } = this.props;
+    return /* @__PURE__ */ React.createElement("div", { className: prefix("viewport-container"), onBlur: this.props.onBlur, style }, this.props.children, /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        className: prefix("viewport"),
+        id: "scene-viewport",
+        ...{ [DATA_SCENA_ELEMENT_ID]: "viewport" },
+        ref: this.viewportRef,
+        style: {
+          ...background && { backgroundImage: `url(${background})` }
+        }
+      },
+      this.renderChildren(this.getViewportInfos())
+    ));
   }
   componentDidMount() {
     this.ids.viewport.el = this.viewportRef.current;
@@ -2360,6 +2373,10 @@ var Viewport = class extends React.PureComponent {
       const nextChildren = info.children;
       const renderedChildren = this.renderChildren(nextChildren);
       const id = info.id;
+      const isScreenshot = editor.state.isScreenshot;
+      if (isScreenshot && info.name === "(PrintArea)") {
+        return /* @__PURE__ */ React.createElement("div", null);
+      }
       const props = {
         key: id
       };
@@ -2374,7 +2391,7 @@ var Viewport = class extends React.PureComponent {
         if (!props.style) {
           props.style = {};
         }
-        if (!isOnArea) {
+        if (!isOnArea && !isScreenshot) {
           props.style.border = "1px dashed #f00";
           areErrors = true;
         } else {

@@ -15,7 +15,7 @@ import {
   makeScenaFunctionComponent,
   prefix,
   require_react
-} from "./chunk-ZP7TF6VQ.mjs";
+} from "./chunk-BKWOI5NB.mjs";
 
 // src/Editor/Editor.tsx
 var React35 = __toESM(require_react());
@@ -1925,6 +1925,7 @@ var ClipboardManager = class {
 };
 
 // src/Editor/Editor.tsx
+import html2canvas2 from "html2canvas";
 function undoCreateElements({ infos, prevSelected }, editor) {
   const res = editor.removeByIds(
     infos.map((info) => info.id),
@@ -1983,7 +1984,8 @@ var Editor = class extends React35.PureComponent {
       width: 500,
       height: 500,
       loadedViewer: false,
-      isShift: false
+      isShift: false,
+      isScreenshot: false
     };
     this.historyManager = new HistoryManager(this);
     this.console = new Debugger(this.props.debug);
@@ -2166,9 +2168,9 @@ var Editor = class extends React35.PureComponent {
             width: `${width}px`,
             height: `${height}px`
           },
-          editor: this
+          editor: this,
+          background: this.props.backgroundImg
         },
-        this.props.backgroundImg && /* @__PURE__ */ React35.createElement("img", { src: this.props.backgroundImg, alt: "", className: "backgroundImage" }),
         /* @__PURE__ */ React35.createElement(
           MoveableManager,
           {
@@ -2371,7 +2373,16 @@ var Editor = class extends React35.PureComponent {
     );
     this.historyManager.registerType("move", undoMove, redoMove);
     if (this.props.initialJSX && this.props.initialJSX.length > 0) {
-      this.appendJSXs(this.props.initialJSX, true);
+      let initialJSX = this.props.initialJSX;
+      if (this.props.isAdmin) {
+        initialJSX = initialJSX.map((jsx) => {
+          if (jsx.name === "(PrintArea)" && jsx.attrs && jsx.attrs.class === void 0) {
+            jsx.attrs.class = "selectable";
+          }
+          return jsx;
+        });
+      }
+      this.appendJSXs(initialJSX, true);
     }
     if (!this.state.loadedViewer) {
       this.forceUpdate();
@@ -2763,6 +2774,20 @@ var Editor = class extends React35.PureComponent {
       };
       imageLoad.src = image.url;
     }
+  }
+  async getScreenshot(fileName) {
+    return new Promise((resolve) => {
+      const zoom = this.state.zoom;
+      this.setState({ isScreenshot: true, zoom: 1 }, async () => {
+        const viewer = document.getElementById("scene-viewport");
+        const canvas = await html2canvas2(viewer, { allowTaint: true, useCORS: true });
+        canvas.toBlob((blob) => {
+          let file = new File([blob], fileName + ".png", { type: "image/png" });
+          resolve(file);
+          this.setState({ isScreenshot: false, zoom });
+        }, "image/jpeg");
+      });
+    });
   }
 };
 

@@ -44,7 +44,9 @@
   height: 100%;
   border: 1px solid #eee;
   box-sizing: border-box;
-  clip-path: url(#printAreas);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 .scena-viewer .selectable {
   overflow: hidden;

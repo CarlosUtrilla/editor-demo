@@ -480,9 +480,20 @@ export default class Editor extends React.PureComponent<
       redoChangeText
     );
     this.historyManager.registerType("move", undoMove, redoMove);
+
     if (this.props.initialJSX && this.props.initialJSX.length > 0) {
-      this.appendJSXs(this.props.initialJSX, true)
+      let initialJSX = this.props.initialJSX;
+      if (this.props.isAdmin) {
+        initialJSX = initialJSX.map(jsx => {
+          if (jsx.name === "(PrintArea)" && jsx.attrs && jsx.attrs.class === undefined) {
+            jsx.attrs.class = "selectable"
+          }
+          return jsx
+        })
+      }
+      this.appendJSXs(initialJSX,true)
     }
+
     if (!this.state.loadedViewer) {
       this.forceUpdate()
     }

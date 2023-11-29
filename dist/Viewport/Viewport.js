@@ -2543,14 +2543,19 @@ var Viewport = /*#__PURE__*/ function(_React_PureComponent) {
             key: "render",
             value: function render() {
                 var style = this.props.style;
+                var background = this.props.background;
                 return /* @__PURE__ */ React.createElement("div", {
                     className: prefix("viewport-container"),
                     onBlur: this.props.onBlur,
                     style: style
                 }, this.props.children, /* @__PURE__ */ React.createElement("div", _object_spread_props(_object_spread({
-                    className: prefix("viewport")
+                    className: prefix("viewport"),
+                    id: "scene-viewport"
                 }, _define_property({}, DATA_SCENA_ELEMENT_ID, "viewport")), {
-                    ref: this.viewportRef
+                    ref: this.viewportRef,
+                    style: _object_spread({}, background && {
+                        backgroundImage: "url(".concat(background, ")")
+                    })
                 }), this.renderChildren(this.getViewportInfos())));
             }
         },
@@ -2572,6 +2577,10 @@ var Viewport = /*#__PURE__*/ function(_React_PureComponent) {
                     var nextChildren = info.children;
                     var renderedChildren = _this.renderChildren(nextChildren);
                     var id = info.id;
+                    var isScreenshot = editor.state.isScreenshot;
+                    if (isScreenshot && info.name === "(PrintArea)") {
+                        return /* @__PURE__ */ React.createElement("div", null);
+                    }
                     var props = {
                         key: id
                     };
@@ -2588,7 +2597,7 @@ var Viewport = /*#__PURE__*/ function(_React_PureComponent) {
                         if (!props.style) {
                             props.style = {};
                         }
-                        if (!isOnArea) {
+                        if (!isOnArea && !isScreenshot) {
                             props.style.border = "1px dashed #f00";
                             areErrors = true;
                         } else {
