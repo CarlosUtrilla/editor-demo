@@ -20,7 +20,8 @@ class App extends React.Component {
     }
     handleScreen = async () => {
         const file = await this.editor.current?.getScreenshot("image")
-        this.setState({img: file as string})
+        const img = URL.createObjectURL(file!)
+        this.setState({img: img})
     }
     public render() {
         return <div className="app">

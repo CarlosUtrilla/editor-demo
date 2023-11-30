@@ -2784,7 +2784,7 @@ var Editor = class extends React35.PureComponent {
       const zoom = this.state.zoom;
       this.setState({ isScreenshot: true, zoom: 1 }, async () => {
         const viewer = document.getElementById("scene-viewport");
-        resolve(await domtoimage.toPng(viewer));
+        resolve(await domtoimage.toBlob(viewer));
         this.setState({ isScreenshot: false, zoom });
       });
     });

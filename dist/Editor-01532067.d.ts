@@ -365,7 +365,7 @@ declare class Editor extends React.PureComponent<{
     private moveComplete;
     saveEditor(): ElementInfo[];
     addImage(file: File | undefined): Promise<void>;
-    getScreenshot(fileName: string): Promise<string>;
+    getScreenshot(fileName: string): Promise<Blob>;
 }
 
 export { AddedInfo as A, Editor as E, MovedInfo as M, RemovedInfo as R, ScenaProps as S, Viewport as V, ScenaFunctionComponent as a, MovedResult as b, ElementInfo as c };

@@ -7321,7 +7321,7 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                                                 viewer = document.getElementById("scene-viewport");
                                                 return [
                                                     4,
-                                                    import_dom_to_image.default.toPng(viewer)
+                                                    import_dom_to_image.default.toBlob(viewer)
                                                 ];
                                             case 1:
                                                 resolve.apply(void 0, [
