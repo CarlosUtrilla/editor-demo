@@ -6281,7 +6281,7 @@ var ClipboardManager = /*#__PURE__*/ function() {
     return ClipboardManager;
 }();
 // src/Editor/Editor.tsx
-var import_html2canvas2 = __toESM(require("html2canvas"));
+var import_dom_to_image = __toESM(require("dom-to-image"));
 function undoCreateElements(param, editor) {
     var infos = param.infos, prevSelected = param.prevSelected;
     var res = editor.removeByIds(infos.map(function(info) {
@@ -6736,15 +6736,19 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                 this.historyManager.registerType("changeText", undoChangeText, redoChangeText);
                 this.historyManager.registerType("move", undoMove, redoMove);
                 if (this.props.initialJSX && this.props.initialJSX.length > 0) {
-                    var initialJSX = this.props.initialJSX;
-                    if (this.props.isAdmin) {
-                        initialJSX = initialJSX.map(function(jsx) {
-                            if (jsx.name === "(PrintArea)" && jsx.attrs && jsx.attrs.class === void 0) {
-                                jsx.attrs.class = "selectable";
+                    var initialJSX = this.props.initialJSX.map(function(jsx) {
+                        if (jsx.name === "(PrintArea)") {
+                            if (!jsx.attrs) {
+                                jsx.attrs = {};
                             }
-                            return jsx;
-                        });
-                    }
+                            if (_this.props.isAdmin) {
+                                jsx.attrs.class = "selectable";
+                            } else {
+                                jsx.attrs.class = void 0;
+                            }
+                        }
+                        return jsx;
+                    });
                     this.appendJSXs(initialJSX, true);
                 }
                 if (!this.state.loadedViewer) {
@@ -7310,32 +7314,23 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                                     isScreenshot: true,
                                     zoom: 1
                                 }, /*#__PURE__*/ _async_to_generator(function() {
-                                    var viewer, canvas;
+                                    var viewer;
                                     return _ts_generator(this, function(_state) {
                                         switch(_state.label){
                                             case 0:
                                                 viewer = document.getElementById("scene-viewport");
                                                 return [
                                                     4,
-                                                    (0, import_html2canvas2.default)(viewer, {
-                                                        allowTaint: true,
-                                                        useCORS: true
-                                                    })
+                                                    import_dom_to_image.default.toPng(viewer)
                                                 ];
                                             case 1:
-                                                canvas = _state.sent();
-                                                canvas.toBlob(function(blob) {
-                                                    var file = new File([
-                                                        blob
-                                                    ], fileName + ".png", {
-                                                        type: "image/png"
-                                                    });
-                                                    resolve(file);
-                                                    _this.setState({
-                                                        isScreenshot: false,
-                                                        zoom: zoom
-                                                    });
-                                                }, "image/jpeg");
+                                                resolve.apply(void 0, [
+                                                    _state.sent()
+                                                ]);
+                                                _this.setState({
+                                                    isScreenshot: false,
+                                                    zoom: zoom
+                                                });
                                                 return [
                                                     2
                                                 ];

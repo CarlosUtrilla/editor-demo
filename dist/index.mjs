@@ -1925,7 +1925,7 @@ var ClipboardManager = class {
 };
 
 // src/Editor/Editor.tsx
-import html2canvas2 from "html2canvas";
+import domtoimage from "dom-to-image";
 function undoCreateElements({ infos, prevSelected }, editor) {
   const res = editor.removeByIds(
     infos.map((info) => info.id),
@@ -2373,15 +2373,19 @@ var Editor = class extends React35.PureComponent {
     );
     this.historyManager.registerType("move", undoMove, redoMove);
     if (this.props.initialJSX && this.props.initialJSX.length > 0) {
-      let initialJSX = this.props.initialJSX;
-      if (this.props.isAdmin) {
-        initialJSX = initialJSX.map((jsx) => {
-          if (jsx.name === "(PrintArea)" && jsx.attrs && jsx.attrs.class === void 0) {
-            jsx.attrs.class = "selectable";
+      let initialJSX = this.props.initialJSX.map((jsx) => {
+        if (jsx.name === "(PrintArea)") {
+          if (!jsx.attrs) {
+            jsx.attrs = {};
           }
-          return jsx;
-        });
-      }
+          if (this.props.isAdmin) {
+            jsx.attrs.class = "selectable";
+          } else {
+            jsx.attrs.class = void 0;
+          }
+        }
+        return jsx;
+      });
       this.appendJSXs(initialJSX, true);
     }
     if (!this.state.loadedViewer) {
@@ -2780,12 +2784,8 @@ var Editor = class extends React35.PureComponent {
       const zoom = this.state.zoom;
       this.setState({ isScreenshot: true, zoom: 1 }, async () => {
         const viewer = document.getElementById("scene-viewport");
-        const canvas = await html2canvas2(viewer, { allowTaint: true, useCORS: true });
-        canvas.toBlob((blob) => {
-          let file = new File([blob], fileName + ".png", { type: "image/png" });
-          resolve(file);
-          this.setState({ isScreenshot: false, zoom });
-        }, "image/jpeg");
+        resolve(await domtoimage.toPng(viewer));
+        this.setState({ isScreenshot: false, zoom });
       });
     });
   }

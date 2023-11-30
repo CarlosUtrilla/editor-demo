@@ -32,6 +32,7 @@ import { DATA_SCENA_ELEMENT_ID } from "./consts";
 import ClipboardManager from "./utils/ClipboardManager";
 import { NameType } from "scenejs";
 import html2canvas from "html2canvas";
+import domtoimage from "dom-to-image";
 
 function undoCreateElements(
   { infos, prevSelected }: IObject<any>,
@@ -482,15 +483,19 @@ export default class Editor extends React.PureComponent<
     this.historyManager.registerType("move", undoMove, redoMove);
 
     if (this.props.initialJSX && this.props.initialJSX.length > 0) {
-      let initialJSX = this.props.initialJSX;
-      if (this.props.isAdmin) {
-        initialJSX = initialJSX.map(jsx => {
-          if (jsx.name === "(PrintArea)" && jsx.attrs && jsx.attrs.class === undefined) {
-            jsx.attrs.class = "selectable"
+      let initialJSX = this.props.initialJSX.map(jsx => {
+          if (jsx.name === "(PrintArea)") {
+            if (!jsx.attrs) {
+              jsx.attrs = {}
+            }
+            if (this.props.isAdmin) {
+              jsx.attrs.class = "selectable"
+            } else {
+              jsx.attrs.class = undefined
+            }
           }
           return jsx
         })
-      }
       this.appendJSXs(initialJSX,true)
     }
 
@@ -1021,16 +1026,13 @@ export default class Editor extends React.PureComponent<
   }
 
   public async getScreenshot(fileName: string) {
-    return new Promise<File>((resolve) => {
+    return new Promise<string>((resolve) => {
       const zoom = this.state.zoom
       this.setState({ isScreenshot: true, zoom: 1 }, async () => {
         const viewer = document.getElementById("scene-viewport")!;
-        const canvas = await html2canvas(viewer,{allowTaint: true, useCORS: true});
-        canvas.toBlob((blob) => {
-          let file = new File([blob!], fileName+".png", { type: "image/png" })
-          resolve(file)
-          this.setState({ isScreenshot: false, zoom})
-        }, 'image/jpeg')
+
+        resolve(await domtoimage.toPng(viewer))
+        this.setState({ isScreenshot: false, zoom})
       })
     })
   }

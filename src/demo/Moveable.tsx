@@ -20,11 +20,7 @@ class App extends React.Component {
     }
     handleScreen = async () => {
         const file = await this.editor.current?.getScreenshot("image")
-        var reader = new FileReader();
-        reader.onload =  (e)=> {
-            this.setState({img: e.target?.result as string})
-        };
-        reader.readAsDataURL(file!);
+        this.setState({img: file as string})
     }
     public render() {
         return <div className="app">
