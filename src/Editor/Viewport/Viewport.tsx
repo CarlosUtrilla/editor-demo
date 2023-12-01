@@ -130,7 +130,7 @@ export default class Viewport extends React.PureComponent<{
                 props.scenaText = info.innerText;
                 props.scenaHTML = info.innerHTML;
             }
-            const jsxChildren = jsx.props.children;
+            const jsxChildren = jsx?.props?.children || [];
             return React.cloneElement(jsx, { ...jsx.props, ...props },
                 ...(isArray(jsxChildren) ? jsxChildren : [jsxChildren]),
                 ...this.renderChildren(nextChildren),

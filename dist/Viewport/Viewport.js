@@ -2572,6 +2572,7 @@ var Viewport = /*#__PURE__*/ function(_React_PureComponent) {
                 var areErrors = false;
                 var renders = children.map(function(info, _, allInfos) {
                     var _React;
+                    var _jsx_props;
                     var editor = _this.props.editor;
                     var jsx = info.jsx;
                     var nextChildren = info.children;
@@ -2625,7 +2626,7 @@ var Viewport = /*#__PURE__*/ function(_React_PureComponent) {
                         props.scenaText = info.innerText;
                         props.scenaHTML = info.innerHTML;
                     }
-                    var jsxChildren = jsx.props.children;
+                    var jsxChildren = (jsx === null || jsx === void 0 ? void 0 : (_jsx_props = jsx.props) === null || _jsx_props === void 0 ? void 0 : _jsx_props.children) || [];
                     return (_React = React).cloneElement.apply(_React, [
                         jsx,
                         _object_spread({}, jsx.props, props)

@@ -1031,7 +1031,7 @@ export default class Editor extends React.PureComponent<
       this.setState({ isScreenshot: true, zoom: 1 }, async () => {
         const viewer = document.getElementById("scene-viewport")!;
 
-        resolve(await domtoimage.toBlob(viewer))
+        resolve(await domtoimage.toBlob(viewer, {cacheBust: true}));
         this.setState({ isScreenshot: false, zoom})
       })
     })

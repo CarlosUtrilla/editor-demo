@@ -15,7 +15,7 @@ import {
   makeScenaFunctionComponent,
   prefix,
   require_react
-} from "./chunk-BKWOI5NB.mjs";
+} from "./chunk-G72FDOR7.mjs";
 
 // src/Editor/Editor.tsx
 var React35 = __toESM(require_react());
