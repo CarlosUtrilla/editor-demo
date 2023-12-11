@@ -2666,6 +2666,7 @@ var Editor = class extends React35.PureComponent {
       attrs: maker.attrs,
       name: `(${selectIcon.id})`,
       frame: style,
+      ..."Text" === selectIcon.id && { colors: [style.color] },
       ...extraProps && { ...extraProps }
     }).then((el) => {
       selectIcon.makeThen(el, selectIcon.id, this.menu.current);
@@ -2784,10 +2785,42 @@ var Editor = class extends React35.PureComponent {
       const zoom = this.state.zoom;
       this.setState({ isScreenshot: true, zoom: 1 }, async () => {
         const viewer = document.getElementById("scene-viewport");
-        resolve(await domtoimage.toBlob(viewer));
+        resolve(await domtoimage.toBlob(viewer, { cacheBust: true }));
         this.setState({ isScreenshot: false, zoom });
       });
     });
+  }
+  async getDesignSize() {
+    const viewport = this.getViewport();
+    const elements = viewport.getViewportInfos();
+    const elementsId = elements.filter((e) => e.name !== "(PrintArea)").map((e) => e.id);
+    const elementsNodes = viewport.getElements(elementsId);
+    await this.setSelectedTargets(elementsNodes);
+    const selectedArea = document.getElementsByClassName("moveable-area");
+    if (selectedArea.length > 0) {
+      const design = selectedArea[0];
+      const bound = design.getBoundingClientRect();
+      await this.setSelectedTargets([]);
+      return {
+        width: bound.width,
+        height: bound.height
+      };
+    }
+    await this.setSelectedTargets([]);
+    return void 0;
+  }
+  getSelectableTargets() {
+    const viewport = this.getViewport();
+    const elements = viewport.getViewportInfos();
+    const selectables = elements.filter((e) => e.name !== "(PrintArea)");
+    return selectables;
+  }
+  getColorList() {
+    const targets = this.getSelectableTargets();
+    const colors = targets.map((t) => t.colors || []).flat().filter((element, index, self) => {
+      return self.indexOf(element) === index;
+    });
+    return colors;
   }
 };
 

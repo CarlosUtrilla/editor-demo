@@ -7128,6 +7128,10 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                     attrs: maker.attrs,
                     name: "(".concat(selectIcon.id, ")"),
                     frame: style
+                }, "Text" === selectIcon.id && {
+                    colors: [
+                        style.color
+                    ]
                 }, extraProps && _object_spread({}, extraProps))).then(function(el) {
                     var _this_menu_current;
                     selectIcon.makeThen(el, selectIcon.id, _this.menu.current);
@@ -7322,7 +7326,9 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                                                 viewer = document.getElementById("scene-viewport");
                                                 return [
                                                     4,
-                                                    import_dom_to_image.default.toBlob(viewer)
+                                                    import_dom_to_image.default.toBlob(viewer, {
+                                                        cacheBust: true
+                                                    })
                                                 ];
                                             case 1:
                                                 resolve.apply(void 0, [
@@ -7342,6 +7348,88 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                         ];
                     });
                 })();
+            }
+        },
+        {
+            key: "getDesignSize",
+            value: function getDesignSize() {
+                var _this = this;
+                return _async_to_generator(function() {
+                    var viewport, elements, elementsId, elementsNodes, selectedArea, design, bound;
+                    return _ts_generator(this, function(_state) {
+                        switch(_state.label){
+                            case 0:
+                                viewport = _this.getViewport();
+                                elements = viewport.getViewportInfos();
+                                elementsId = elements.filter(function(e) {
+                                    return e.name !== "(PrintArea)";
+                                }).map(function(e) {
+                                    return e.id;
+                                });
+                                elementsNodes = viewport.getElements(elementsId);
+                                return [
+                                    4,
+                                    _this.setSelectedTargets(elementsNodes)
+                                ];
+                            case 1:
+                                _state.sent();
+                                selectedArea = document.getElementsByClassName("moveable-area");
+                                if (!(selectedArea.length > 0)) return [
+                                    3,
+                                    3
+                                ];
+                                design = selectedArea[0];
+                                bound = design.getBoundingClientRect();
+                                return [
+                                    4,
+                                    _this.setSelectedTargets([])
+                                ];
+                            case 2:
+                                _state.sent();
+                                return [
+                                    2,
+                                    {
+                                        width: bound.width,
+                                        height: bound.height
+                                    }
+                                ];
+                            case 3:
+                                return [
+                                    4,
+                                    _this.setSelectedTargets([])
+                                ];
+                            case 4:
+                                _state.sent();
+                                return [
+                                    2,
+                                    void 0
+                                ];
+                        }
+                    });
+                })();
+            }
+        },
+        {
+            key: "getSelectableTargets",
+            value: function getSelectableTargets() {
+                var viewport = this.getViewport();
+                var elements = viewport.getViewportInfos();
+                var selectables = elements.filter(function(e) {
+                    return e.name !== "(PrintArea)";
+                });
+                return selectables;
+            }
+        },
+        {
+            key: "getColorList",
+            value: function getColorList() {
+                var targets = this.getSelectableTargets();
+                var colors = targets.map(function(t) {
+                    return t.colors || [];
+                }).flat().filter(function(element, index, self) {
+                    return self.indexOf(element) === index;
+                });
+                return colors;
             }
         }
     ]);

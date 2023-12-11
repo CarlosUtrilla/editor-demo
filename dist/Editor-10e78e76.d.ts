@@ -222,6 +222,7 @@ interface ElementInfo {
     index?: number;
     innerText?: string;
     innerHTML?: string;
+    colors?: string[];
 }
 declare class Viewport extends React.PureComponent<{
     editor: Editor;
@@ -366,6 +367,12 @@ declare class Editor extends React.PureComponent<{
     saveEditor(): ElementInfo[];
     addImage(file: File | undefined): Promise<void>;
     getScreenshot(fileName: string): Promise<Blob>;
+    getDesignSize(): Promise<{
+        width: number;
+        height: number;
+    } | undefined>;
+    getSelectableTargets(): ElementInfo[];
+    getColorList(): string[];
 }
 
 export { AddedInfo as A, Editor as E, MovedInfo as M, RemovedInfo as R, ScenaProps as S, Viewport as V, ScenaFunctionComponent as a, MovedResult as b, ElementInfo as c };

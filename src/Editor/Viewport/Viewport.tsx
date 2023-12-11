@@ -25,7 +25,6 @@ export interface ElementInfo {
     jsx: ScenaJSXType;
     name: string;
     frame?: IObject<any>;
-
     scopeId?: string;
     children?: ElementInfo[];
     attrs?: IObject<any>;
@@ -36,6 +35,7 @@ export interface ElementInfo {
     index?: number;
     innerText?: string;
     innerHTML?: string;
+    colors?: string[]
 }
 export default class Viewport extends React.PureComponent<{
     editor: Editor,

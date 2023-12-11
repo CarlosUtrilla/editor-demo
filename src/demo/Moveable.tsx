@@ -21,7 +21,9 @@ class App extends React.Component {
     handleScreen = async () => {
         const file = await this.editor.current?.getScreenshot("image")
         const img = URL.createObjectURL(file!)
-        this.setState({img: img})
+        this.setState({ img: img })
+        const size = await this.editor.current?.getDesignSize()
+        console.log("Design size",size)
     }
     public render() {
         return <div className="app">

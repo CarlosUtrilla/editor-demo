@@ -33,6 +33,7 @@ import ClipboardManager from "./utils/ClipboardManager";
 import { NameType } from "scenejs";
 import html2canvas from "html2canvas";
 import domtoimage from "dom-to-image";
+import { color } from "html2canvas/dist/types/css/types/color";
 
 function undoCreateElements(
   { infos, prevSelected }: IObject<any>,
@@ -841,6 +842,7 @@ export default class Editor extends React.PureComponent<
       attrs: maker.attrs,
       name: `(${selectIcon.id})`,
       frame: style,
+      ...("Text" === selectIcon.id &&{ colors: [style.color]}),
       ...(extraProps && {...extraProps})
     }).then((el) => {
       selectIcon.makeThen(el, selectIcon.id as string, this.menu.current!)
@@ -1031,9 +1033,46 @@ export default class Editor extends React.PureComponent<
       this.setState({ isScreenshot: true, zoom: 1 }, async () => {
         const viewer = document.getElementById("scene-viewport")!;
 
-        resolve(await domtoimage.toBlob(viewer, {cacheBust: true}));
+        resolve(await domtoimage.toBlob(viewer, {cacheBust: true,quality: 100}));
         this.setState({ isScreenshot: false, zoom})
       })
     })
+  }
+  public async getDesignSize() {
+    // Se selecciona todo el diseño del usuario para posteriormente sacar la medida en pixeles
+    const viewport = this.getViewport()
+    const elements = viewport.getViewportInfos()
+    const elementsId = elements.filter(e => e.name !== "(PrintArea)").map(e=> e.id!)
+    const elementsNodes = viewport.getElements(elementsId);
+    await this.setSelectedTargets(elementsNodes)
+
+    //Se obtiene la medida en pixeles del diseño final del usuario
+    const selectedArea = document.getElementsByClassName("moveable-area")
+    if (selectedArea.length > 0) {
+      const design = selectedArea[0];
+      const bound = design.getBoundingClientRect()
+      await this.setSelectedTargets([])
+      return {
+        width: bound.width,
+        height: bound.height
+      }
+    }
+    await this.setSelectedTargets([])
+    return undefined;
+  }
+
+  public getSelectableTargets() {
+    const viewport = this.getViewport()
+    const elements = viewport.getViewportInfos()
+    const selectables = elements.filter(e => e.name !== "(PrintArea)")
+    return selectables
+  }
+
+  public getColorList() {
+    const targets = this.getSelectableTargets();
+    const colors = targets.map(t => t.colors || []).flat().filter((element, index, self) => {
+      return self.indexOf(element) === index;
+    })
+    return colors
   }
 }
