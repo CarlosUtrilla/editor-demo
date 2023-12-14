@@ -129,17 +129,17 @@ export function inRange(number: number, start: number, end?: number) {
     return number >= start && number < end;
 }
 
-export function isDivInsideAnother(div1: any, div2: any) {
+export function isDivInsideAnother(div1: any, parentDiv: any) {
     // Obtener las coordenadas y dimensiones del primer div
     var rect1 = div1.getBoundingClientRect();
 
     // Obtener las coordenadas y dimensiones del segundo div
-    var rect2 = div2.getBoundingClientRect();
+    var rect2 = parentDiv.getBoundingClientRect();
     // Verificar si el primer div está dentro del área del segundo div
     return (
-        rect1.left >= rect2.left &&
-        rect1.right <= rect2.right &&
-        rect1.top >= rect2.top &&
-        rect1.bottom <= rect2.bottom
+        rect1.left >= (rect2.left - 3) &&
+        rect1.right <= (rect2.right + 1) &&
+        rect1.top >= (rect2.top - 3) &&
+        rect1.bottom <= (rect2.bottom + 1)
     );
 }

@@ -3,7 +3,6 @@ import {
   TYPE_SCENA_LAYERS,
   Viewport,
   __decorateClass,
-  __toESM,
   checkImageLoaded,
   checkInput,
   connectEditorProps,
@@ -13,24 +12,23 @@ import {
   getParnetScenaElement,
   getScenaAttrs,
   makeScenaFunctionComponent,
-  prefix,
-  require_react
-} from "./chunk-B2P27WA7.mjs";
+  prefix
+} from "./chunk-M72IUDI3.mjs";
 
 // src/Editor/Editor.tsx
-var React36 = __toESM(require_react());
+import * as React36 from "react";
 import InfiniteViewer from "react-infinite-viewer";
 import Guides from "@scena/react-guides";
 import Selecto from "react-selecto";
 
 // src/Editor/Menu/Menu.tsx
-var React33 = __toESM(require_react());
+import * as React33 from "react";
 
 // src/Editor/Menu/Divider.tsx
-var React2 = __toESM(require_react());
+import * as React2 from "react";
 
 // src/Editor/Menu/Icon.tsx
-var React = __toESM(require_react());
+import * as React from "react";
 import { camelize } from "@daybrush/utils";
 var Icon = class extends React.PureComponent {
   constructor() {
@@ -160,7 +158,7 @@ var Divider = class extends Icon {
 Divider.id = "Divider";
 
 // src/Editor/Menu/ImageIcon.tsx
-var React3 = __toESM(require_react());
+import * as React3 from "react";
 var ImageIcon = class extends Icon {
   render() {
     return /* @__PURE__ */ React3.createElement(
@@ -202,7 +200,7 @@ ImageIcon.maker = (memory) => ({
 });
 
 // src/Editor/Menu/MoveToolIcon.tsx
-var React4 = __toESM(require_react());
+import * as React4 from "react";
 var MoveToolIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -215,7 +213,7 @@ var MoveToolIcon = class extends Icon {
 MoveToolIcon.id = "MoveTool";
 
 // src/Editor/Menu/PrintAreaIcon.tsx
-var React5 = __toESM(require_react());
+import * as React5 from "react";
 var PrintAreaIcon = class extends Icon {
   renderIcon() {
     return /* @__PURE__ */ React5.createElement("i", { className: "fa-solid fa-square-dashed" });
@@ -227,17 +225,18 @@ PrintAreaIcon.maker = (memory) => ({
   attrs: {},
   style: {
     "background-color": "transparent",
-    "border-width": "2px",
-    "border-style": "dashed",
-    "border-color": memory.get("border-color") || "#000"
+    "outline-width": "2px",
+    "outline-style": "dashed",
+    "outline-color": memory.get("border-color") || "#000",
+    "box-sizing": "content-box"
   }
 });
 
 // src/Editor/Menu/ShapeIcons/ShapesIcon.tsx
-var React9 = __toESM(require_react());
+import * as React9 from "react";
 
 // src/Editor/Menu/ShapeIcons/RectIcon.tsx
-var React6 = __toESM(require_react());
+import * as React6 from "react";
 var RectIcon = class extends Icon {
   renderIcon() {
     return /* @__PURE__ */ React6.createElement("i", { className: "fa-sharp fa-regular fa-square" });
@@ -256,7 +255,7 @@ RectIcon.maker = (memory) => ({
 });
 
 // src/Editor/Menu/ShapeIcons/RoundRectIcon.tsx
-var React7 = __toESM(require_react());
+import * as React7 from "react";
 var RoundRectIcon = class extends Icon {
   renderIcon() {
     return /* @__PURE__ */ React7.createElement("i", { className: "fa-regular fa-square" });
@@ -276,7 +275,7 @@ RoundRectIcon.maker = (memory) => ({
 });
 
 // src/Editor/Menu/ShapeIcons/CircleIcon.tsx
-var React8 = __toESM(require_react());
+import * as React8 from "react";
 var CircleIcon = class extends Icon {
   renderIcon() {
     return /* @__PURE__ */ React8.createElement("i", { className: "fa-regular fa-circle" });
@@ -325,7 +324,7 @@ var ShapesIcon = class extends Icon {
 ShapesIcon.id = subMenu.map((s) => s.id);
 
 // src/Editor/Menu/TextIcons/TextIcon.tsx
-var React10 = __toESM(require_react());
+import * as React10 from "react";
 var TextIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -355,11 +354,11 @@ TextIcon.makeThen = (target, id, menu) => {
 };
 
 // src/Editor/Menu/CropIcon.tsx
-var React13 = __toESM(require_react());
+import * as React13 from "react";
 import { splitBracket } from "@daybrush/utils";
 
 // src/Editor/Menu/ShapeIcons/OvalIcon.tsx
-var React11 = __toESM(require_react());
+import * as React11 from "react";
 var OvalIcon = class extends Icon {
   renderIcon() {
     return /* @__PURE__ */ React11.createElement("i", { className: "fa-regular fa-circle" });
@@ -379,7 +378,7 @@ OvalIcon.maker = (memory) => ({
 });
 
 // src/Editor/Menu/ShapeIcons/PolygonIcon.tsx
-var React12 = __toESM(require_react());
+import * as React12 from "react";
 var PolygonIcon = class extends Icon {
   renderIcon() {
     return /* @__PURE__ */ React12.createElement("svg", { viewBox: "0 0 73 73" }, /* @__PURE__ */ React12.createElement(
@@ -449,7 +448,7 @@ var CropIcon = class extends Icon {
 CropIcon.id = "Crop";
 
 // src/Editor/Menu/RedoUndo/UndoIcon.tsx
-var React14 = __toESM(require_react());
+import * as React14 from "react";
 var UndoIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -464,7 +463,7 @@ var UndoIcon = class extends Icon {
 UndoIcon.id = "Undo";
 
 // src/Editor/Menu/RedoUndo/RedoIcon.tsx
-var React15 = __toESM(require_react());
+import * as React15 from "react";
 var RedoIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -479,13 +478,13 @@ var RedoIcon = class extends Icon {
 RedoIcon.id = "Redo";
 
 // src/Editor/Menu/TextIcons/TextColorIcon.tsx
-var React19 = __toESM(require_react());
+import * as React19 from "react";
 
 // src/Editor/Inputs/ColorIconPicker.tsx
-var React18 = __toESM(require_react());
+import * as React18 from "react";
 
 // src/Editor/Inputs/Input.tsx
-var React16 = __toESM(require_react());
+import * as React16 from "react";
 var Input = class extends React16.PureComponent {
   constructor() {
     super(...arguments);
@@ -507,7 +506,7 @@ var Input = class extends React16.PureComponent {
 };
 
 // src/Editor/Inputs/ColorPicker.tsx
-var React17 = __toESM(require_react());
+import * as React17 from "react";
 import { SketchPicker } from "react-color";
 var presetColors = ["transparent", "#D0021B", "#F5A623", "#F8E71C", "#8B572A", "#7ED321", "#417505", "#BD10E0", "#9013FE", "#4A90E2", "#50E3C2", "#B8E986", "#000000", "#4A4A4A", "#9B9B9B", "#FFFFFF"];
 var ColorPicker = class extends Input {
@@ -683,7 +682,7 @@ var TextColorIcon = class extends Icon {
 TextColorIcon.id = "TextColor";
 
 // src/Editor/Menu/TextIcons/BoldIcon.tsx
-var React20 = __toESM(require_react());
+import * as React20 from "react";
 var BoldIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -730,7 +729,7 @@ var BoldIcon = class extends Icon {
 BoldIcon.id = "TextBold";
 
 // src/Editor/Menu/TextIcons/ItalicIcon.tsx
-var React21 = __toESM(require_react());
+import * as React21 from "react";
 var ItalicIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -777,7 +776,7 @@ var ItalicIcon = class extends Icon {
 ItalicIcon.id = "TextItalic";
 
 // src/Editor/Menu/TextIcons/UnderlinedIcon.tsx
-var React22 = __toESM(require_react());
+import * as React22 from "react";
 var UnderlineIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -824,10 +823,10 @@ var UnderlineIcon = class extends Icon {
 UnderlineIcon.id = "TextUnderline";
 
 // src/Editor/Menu/TextIcons/FontFamily.tsx
-var React24 = __toESM(require_react());
+import * as React24 from "react";
 
 // src/Editor/Inputs/SelectBox.tsx
-var React23 = __toESM(require_react());
+import * as React23 from "react";
 import { isUndefined } from "@daybrush/utils";
 var SelectBox = class extends Input {
   constructor() {
@@ -915,7 +914,7 @@ FontFamily.id = "FontFamily";
 FontFamily.width = 92;
 
 // src/Editor/Menu/TextIcons/FontSize.tsx
-var React25 = __toESM(require_react());
+import * as React25 from "react";
 var sizes = [
   "10px",
   "11px",
@@ -989,7 +988,7 @@ FontSize.id = "FontSize";
 FontSize.width = 97;
 
 // src/Editor/Menu/TextIcons/Aligns/AlignLeftIcon.tsx
-var React26 = __toESM(require_react());
+import * as React26 from "react";
 var AlignLeftIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1035,7 +1034,7 @@ var AlignLeftIcon = class extends Icon {
 AlignLeftIcon.id = "AlignLeftIcon";
 
 // src/Editor/Menu/TextIcons/Aligns/AlignRightIcon.tsx
-var React27 = __toESM(require_react());
+import * as React27 from "react";
 var AlignRightIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1081,7 +1080,7 @@ var AlignRightIcon = class extends Icon {
 AlignRightIcon.id = "AlignRightIcon";
 
 // src/Editor/Menu/TextIcons/Aligns/AlignCenter.tsx
-var React28 = __toESM(require_react());
+import * as React28 from "react";
 var AlignCenterIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1127,7 +1126,7 @@ var AlignCenterIcon = class extends Icon {
 AlignCenterIcon.id = "AlignCenterIcon";
 
 // src/Editor/Menu/TextIcons/Aligns/AlignJustify.tsx
-var React29 = __toESM(require_react());
+import * as React29 from "react";
 var AlignJustifyIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1173,7 +1172,7 @@ var AlignJustifyIcon = class extends Icon {
 AlignJustifyIcon.id = "AlignJustifyIcon";
 
 // src/Editor/Menu/ShapeIcons/FillIcon.tsx
-var React30 = __toESM(require_react());
+import * as React30 from "react";
 var FillIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1219,7 +1218,7 @@ var FillIcon = class extends Icon {
 FillIcon.id = "FillIcon";
 
 // src/Editor/Menu/ShapeIcons/BorderColorIcon.tsx
-var React31 = __toESM(require_react());
+import * as React31 from "react";
 var BorderColorIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1320,7 +1319,7 @@ var CompleteMenu = [
 ];
 
 // src/Editor/Menu/DropdownIcon.tsx
-var React32 = __toESM(require_react());
+import * as React32 from "react";
 import Menu from "@mui/material/Menu";
 function DropdownIcon({ children }) {
   const [anchorEl, setAnchorEl] = React32.useState(null);
@@ -1492,7 +1491,7 @@ var Memory = class {
 };
 
 // src/Editor/Viewport/MoveableMananger.tsx
-var React34 = __toESM(require_react());
+import * as React34 from "react";
 import Moveable from "react-moveable";
 import { diff } from "@egjs/list-differ";
 function restoreRender(id, state, prevState, orders, editor) {
@@ -1586,6 +1585,7 @@ var MoveableManager = class extends React34.PureComponent {
       return selectedTargets.indexOf(el) === -1;
     });
     const isShift = editor.state.isShift;
+    const isAdmin = editor.props.isAdmin;
     const targetIsImage = selectedTargets.every((el) => el.tagName === "IMG");
     return /* @__PURE__ */ React34.createElement(
       Moveable,
@@ -1606,10 +1606,28 @@ var MoveableManager = class extends React34.PureComponent {
         snappable: true,
         snapGap: false,
         roundable: true,
-        verticalGuidelines,
-        horizontalGuidelines,
+        snapDirections: {
+          bottom: true,
+          top: true,
+          left: true,
+          right: true,
+          center: true,
+          middle: true
+        },
+        elementSnapDirections: {
+          bottom: true,
+          top: true,
+          left: true,
+          right: true,
+          center: true,
+          middle: true
+        },
+        verticalGuidelines: isAdmin ? verticalGuidelines : [],
+        horizontalGuidelines: isAdmin ? horizontalGuidelines : [],
         elementGuidelines,
         clipArea: true,
+        bounds: { "left": 0, "top": 0, "right": 0, "bottom": 0, "position": "css" },
+        snapThreshold: 3,
         onBeforeRenderStart: moveableData.onBeforeRenderStart,
         onBeforeRenderGroupStart: moveableData.onBeforeRenderGroupStart,
         onDragStart: moveableData.onDragStart,
@@ -1857,7 +1875,7 @@ var Debugger = class {
 };
 
 // src/Editor/utils/ClipboardManager.tsx
-var React35 = __toESM(require_react());
+import * as React35 from "react";
 import html2canvas from "html2canvas";
 var ClipboardManager = class {
   constructor(editor) {
@@ -2126,7 +2144,6 @@ var Editor = class extends React36.PureComponent {
       moveableManager,
       viewport,
       menu,
-      tabs,
       selecto,
       state
     } = this;
@@ -2146,7 +2163,7 @@ var Editor = class extends React36.PureComponent {
         className: prefix("editor"),
         ref: this.editorElement,
         style: {
-          width: `${width}px`
+          maxWidth: `${width}px`
         }
       },
       !previewMode && /* @__PURE__ */ React36.createElement(Menu2, { ref: menu, editor: this, onSelect: this.onMenuChange }),
@@ -2344,28 +2361,28 @@ var Editor = class extends React36.PureComponent {
       {
         shortcut: "Left",
         handler: (e) => {
-          this.move(-10, 0);
+          this.move(-1, 0);
           e && e.preventDefault();
         }
       },
       {
         shortcut: "Up",
         handler: (e) => {
-          this.move(0, -10);
+          this.move(0, -1);
           e && e.preventDefault();
         }
       },
       {
         shortcut: "Right",
         handler: (e) => {
-          this.move(10, 0);
+          this.move(1, 0);
           e && e.preventDefault();
         }
       },
       {
         shortcut: "Down",
         handler: (e) => {
-          this.move(0, 10);
+          this.move(0, 1);
           e && e.preventDefault();
         }
       },
@@ -2455,6 +2472,10 @@ var Editor = class extends React36.PureComponent {
           } else {
             jsx.attrs.class = void 0;
           }
+          const newFrame = Object.entries(jsx.frame).map(([key, value]) => {
+            return [key.replace(/border/g, "outline"), value];
+          });
+          jsx.frame = Object.fromEntries(newFrame);
         }
         return jsx;
       });

@@ -143,7 +143,6 @@ export default class Editor extends React.PureComponent<
       moveableManager,
       viewport,
       menu,
-      tabs,
       selecto,
       state
     } = this;
@@ -165,7 +164,7 @@ export default class Editor extends React.PureComponent<
         className={prefix("editor")}
         ref={this.editorElement}
         style={{
-          width: `${width}px`,
+          maxWidth: `${width}px`,
         }}
       >
         {
@@ -387,34 +386,34 @@ export default class Editor extends React.PureComponent<
       {
         shortcut: "Left",
         handler: (e) => { 
-          this.move(-10, 0);
+          this.move(-1, 0);
           e && e.preventDefault();
         }
       },
       {
         shortcut: "Up",
         handler: (e) => { 
-          this.move(0,-10);
+          this.move(0,-1);
           e && e.preventDefault();
         }
       },
       {
         shortcut: "Right",
         handler: (e) => { 
-          this.move(10, 0);
+          this.move(1, 0);
           e && e.preventDefault();
         }
       },
       {
         shortcut: "Down",
         handler: (e) => { 
-          this.move(0, 10);
+          this.move(0, 1);
           e && e.preventDefault();
         }
       },
       {
         shortcut: "Backspace",
-        handler: () => { 
+        handler: () => {
           this.removeElements(this.getSelectedTargets());
         }
       },
@@ -513,6 +512,10 @@ export default class Editor extends React.PureComponent<
             } else {
               jsx.attrs.class = undefined
             }
+            const newFrame = Object.entries(jsx.frame as any).map(([key, value]) => {
+              return [key.replace(/border/g, "outline"), value]
+            })
+            jsx.frame = Object.fromEntries(newFrame)
           }
           return jsx
         })

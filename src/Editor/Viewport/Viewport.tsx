@@ -100,7 +100,7 @@ export default class Viewport extends React.PureComponent<{
                 props.className = "selectable"
             }
 
-            if (info.name !== "(PrintArea)" && info.el) {
+            if (info.name !== "(PrintArea)" && info.el && !editor.props.previewMode) {
                 const printAreas = allInfos.filter(e => e.name === "(PrintArea)");
                 const isOnArea = printAreas.some(p => {
                     return p.el && isDivInsideAnother(info.el, p.el)

@@ -114,6 +114,7 @@ export default class MoveableManager extends React.PureComponent<{
             return selectedTargets.indexOf(el) === -1;
         });
         const isShift = editor.state.isShift;
+        const isAdmin = editor.props.isAdmin;
         const targetIsImage = selectedTargets.every(el => el.tagName === 'IMG');
         return <Moveable<DimensionViewableProps>
             ables={[DimensionViewable]}
@@ -132,10 +133,28 @@ export default class MoveableManager extends React.PureComponent<{
             snappable={true}
             snapGap={false}
             roundable={true}
-            verticalGuidelines={verticalGuidelines}
-            horizontalGuidelines={horizontalGuidelines}
+            snapDirections={{
+                bottom: true,
+                top: true,
+                left: true,
+                right: true,
+                center: true,
+                middle: true,
+            }}
+            elementSnapDirections={{
+                bottom: true,
+                top: true,
+                left: true,
+                right: true,
+                center: true,
+                middle: true,
+            }}
+            verticalGuidelines={isAdmin ? verticalGuidelines: []}
+            horizontalGuidelines={isAdmin ? horizontalGuidelines: []}
             elementGuidelines={elementGuidelines}
             clipArea={true}
+            bounds={{"left":0,"top":0,"right":0,"bottom":0,"position":"css"}}
+            snapThreshold={3}
 
             onBeforeRenderStart={moveableData.onBeforeRenderStart}
             onBeforeRenderGroupStart={moveableData.onBeforeRenderGroupStart}

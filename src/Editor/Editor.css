@@ -51,6 +51,7 @@
 }
 .scena-viewer .selectable{
     overflow: hidden;
+    box-sizing: border-box;
 }
 .scena-viewport img{
     object-fit: fill;
