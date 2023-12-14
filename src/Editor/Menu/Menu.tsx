@@ -4,6 +4,7 @@ import Icon from "./Icon";
 import Editor from "../Editor";
 import { CompleteMenu, HomeMenu, PrintAreaMenu, TextMenu } from "./MenusList";
 import "./Menu.css";
+import DropdownIcon from "./DropdownIcon";
 
 
 export default class Menu extends React.PureComponent<{
@@ -11,12 +12,13 @@ export default class Menu extends React.PureComponent<{
     onSelect: (id: string) => any
 }> {
     public state = {
-        selected: "MoveTool",
+        selected: "MoveTool"
     };
     public menuRefs: Array<React.RefObject<Icon>> = [];
+    public menuContainerRef = React.createRef<HTMLDivElement>();
     public render() {
         return (
-            <div className={prefix("menu")}>
+            <div className={prefix("menu")} ref={this.menuContainerRef}>
                 {this.renderMenus()}
                 {/* <div className={prefix("menu-bottom")}>
                     <KeyboardIcon editor={this.props.editor} />
@@ -26,7 +28,6 @@ export default class Menu extends React.PureComponent<{
     }
     public renderMenus() {
         let selected = this.state.selected;
-        const menuRefs = this.menuRefs;
         const editor = this.props.editor;
         const viewport = editor.getViewport()
         let menu = HomeMenu
@@ -55,30 +56,63 @@ export default class Menu extends React.PureComponent<{
                 menu = PrintAreaMenu
             }
         }
-        return menu
+
+        menu = menu
             .filter(m => !editor.props.isAdmin ? m.id !== "PrintArea" : true)
-            .map((MenuClass, i) => {
-                const id = MenuClass.id;
-                if (!menuRefs[i]) {
-                    menuRefs[i] = React.createRef();
-                }
-                if (id === "Divider") {
-                    return (
-                        <MenuClass key={i} editor={editor}/>
-                    )
-                }
-                return (
-                    <MenuClass
-                        ref={menuRefs[i]}
-                        key={i}
-                        editor={editor}
-                        selected={Array.isArray(id) ? id.includes(selected): selected === id}
-                        selectedId={selected}
-                        onSelect={this.select}
-                    />
-                );
-        });
+        const maxWidth = this.menuContainerRef.current?.clientWidth || 0
+        let currentWidth = 0;
+
+        const filteredMenu: (typeof Icon)[] = []
+        const dropedMenu: (typeof Icon)[] = []
+        menu.forEach(menuItem => {
+            if (maxWidth > (currentWidth)) {
+                filteredMenu.push(menuItem)
+                currentWidth += menuItem.width
+            } else {
+                currentWidth = maxWidth;
+                dropedMenu.push(menuItem)
+            }
+        })
+
+        return <>
+            {filteredMenu.map((MenuClass, i) => {
+                return this.renderIcon(MenuClass, i, selected)
+            })}
+            {
+                dropedMenu.length > 0 &&
+                <DropdownIcon>
+                    {dropedMenu.map((MenuClass, i) => {
+                        return this.renderIcon(MenuClass, i, selected)
+                    })}
+                </DropdownIcon>
+            }
+        </>
     }
+
+    public renderIcon(MenuClass: typeof Icon, i: number, selected: string) {
+        const menuRefs = this.menuRefs;
+        const editor = this.props.editor;
+        const id = MenuClass.id;
+        if (!menuRefs[i]) {
+            menuRefs[i] = React.createRef();
+        }
+        if (id === "Divider") {
+            return (
+                <MenuClass key={i} editor={editor}/>
+            )
+        }
+        return (
+            <MenuClass
+                ref={menuRefs[i]}
+                key={i}
+                editor={editor}
+                selected={Array.isArray(id) ? id.includes(selected): selected === id}
+                selectedId={selected}
+                onSelect={this.select}
+            />
+        );
+    }
+
     public select = (id: string) => {
         this.setState({
             selected: id,
@@ -96,5 +130,9 @@ export default class Menu extends React.PureComponent<{
             }
             ref.current.blur();
         });
+    }
+
+    componentDidMount(): void {
+        this.forceUpdate()
     }
 }

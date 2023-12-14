@@ -13,6 +13,7 @@ const sizes = [
 ]
 export default class FontSize extends Icon {
 	public static id = "FontSize";
+	public static width = 97;
 	public propertyName = "font-size";
 	public propertyValue = "16px"
 	public render() {

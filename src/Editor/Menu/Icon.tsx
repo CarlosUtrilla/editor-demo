@@ -23,6 +23,7 @@ export default abstract class Icon extends React.PureComponent<{
     public static id: string | string[];
     public static maker?: (memory: Memory) => Maker;
     public static makeThen: (target: HTMLElement | SVGElement, id: string, menu: Menu) => any = () => { };
+    public static width = 45
     public keys: string[] = [];
     public abstract renderIcon(): any;
     private subContainer = React.createRef<HTMLDivElement>();

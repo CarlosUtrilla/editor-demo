@@ -1,6 +1,6 @@
 {
   "name": "reno-capital-editor",
-  "version": "0.2.9",
+  "version": "0.3.2",
   "devDependencies": {
     "@babel/cli": "^7.23.0",
     "@babel/core": "^7.23.3",
@@ -71,6 +71,11 @@
     "react-selecto": "^1.26.1",
     "scenejs": "^1.10.3",
     "shortcuts": "^3.0.1"
+  },
+  "peerDependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.15.0"
   },
   "main": "dist/index.js",
   "module": "dist/index.js",

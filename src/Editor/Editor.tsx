@@ -93,6 +93,7 @@ export default class Editor extends React.PureComponent<
     isAdmin?: boolean;
     fontFamily?: string[];
     onValidate?: (errors: boolean) => void;
+    previewMode?: boolean;
   },
   Partial<ScenaEditorState>
 > {
@@ -146,6 +147,9 @@ export default class Editor extends React.PureComponent<
       selecto,
       state
     } = this;
+
+    const previewMode = this.props.previewMode;
+
     const { selectedMenu, selectedTargets, zoom, showGuides, minZoom, width, height } = state;
     const horizontalSnapGuides = [
       0,
@@ -157,11 +161,19 @@ export default class Editor extends React.PureComponent<
     let unit = 50;
 
     return (
-      <div className={prefix("editor")} ref={this.editorElement}>
-        {/* <Tabs ref={tabs} editor={this}></Tabs> */}
-        <Menu ref={menu} editor={this} onSelect={this.onMenuChange} />
+      <div
+        className={prefix("editor")}
+        ref={this.editorElement}
+        style={{
+          width: `${width}px`,
+        }}
+      >
         {
-          showGuides &&
+          !previewMode &&
+          <Menu ref={menu} editor={this} onSelect={this.onMenuChange} />
+        }
+        {
+          showGuides && !previewMode && 
           <React.Fragment>
               <div
                 className={prefix("reset")}
@@ -249,91 +261,96 @@ export default class Editor extends React.PureComponent<
                 width: `${width}px`,
                 height: `${height}px`,
               }}
-            editor={this}
-            background={this.props.backgroundImg}
+              editor={this}
+              background={this.props.backgroundImg}
           >
-              <MoveableManager
+            {
+              !previewMode &&
+                <MoveableManager
                 ref={moveableManager}
                 selectedTargets={selectedTargets}
                 selectedMenu={selectedMenu}
                 verticalGuidelines={verticalSnapGuides}
                 horizontalGuidelines={horizontalSnapGuides}
                 editor={this}
-            ></MoveableManager>
+                ></MoveableManager>
+            }
             </Viewport>
         </InfiniteViewer>
-        <Selecto
-          ref={selecto}
-          hitRate={0}
-          dragContainer={".scena-viewer"}
-          rootContainer={infiniteViewer.current && infiniteViewer.current.getContainer()}
-          container={infiniteViewer.current && infiniteViewer.current.getContainer()}
-          selectableTargets={selectedMenu === "MoveTool" ?[`.scena-viewport [${DATA_SCENA_ELEMENT_ID}].selectable`]:[]}
-          selectByClick={true}
-          selectFromInside={false}
-          toggleContinueSelect={["shift"]}
-          preventDefault={true}
-          scrollOptions={
-            infiniteViewer.current
-              ? {
-                  container: infiniteViewer.current.getContainer(),
-                  threshold: 30,
-                  throttleTime: 30,
-                  getScrollPosition: () => {
-                    const current = infiniteViewer.current!;
-                    return [current.getScrollLeft(), current.getScrollTop()];
+        {!previewMode &&
+          <Selecto
+            ref={selecto}
+            hitRate={0}
+            dragContainer={".scena-viewer"}
+            rootContainer={infiniteViewer.current && infiniteViewer.current.getContainer()}
+            container={infiniteViewer.current && infiniteViewer.current.getContainer()}
+            selectableTargets={selectedMenu === "MoveTool" ?[`.scena-viewport [${DATA_SCENA_ELEMENT_ID}].selectable`]:[]}
+            selectByClick={true}
+            selectFromInside={false}
+            toggleContinueSelect={["shift"]}
+            preventDefault={true}
+            scrollOptions={
+              infiniteViewer.current
+                ? {
+                    container: infiniteViewer.current.getContainer(),
+                    threshold: 30,
+                    throttleTime: 30,
+                    getScrollPosition: () => {
+                      const current = infiniteViewer.current!;
+                      return [current.getScrollLeft(), current.getScrollTop()];
+                    }
                   }
+                : undefined
+            }
+            onDragStart={(e) => {
+              const inputEvent = e.inputEvent;
+              const target = inputEvent.target;
+
+              this.checkBlur();
+              if (selectedMenu === "Text" && target.isContentEditable) {
+                const contentElement = getContentElement(target);
+
+                if (
+                  contentElement &&
+                  contentElement.hasAttribute(DATA_SCENA_ELEMENT_ID)
+                ) {
+                  e.stop();
+                  this.setSelectedTargets([contentElement]);
                 }
-              : undefined
-          }
-          onDragStart={(e) => {
-            const inputEvent = e.inputEvent;
-            const target = inputEvent.target;
-
-            this.checkBlur();
-            if (selectedMenu === "Text" && target.isContentEditable) {
-              const contentElement = getContentElement(target);
-
+              }
               if (
-                contentElement &&
-                contentElement.hasAttribute(DATA_SCENA_ELEMENT_ID)
+                moveableManager
+                  .current!.getMoveable()
+                  .isMoveableElement(target) ||
+                state.selectedTargets.some(
+                  (t) => t === target || t.contains(target)
+                )
               ) {
                 e.stop();
-                this.setSelectedTargets([contentElement]);
               }
-            }
-            if (
-              moveableManager
-                .current!.getMoveable()
-                .isMoveableElement(target) ||
-              state.selectedTargets.some(
-                (t) => t === target || t.contains(target)
-              )
-            ) {
-              e.stop();
-            }
-          }}
-          onScroll={({ direction }) => {
-            infiniteViewer.current!.scrollBy(
-              direction[0] * 10,
-              direction[1] * 10
-            );
-          }}
-          onSelectEnd={({ isDragStart, selected, inputEvent, rect }) => {
-            if (isDragStart) {
-              inputEvent.preventDefault();
-            }
-            if (this.selectEndMaker(rect)) {
-              return;
-            }
-            this.setSelectedTargets(selected).then(() => {
-              if (!isDragStart) {
+            }}
+            onScroll={({ direction }) => {
+              infiniteViewer.current!.scrollBy(
+                direction[0] * 10,
+                direction[1] * 10
+              );
+            }}
+            onSelectEnd={({ isDragStart, selected, inputEvent, rect }) => {
+              if (isDragStart) {
+                inputEvent.preventDefault();
+              }
+              if (this.selectEndMaker(rect)) {
                 return;
               }
-              moveableManager.current!.getMoveable().dragStart(inputEvent);
-            });
-          }}
-        ></Selecto>
+              this.setSelectedTargets(selected).then(() => {
+                if (!isDragStart) {
+                  return;
+                }
+                moveableManager.current!.getMoveable().dragStart(inputEvent);
+              });
+            }}
+          ></Selecto>
+        }
       </div>
     );
   }
@@ -484,7 +501,9 @@ export default class Editor extends React.PureComponent<
     this.historyManager.registerType("move", undoMove, redoMove);
 
     if (this.props.initialJSX && this.props.initialJSX.length > 0) {
-      let initialJSX = this.props.initialJSX.map(jsx => {
+      let initialJSX = this.props.initialJSX
+        .filter(jsx => this.props.previewMode ? jsx.name !== "(PrintArea)" : true)
+        .map(jsx => {
           if (jsx.name === "(PrintArea)") {
             if (!jsx.attrs) {
               jsx.attrs = {}

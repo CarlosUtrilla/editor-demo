@@ -157,6 +157,7 @@ declare abstract class Icon extends React.PureComponent<{
     static id: string | string[];
     static maker?: (memory: Memory) => Maker;
     static makeThen: (target: HTMLElement | SVGElement, id: string, menu: Menu) => any;
+    static width: number;
     keys: string[];
     abstract renderIcon(): any;
     private subContainer;
@@ -185,11 +186,14 @@ declare class Menu extends React.PureComponent<{
         selected: string;
     };
     menuRefs: Array<React.RefObject<Icon>>;
+    menuContainerRef: React.RefObject<HTMLDivElement>;
     render(): React.JSX.Element;
-    renderMenus(): React.JSX.Element[];
+    renderMenus(): React.JSX.Element;
+    renderIcon(MenuClass: typeof Icon, i: number, selected: string): React.JSX.Element;
     select: (id: string) => void;
     getSelected(): typeof Icon | undefined;
     blur(): void;
+    componentDidMount(): void;
 }
 
 interface AddedInfo {
@@ -313,6 +317,7 @@ declare class Editor extends React.PureComponent<{
     isAdmin?: boolean;
     fontFamily?: string[];
     onValidate?: (errors: boolean) => void;
+    previewMode?: boolean;
 }, Partial<ScenaEditorState>> {
     state: ScenaEditorState;
     historyManager: HistoryManager;

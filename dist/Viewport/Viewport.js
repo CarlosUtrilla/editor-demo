@@ -2544,6 +2544,9 @@ var Viewport = /*#__PURE__*/ function(_React_PureComponent) {
             value: function render() {
                 var style = this.props.style;
                 var background = this.props.background;
+                var editor = this.props.editor;
+                var isScreenshot = editor.state.isScreenshot;
+                var previewMode = editor.props.previewMode;
                 return /* @__PURE__ */ React.createElement("div", {
                     className: prefix("viewport-container"),
                     onBlur: this.props.onBlur,
@@ -2555,6 +2558,8 @@ var Viewport = /*#__PURE__*/ function(_React_PureComponent) {
                     ref: this.viewportRef,
                     style: _object_spread({}, background && {
                         backgroundImage: "url(".concat(background, ")")
+                    }, (isScreenshot || previewMode) && {
+                        borderColor: "transparent"
                     })
                 }), this.renderChildren(this.getViewportInfos())));
             }

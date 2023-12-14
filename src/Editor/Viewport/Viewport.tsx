@@ -59,7 +59,10 @@ export default class Viewport extends React.PureComponent<{
     public viewportRef = React.createRef<HTMLDivElement>();
     public render() {
         const style = this.props.style;
-        const {background} = this.props
+        const { background } = this.props
+        const {editor} = this.props
+        const isScreenshot = editor.state.isScreenshot
+        const previewMode = editor.props.previewMode
         return <div  className={prefix("viewport-container")} onBlur={this.props.onBlur} style={style}>
             {this.props.children}
             <div
@@ -68,6 +71,7 @@ export default class Viewport extends React.PureComponent<{
                 ref={this.viewportRef}
                 style={{
                     ...(background && { backgroundImage: `url(${background})` }),
+                    ...((isScreenshot || previewMode) && {borderColor: "transparent"})
                 }}
             >
                 {this.renderChildren(this.getViewportInfos())}

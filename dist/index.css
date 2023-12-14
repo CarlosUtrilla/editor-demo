@@ -260,8 +260,9 @@
   padding: 0;
   border: none;
 }
-.scena-menu .scena-selected {
-  background: var(--mainColor);
+.scena-menu .scena-selected,
+.scena-menu-dropdown .scena-selected {
+  background: #3D52D9;
 }
 .scena-icon.scena-selected > svg path,
 .scena-icon.scena-selected > svg ellipse,
@@ -359,4 +360,13 @@
   border-radius: 0.25rem;
   padding: 0.2rem 0.25rem;
   font-size: 0.85rem;
+}
+.scena-menu-dropdown ul {
+  background: #000;
+}
+.scena-menu-dropdown .MuiPaper-root {
+  overflow: visible !important;
+}
+.scena-menu-dropdown .scena-divider {
+  transform: rotate(90deg);
 }

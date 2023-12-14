@@ -2348,6 +2348,9 @@ var Viewport = class extends React.PureComponent {
   render() {
     const style = this.props.style;
     const { background } = this.props;
+    const { editor } = this.props;
+    const isScreenshot = editor.state.isScreenshot;
+    const previewMode = editor.props.previewMode;
     return /* @__PURE__ */ React.createElement("div", { className: prefix("viewport-container"), onBlur: this.props.onBlur, style }, this.props.children, /* @__PURE__ */ React.createElement(
       "div",
       {
@@ -2356,7 +2359,8 @@ var Viewport = class extends React.PureComponent {
         ...{ [DATA_SCENA_ELEMENT_ID]: "viewport" },
         ref: this.viewportRef,
         style: {
-          ...background && { backgroundImage: `url(${background})` }
+          ...background && { backgroundImage: `url(${background})` },
+          ...(isScreenshot || previewMode) && { borderColor: "transparent" }
         }
       },
       this.renderChildren(this.getViewportInfos())

@@ -1226,7 +1226,7 @@ var require_react_development = __commonJS({
                     }
                     return element;
                 };
-                function createElement36(type, config, children) {
+                function createElement37(type, config, children) {
                     var propName;
                     var props = {};
                     var key = null;
@@ -1795,7 +1795,7 @@ var require_react_development = __commonJS({
                     }
                     return dispatcher.useContext(Context);
                 }
-                function useState(initialState) {
+                function useState2(initialState) {
                     var dispatcher = resolveDispatcher();
                     return dispatcher.useState(initialState);
                 }
@@ -2319,7 +2319,7 @@ var require_react_development = __commonJS({
                             error("React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", typeString, info);
                         }
                     }
-                    var element = createElement36.apply(this, arguments);
+                    var element = createElement37.apply(this, arguments);
                     if (element == null) {
                         return element;
                     }
@@ -2595,7 +2595,7 @@ var require_react_development = __commonJS({
                 exports.useMemo = useMemo;
                 exports.useReducer = useReducer;
                 exports.useRef = useRef;
-                exports.useState = useState;
+                exports.useState = useState2;
                 exports.useSyncExternalStore = useSyncExternalStore;
                 exports.useTransition = useTransition;
                 exports.version = ReactVersion;
@@ -2629,12 +2629,12 @@ __export(Editor_exports, {
 });
 module.exports = __toCommonJS(Editor_exports);
 // src/Editor/Editor.tsx
-var React36 = __toESM(require_react());
+var React37 = __toESM(require_react());
 var import_react_infinite_viewer = __toESM(require("react-infinite-viewer"));
 var import_react_guides = __toESM(require("@scena/react-guides"));
 var import_react_selecto = __toESM(require("react-selecto"));
 // src/Editor/Menu/Menu.tsx
-var React32 = __toESM(require_react());
+var React33 = __toESM(require_react());
 // src/Editor/utils/utils.ts
 var import_framework_utils = require("framework-utils");
 // src/Editor/consts.ts
@@ -2901,6 +2901,7 @@ var Icon = /*#__PURE__*/ function(_React_PureComponent) {
     return Icon;
 }(React.PureComponent);
 Icon.makeThen = function() {};
+Icon.width = 45;
 Icon = __decorateClass([
     connectEditorProps
 ], Icon);
@@ -4177,6 +4178,7 @@ var FontFamily = /*#__PURE__*/ function(Icon) {
     return FontFamily;
 }(Icon);
 FontFamily.id = "FontFamily";
+FontFamily.width = 92;
 // src/Editor/Menu/TextIcons/FontSize.tsx
 var React25 = __toESM(require_react());
 var sizes = [
@@ -4278,6 +4280,7 @@ var FontSize = /*#__PURE__*/ function(Icon) {
     return FontSize;
 }(Icon);
 FontSize.id = "FontSize";
+FontSize.width = 97;
 // src/Editor/Menu/TextIcons/Aligns/AlignLeftIcon.tsx
 var React26 = __toESM(require_react());
 var AlignLeftIcon = /*#__PURE__*/ function(Icon) {
@@ -4830,12 +4833,37 @@ var CompleteMenu = [
     UnderlineIcon,
     FontFamily
 ];
+// src/Editor/Menu/DropdownIcon.tsx
+var React32 = __toESM(require_react());
+var import_Menu = __toESM(require("@mui/material/Menu"));
+function DropdownIcon(param) {
+    var children = param.children;
+    var _React32_useState = _sliced_to_array(React32.useState(null), 2), anchorEl = _React32_useState[0], setAnchorEl = _React32_useState[1];
+    var open = Boolean(anchorEl);
+    var handleClick = function(event) {
+        setAnchorEl(event.currentTarget);
+    };
+    var handleClose = function() {
+        setAnchorEl(null);
+    };
+    return /* @__PURE__ */ React32.createElement(React32.Fragment, null, /* @__PURE__ */ React32.createElement("div", {
+        className: "scena-icon",
+        onClick: handleClick
+    }, /* @__PURE__ */ React32.createElement("i", {
+        className: "fa-solid fa-ellipsis-vertical"
+    })), /* @__PURE__ */ React32.createElement(import_Menu.default, {
+        anchorEl: anchorEl,
+        open: open,
+        onClose: handleClose,
+        className: "scena-menu-dropdown"
+    }, children));
+}
 // src/Editor/Menu/Menu.tsx
-var Menu = /*#__PURE__*/ function(_React32_PureComponent) {
-    _inherits(Menu, _React32_PureComponent);
-    var _super = _create_super(Menu);
-    function Menu() {
-        _class_call_check(this, Menu);
+var Menu2 = /*#__PURE__*/ function(_React33_PureComponent) {
+    _inherits(Menu2, _React33_PureComponent);
+    var _super = _create_super(Menu2);
+    function Menu2() {
+        _class_call_check(this, Menu2);
         var _this;
         _this = _super.call.apply(_super, [
             this
@@ -4844,6 +4872,7 @@ var Menu = /*#__PURE__*/ function(_React32_PureComponent) {
             selected: "MoveTool"
         };
         _this.menuRefs = [];
+        _this.menuContainerRef = React33.createRef();
         _this.select = function(id) {
             _this.setState({
                 selected: id
@@ -4852,12 +4881,13 @@ var Menu = /*#__PURE__*/ function(_React32_PureComponent) {
         };
         return _this;
     }
-    _create_class(Menu, [
+    _create_class(Menu2, [
         {
             key: "render",
             value: function render() {
-                return /* @__PURE__ */ React32.createElement("div", {
-                    className: prefix("menu")
+                return /* @__PURE__ */ React33.createElement("div", {
+                    className: prefix("menu"),
+                    ref: this.menuContainerRef
                 }, this.renderMenus());
             }
         },
@@ -4865,8 +4895,8 @@ var Menu = /*#__PURE__*/ function(_React32_PureComponent) {
             key: "renderMenus",
             value: function renderMenus() {
                 var _this = this;
+                var _this_menuContainerRef_current;
                 var selected = this.state.selected;
-                var menuRefs = this.menuRefs;
                 var editor = this.props.editor;
                 var viewport = editor.getViewport();
                 var menu = HomeMenu;
@@ -4921,27 +4951,51 @@ var Menu = /*#__PURE__*/ function(_React32_PureComponent) {
                         menu = PrintAreaMenu;
                     }
                 }
-                return menu.filter(function(m) {
+                menu = menu.filter(function(m) {
                     return !editor.props.isAdmin ? m.id !== "PrintArea" : true;
-                }).map(function(MenuClass, i) {
-                    var id = MenuClass.id;
-                    if (!menuRefs[i]) {
-                        menuRefs[i] = React32.createRef();
+                });
+                var maxWidth = ((_this_menuContainerRef_current = this.menuContainerRef.current) === null || _this_menuContainerRef_current === void 0 ? void 0 : _this_menuContainerRef_current.clientWidth) || 0;
+                var currentWidth = 0;
+                var filteredMenu = [];
+                var dropedMenu = [];
+                menu.forEach(function(menuItem) {
+                    if (maxWidth > currentWidth) {
+                        filteredMenu.push(menuItem);
+                        currentWidth += menuItem.width;
+                    } else {
+                        currentWidth = maxWidth;
+                        dropedMenu.push(menuItem);
                     }
-                    if (id === "Divider") {
-                        return /* @__PURE__ */ React32.createElement(MenuClass, {
-                            key: i,
-                            editor: editor
-                        });
-                    }
-                    return /* @__PURE__ */ React32.createElement(MenuClass, {
-                        ref: menuRefs[i],
+                });
+                return /* @__PURE__ */ React33.createElement(React33.Fragment, null, filteredMenu.map(function(MenuClass, i) {
+                    return _this.renderIcon(MenuClass, i, selected);
+                }), dropedMenu.length > 0 && /* @__PURE__ */ React33.createElement(DropdownIcon, null, dropedMenu.map(function(MenuClass, i) {
+                    return _this.renderIcon(MenuClass, i, selected);
+                })));
+            }
+        },
+        {
+            key: "renderIcon",
+            value: function renderIcon(MenuClass, i, selected) {
+                var menuRefs = this.menuRefs;
+                var editor = this.props.editor;
+                var id = MenuClass.id;
+                if (!menuRefs[i]) {
+                    menuRefs[i] = React33.createRef();
+                }
+                if (id === "Divider") {
+                    return /* @__PURE__ */ React33.createElement(MenuClass, {
                         key: i,
-                        editor: editor,
-                        selected: Array.isArray(id) ? id.includes(selected) : selected === id,
-                        selectedId: selected,
-                        onSelect: _this.select
+                        editor: editor
                     });
+                }
+                return /* @__PURE__ */ React33.createElement(MenuClass, {
+                    ref: menuRefs[i],
+                    key: i,
+                    editor: editor,
+                    selected: Array.isArray(id) ? id.includes(selected) : selected === id,
+                    selectedId: selected,
+                    onSelect: this.select
                 });
             }
         },
@@ -4964,15 +5018,21 @@ var Menu = /*#__PURE__*/ function(_React32_PureComponent) {
                     ref.current.blur();
                 });
             }
+        },
+        {
+            key: "componentDidMount",
+            value: function componentDidMount() {
+                this.forceUpdate();
+            }
         }
     ]);
-    return Menu;
-}(React32.PureComponent);
+    return Menu2;
+}(React33.PureComponent);
 // src/Editor/Viewport/Viewport.tsx
-var React33 = __toESM(require_react());
+var React34 = __toESM(require_react());
 var import_utils9 = require("@daybrush/utils");
-var Viewport = /*#__PURE__*/ function(_React33_PureComponent) {
-    _inherits(Viewport, _React33_PureComponent);
+var Viewport = /*#__PURE__*/ function(_React34_PureComponent) {
+    _inherits(Viewport, _React34_PureComponent);
     var _super = _create_super(Viewport);
     function Viewport() {
         _class_call_check(this, Viewport);
@@ -4983,7 +5043,7 @@ var Viewport = /*#__PURE__*/ function(_React33_PureComponent) {
         _this.components = {};
         _this.jsxs = {};
         _this.viewport = {
-            jsx: /* @__PURE__ */ React33.createElement("div", null),
+            jsx: /* @__PURE__ */ React34.createElement("div", null),
             name: "Viewport",
             id: "viewport",
             children: []
@@ -4992,7 +5052,7 @@ var Viewport = /*#__PURE__*/ function(_React33_PureComponent) {
             viewport: _this.viewport
         };
         _this.state = {};
-        _this.viewportRef = React33.createRef();
+        _this.viewportRef = React34.createRef();
         return _this;
     }
     _create_class(Viewport, [
@@ -5001,17 +5061,22 @@ var Viewport = /*#__PURE__*/ function(_React33_PureComponent) {
             value: function render() {
                 var style = this.props.style;
                 var background = this.props.background;
-                return /* @__PURE__ */ React33.createElement("div", {
+                var editor = this.props.editor;
+                var isScreenshot = editor.state.isScreenshot;
+                var previewMode = editor.props.previewMode;
+                return /* @__PURE__ */ React34.createElement("div", {
                     className: prefix("viewport-container"),
                     onBlur: this.props.onBlur,
                     style: style
-                }, this.props.children, /* @__PURE__ */ React33.createElement("div", _object_spread_props(_object_spread({
+                }, this.props.children, /* @__PURE__ */ React34.createElement("div", _object_spread_props(_object_spread({
                     className: prefix("viewport"),
                     id: "scene-viewport"
                 }, _define_property({}, DATA_SCENA_ELEMENT_ID, "viewport")), {
                     ref: this.viewportRef,
                     style: _object_spread({}, background && {
                         backgroundImage: "url(".concat(background, ")")
+                    }, (isScreenshot || previewMode) && {
+                        borderColor: "transparent"
                     })
                 }), this.renderChildren(this.getViewportInfos())));
             }
@@ -5028,7 +5093,7 @@ var Viewport = /*#__PURE__*/ function(_React33_PureComponent) {
                 var _this = this;
                 var areErrors = false;
                 var renders = children.map(function(info, _, allInfos) {
-                    var _React33;
+                    var _React34;
                     var _jsx_props;
                     var editor = _this.props.editor;
                     var jsx = info.jsx;
@@ -5037,7 +5102,7 @@ var Viewport = /*#__PURE__*/ function(_React33_PureComponent) {
                     var id = info.id;
                     var isScreenshot = editor.state.isScreenshot;
                     if (isScreenshot && info.name === "(PrintArea)") {
-                        return /* @__PURE__ */ React33.createElement("div", null);
+                        return /* @__PURE__ */ React34.createElement("div", null);
                     }
                     var props = {
                         key: id
@@ -5063,9 +5128,9 @@ var Viewport = /*#__PURE__*/ function(_React33_PureComponent) {
                         }
                     }
                     if ((0, import_utils9.isString)(jsx)) {
-                        var _React331;
+                        var _React341;
                         props[DATA_SCENA_ELEMENT_ID] = id;
-                        return (_React331 = React33).createElement.apply(_React331, [
+                        return (_React341 = React34).createElement.apply(_React341, [
                             jsx,
                             props
                         ].concat(_to_consumable_array(renderedChildren)));
@@ -5074,7 +5139,7 @@ var Viewport = /*#__PURE__*/ function(_React33_PureComponent) {
                         props.scenaAttrs = info.attrs || {};
                         props.scenaText = info.innerText;
                         props.scenaHTML = info.innerHTML;
-                        return React33.createElement(jsx, props);
+                        return React34.createElement(jsx, props);
                     } else if ((0, import_utils9.isString)(jsx.type)) {
                         props[DATA_SCENA_ELEMENT_ID] = id;
                     } else {
@@ -5084,7 +5149,7 @@ var Viewport = /*#__PURE__*/ function(_React33_PureComponent) {
                         props.scenaHTML = info.innerHTML;
                     }
                     var jsxChildren = (jsx === null || jsx === void 0 ? void 0 : (_jsx_props = jsx.props) === null || _jsx_props === void 0 ? void 0 : _jsx_props.children) || [];
-                    return (_React33 = React33).cloneElement.apply(_React33, [
+                    return (_React34 = React34).cloneElement.apply(_React34, [
                         jsx,
                         _object_spread({}, jsx.props, props)
                     ].concat(_to_consumable_array((0, import_utils9.isArray)(jsxChildren) ? jsxChildren : [
@@ -5495,7 +5560,7 @@ var Viewport = /*#__PURE__*/ function(_React33_PureComponent) {
         }
     ]);
     return Viewport;
-}(React33.PureComponent);
+}(React34.PureComponent);
 // src/Editor/utils/EventBus.ts
 var import_component = __toESM(require("@egjs/component"));
 var EventBus = /*#__PURE__*/ function(_import_component_default) {
@@ -5556,7 +5621,7 @@ var Memory = /*#__PURE__*/ function() {
     return Memory;
 }();
 // src/Editor/Viewport/MoveableMananger.tsx
-var React34 = __toESM(require_react());
+var React35 = __toESM(require_react());
 var import_react_moveable = __toESM(require("react-moveable"));
 var import_list_differ = require("@egjs/list-differ");
 function restoreRender(id, state, prevState, orders, editor) {
@@ -5621,7 +5686,7 @@ var DimensionViewable = {
     render: function render(moveable) {
         var _moveable_state = moveable.state, left = _moveable_state.left, top = _moveable_state.top;
         var rect = moveable.getRect();
-        return /* @__PURE__ */ React34.createElement("div", {
+        return /* @__PURE__ */ React35.createElement("div", {
             key: "dimension-viewer",
             className: "moveable-dimension",
             style: {
@@ -5631,8 +5696,8 @@ var DimensionViewable = {
         }, Math.round(rect.offsetWidth), " x ", Math.round(rect.offsetHeight));
     }
 };
-var MoveableManager = /*#__PURE__*/ function(_React34_PureComponent) {
-    _inherits(MoveableManager, _React34_PureComponent);
+var MoveableManager = /*#__PURE__*/ function(_React35_PureComponent) {
+    _inherits(MoveableManager, _React35_PureComponent);
     var _super = _create_super(MoveableManager);
     function MoveableManager() {
         _class_call_check(this, MoveableManager);
@@ -5640,7 +5705,7 @@ var MoveableManager = /*#__PURE__*/ function(_React34_PureComponent) {
         _this = _super.call.apply(_super, [
             this
         ].concat(Array.prototype.slice.call(arguments)));
-        _this.moveable = React34.createRef();
+        _this.moveable = React35.createRef();
         return _this;
     }
     _create_class(MoveableManager, [
@@ -5668,7 +5733,7 @@ var MoveableManager = /*#__PURE__*/ function(_React34_PureComponent) {
                 });
                 var _this1 = this;
                 var _this2 = this;
-                return /* @__PURE__ */ React34.createElement(import_react_moveable.default, {
+                return /* @__PURE__ */ React35.createElement(import_react_moveable.default, {
                     ables: [
                         DimensionViewable
                     ],
@@ -5805,7 +5870,7 @@ var MoveableManager = /*#__PURE__*/ function(_React34_PureComponent) {
             value: function renderViewportMoveable() {
                 var viewport = this.editor.getViewport();
                 var target = viewport ? viewport.viewportRef.current : null;
-                return /* @__PURE__ */ React34.createElement(import_react_moveable.default, {
+                return /* @__PURE__ */ React35.createElement(import_react_moveable.default, {
                     ref: this.moveable,
                     rotatable: false,
                     target: target,
@@ -5858,7 +5923,7 @@ var MoveableManager = /*#__PURE__*/ function(_React34_PureComponent) {
         }
     ]);
     return MoveableManager;
-}(React34.PureComponent);
+}(React35.PureComponent);
 MoveableManager = __decorateClass([
     connectEditorProps
 ], MoveableManager);
@@ -6079,7 +6144,7 @@ var Debugger = /*#__PURE__*/ function() {
     return Debugger;
 }();
 // src/Editor/utils/ClipboardManager.tsx
-var React35 = __toESM(require_react());
+var React36 = __toESM(require_react());
 var import_html2canvas = __toESM(require("html2canvas"));
 var ClipboardManager = /*#__PURE__*/ function() {
     function ClipboardManager(editor) {
@@ -6261,7 +6326,7 @@ var ClipboardManager = /*#__PURE__*/ function() {
                                 text = _state.sent();
                                 _this.editor.appendJSXs([
                                     {
-                                        jsx: /* @__PURE__ */ React35.createElement("div", {
+                                        jsx: /* @__PURE__ */ React36.createElement("div", {
                                             contentEditable: "true"
                                         }),
                                         name: "(Text)",
@@ -6328,8 +6393,8 @@ function redoMove(param, editor) {
     var nextInfos = param.nextInfos;
     editor.moves(nextInfos, true);
 }
-var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
-    _inherits(Editor, _React36_PureComponent);
+var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
+    _inherits(Editor, _React37_PureComponent);
     var _super = _create_super(Editor);
     function Editor() {
         _class_call_check(this, Editor);
@@ -6364,15 +6429,15 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
             }
         });
         _this.clipboardManager = new ClipboardManager(_assert_this_initialized(_this));
-        _this.horizontalGuides = React36.createRef();
-        _this.verticalGuides = React36.createRef();
-        _this.infiniteViewer = React36.createRef();
-        _this.selecto = React36.createRef();
-        _this.menu = React36.createRef();
-        _this.moveableManager = React36.createRef();
-        _this.viewport = React36.createRef();
-        _this.tabs = React36.createRef();
-        _this.editorElement = React36.createRef();
+        _this.horizontalGuides = React37.createRef();
+        _this.verticalGuides = React37.createRef();
+        _this.infiniteViewer = React37.createRef();
+        _this.selecto = React37.createRef();
+        _this.menu = React37.createRef();
+        _this.moveableManager = React37.createRef();
+        _this.viewport = React37.createRef();
+        _this.tabs = React37.createRef();
+        _this.editorElement = React37.createRef();
         _this.onMenuChange = function(id) {
             _this.setState({
                 selectedMenu: id
@@ -6437,6 +6502,7 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
             value: function render() {
                 var _this = this;
                 var _this1 = this, horizontalGuides = _this1.horizontalGuides, verticalGuides = _this1.verticalGuides, infiniteViewer = _this1.infiniteViewer, moveableManager = _this1.moveableManager, viewport = _this1.viewport, menu = _this1.menu, tabs = _this1.tabs, selecto = _this1.selecto, state = _this1.state;
+                var previewMode = this.props.previewMode;
                 var selectedMenu = state.selectedMenu, selectedTargets = state.selectedTargets, zoom = state.zoom, showGuides = state.showGuides, minZoom = state.minZoom, width = state.width, height = state.height;
                 var horizontalSnapGuides = [
                     0,
@@ -6449,19 +6515,22 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                     width / 2
                 ].concat(_to_consumable_array(state.verticalGuides));
                 var unit = 50;
-                return /* @__PURE__ */ React36.createElement("div", {
+                return /* @__PURE__ */ React37.createElement("div", {
                     className: prefix("editor"),
-                    ref: this.editorElement
-                }, /* @__PURE__ */ React36.createElement(Menu, {
+                    ref: this.editorElement,
+                    style: {
+                        width: "".concat(width, "px")
+                    }
+                }, !previewMode && /* @__PURE__ */ React37.createElement(Menu2, {
                     ref: menu,
                     editor: this,
                     onSelect: this.onMenuChange
-                }), showGuides && /* @__PURE__ */ React36.createElement(React36.Fragment, null, /* @__PURE__ */ React36.createElement("div", {
+                }), showGuides && !previewMode && /* @__PURE__ */ React37.createElement(React37.Fragment, null, /* @__PURE__ */ React37.createElement("div", {
                     className: prefix("reset"),
                     onClick: function(e) {
                         infiniteViewer.current.scrollCenter();
                     }
-                }), /* @__PURE__ */ React36.createElement(import_react_guides.default, {
+                }), /* @__PURE__ */ React37.createElement(import_react_guides.default, {
                     ref: horizontalGuides,
                     type: "horizontal",
                     className: prefix("guides", "horizontal"),
@@ -6478,7 +6547,7 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                             horizontalGuides: e.guides
                         });
                     }
-                }), /* @__PURE__ */ React36.createElement(import_react_guides.default, {
+                }), /* @__PURE__ */ React37.createElement(import_react_guides.default, {
                     ref: verticalGuides,
                     type: "vertical",
                     className: prefix("guides", "vertical"),
@@ -6495,7 +6564,7 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                             verticalGuides: e.guides
                         });
                     }
-                })), /* @__PURE__ */ React36.createElement(import_react_infinite_viewer.default, {
+                })), /* @__PURE__ */ React37.createElement(import_react_infinite_viewer.default, {
                     ref: infiniteViewer,
                     className: prefix("viewer"),
                     pinchThreshold: 5,
@@ -6537,7 +6606,7 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                             zoom: zoom2
                         });
                     }
-                }, /* @__PURE__ */ React36.createElement(Viewport, {
+                }, /* @__PURE__ */ React37.createElement(Viewport, {
                     ref: viewport,
                     onBlur: this.onBlur,
                     style: {
@@ -6546,14 +6615,14 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                     },
                     editor: this,
                     background: this.props.backgroundImg
-                }, /* @__PURE__ */ React36.createElement(MoveableManager, {
+                }, !previewMode && /* @__PURE__ */ React37.createElement(MoveableManager, {
                     ref: moveableManager,
                     selectedTargets: selectedTargets,
                     selectedMenu: selectedMenu,
                     verticalGuidelines: verticalSnapGuides,
                     horizontalGuidelines: horizontalSnapGuides,
                     editor: this
-                }))), /* @__PURE__ */ React36.createElement(import_react_selecto.default, {
+                }))), !previewMode && /* @__PURE__ */ React37.createElement(import_react_selecto.default, {
                     ref: selecto,
                     hitRate: 0,
                     dragContainer: ".scena-viewer",
@@ -6737,7 +6806,9 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                 this.historyManager.registerType("changeText", undoChangeText, redoChangeText);
                 this.historyManager.registerType("move", undoMove, redoMove);
                 if (this.props.initialJSX && this.props.initialJSX.length > 0) {
-                    var initialJSX = this.props.initialJSX.map(function(jsx) {
+                    var initialJSX = this.props.initialJSX.filter(function(jsx) {
+                        return _this.props.previewMode ? jsx.name !== "(PrintArea)" : true;
+                    }).map(function(jsx) {
                         if (jsx.name === "(PrintArea)") {
                             if (!jsx.attrs) {
                                 jsx.attrs = {};
@@ -7021,10 +7092,10 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                     }
                     if (!jsx && componentId) {
                         var Component2 = viewport.getComponent(componentId);
-                        jsx = /* @__PURE__ */ React36.createElement(Component2, null);
+                        jsx = /* @__PURE__ */ React37.createElement(Component2, null);
                     }
                     if (!jsx) {
-                        jsx = React36.createElement(data.tagName);
+                        jsx = React37.createElement(data.tagName);
                     }
                     return _object_spread_props(_object_spread({}, data), {
                         children: children.map(loadData),
@@ -7077,7 +7148,7 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
             value: function appendBlob(blob) {
                 var url = URL.createObjectURL(blob);
                 return this.appendJSX({
-                    jsx: /* @__PURE__ */ React36.createElement("img", {
+                    jsx: /* @__PURE__ */ React37.createElement("img", {
                         src: url,
                         alt: "appended blob"
                     }),
@@ -7327,7 +7398,8 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
                                                 return [
                                                     4,
                                                     import_dom_to_image.default.toBlob(viewer, {
-                                                        cacheBust: true
+                                                        cacheBust: true,
+                                                        quality: 100
                                                     })
                                                 ];
                                             case 1:
@@ -7434,7 +7506,7 @@ var Editor = /*#__PURE__*/ function(_React36_PureComponent) {
         }
     ]);
     return Editor;
-}(React36.PureComponent);
+}(React37.PureComponent);
 // src/Editor/index.ts
 var Editor_default = Editor;
 // Annotate the CommonJS export names for ESM import in node:

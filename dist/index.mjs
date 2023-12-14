@@ -15,16 +15,16 @@ import {
   makeScenaFunctionComponent,
   prefix,
   require_react
-} from "./chunk-G72FDOR7.mjs";
+} from "./chunk-B2P27WA7.mjs";
 
 // src/Editor/Editor.tsx
-var React35 = __toESM(require_react());
+var React36 = __toESM(require_react());
 import InfiniteViewer from "react-infinite-viewer";
 import Guides from "@scena/react-guides";
 import Selecto from "react-selecto";
 
 // src/Editor/Menu/Menu.tsx
-var React32 = __toESM(require_react());
+var React33 = __toESM(require_react());
 
 // src/Editor/Menu/Divider.tsx
 var React2 = __toESM(require_react());
@@ -146,6 +146,7 @@ var Icon = class extends React.PureComponent {
 };
 Icon.makeThen = () => {
 };
+Icon.width = 45;
 Icon = __decorateClass([
   connectEditorProps
 ], Icon);
@@ -911,6 +912,7 @@ var FontFamily = class extends Icon {
   }
 };
 FontFamily.id = "FontFamily";
+FontFamily.width = 92;
 
 // src/Editor/Menu/TextIcons/FontSize.tsx
 var React25 = __toESM(require_react());
@@ -984,6 +986,7 @@ var FontSize = class extends Icon {
   }
 };
 FontSize.id = "FontSize";
+FontSize.width = 97;
 
 // src/Editor/Menu/TextIcons/Aligns/AlignLeftIcon.tsx
 var React26 = __toESM(require_react());
@@ -1316,14 +1319,46 @@ var CompleteMenu = [
   FontFamily
 ];
 
+// src/Editor/Menu/DropdownIcon.tsx
+var React32 = __toESM(require_react());
+import Menu from "@mui/material/Menu";
+function DropdownIcon({ children }) {
+  const [anchorEl, setAnchorEl] = React32.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  return /* @__PURE__ */ React32.createElement(React32.Fragment, null, /* @__PURE__ */ React32.createElement(
+    "div",
+    {
+      className: "scena-icon",
+      onClick: handleClick
+    },
+    /* @__PURE__ */ React32.createElement("i", { className: "fa-solid fa-ellipsis-vertical" })
+  ), /* @__PURE__ */ React32.createElement(
+    Menu,
+    {
+      anchorEl,
+      open,
+      onClose: handleClose,
+      className: "scena-menu-dropdown"
+    },
+    children
+  ));
+}
+
 // src/Editor/Menu/Menu.tsx
-var Menu = class extends React32.PureComponent {
+var Menu2 = class extends React33.PureComponent {
   constructor() {
     super(...arguments);
     this.state = {
       selected: "MoveTool"
     };
     this.menuRefs = [];
+    this.menuContainerRef = React33.createRef();
     this.select = (id) => {
       this.setState({
         selected: id
@@ -1332,11 +1367,10 @@ var Menu = class extends React32.PureComponent {
     };
   }
   render() {
-    return /* @__PURE__ */ React32.createElement("div", { className: prefix("menu") }, this.renderMenus());
+    return /* @__PURE__ */ React33.createElement("div", { className: prefix("menu"), ref: this.menuContainerRef }, this.renderMenus());
   }
   renderMenus() {
     let selected = this.state.selected;
-    const menuRefs = this.menuRefs;
     const editor = this.props.editor;
     const viewport = editor.getViewport();
     let menu = HomeMenu;
@@ -1365,26 +1399,47 @@ var Menu = class extends React32.PureComponent {
         menu = PrintAreaMenu;
       }
     }
-    return menu.filter((m) => !editor.props.isAdmin ? m.id !== "PrintArea" : true).map((MenuClass, i) => {
-      const id = MenuClass.id;
-      if (!menuRefs[i]) {
-        menuRefs[i] = React32.createRef();
+    menu = menu.filter((m) => !editor.props.isAdmin ? m.id !== "PrintArea" : true);
+    const maxWidth = this.menuContainerRef.current?.clientWidth || 0;
+    let currentWidth = 0;
+    const filteredMenu = [];
+    const dropedMenu = [];
+    menu.forEach((menuItem) => {
+      if (maxWidth > currentWidth) {
+        filteredMenu.push(menuItem);
+        currentWidth += menuItem.width;
+      } else {
+        currentWidth = maxWidth;
+        dropedMenu.push(menuItem);
       }
-      if (id === "Divider") {
-        return /* @__PURE__ */ React32.createElement(MenuClass, { key: i, editor });
-      }
-      return /* @__PURE__ */ React32.createElement(
-        MenuClass,
-        {
-          ref: menuRefs[i],
-          key: i,
-          editor,
-          selected: Array.isArray(id) ? id.includes(selected) : selected === id,
-          selectedId: selected,
-          onSelect: this.select
-        }
-      );
     });
+    return /* @__PURE__ */ React33.createElement(React33.Fragment, null, filteredMenu.map((MenuClass, i) => {
+      return this.renderIcon(MenuClass, i, selected);
+    }), dropedMenu.length > 0 && /* @__PURE__ */ React33.createElement(DropdownIcon, null, dropedMenu.map((MenuClass, i) => {
+      return this.renderIcon(MenuClass, i, selected);
+    })));
+  }
+  renderIcon(MenuClass, i, selected) {
+    const menuRefs = this.menuRefs;
+    const editor = this.props.editor;
+    const id = MenuClass.id;
+    if (!menuRefs[i]) {
+      menuRefs[i] = React33.createRef();
+    }
+    if (id === "Divider") {
+      return /* @__PURE__ */ React33.createElement(MenuClass, { key: i, editor });
+    }
+    return /* @__PURE__ */ React33.createElement(
+      MenuClass,
+      {
+        ref: menuRefs[i],
+        key: i,
+        editor,
+        selected: Array.isArray(id) ? id.includes(selected) : selected === id,
+        selectedId: selected,
+        onSelect: this.select
+      }
+    );
   }
   getSelected() {
     const selected = this.state.selected;
@@ -1397,6 +1452,9 @@ var Menu = class extends React32.PureComponent {
       }
       ref.current.blur();
     });
+  }
+  componentDidMount() {
+    this.forceUpdate();
   }
 };
 
@@ -1434,7 +1492,7 @@ var Memory = class {
 };
 
 // src/Editor/Viewport/MoveableMananger.tsx
-var React33 = __toESM(require_react());
+var React34 = __toESM(require_react());
 import Moveable from "react-moveable";
 import { diff } from "@egjs/list-differ";
 function restoreRender(id, state, prevState, orders, editor) {
@@ -1493,16 +1551,16 @@ var DimensionViewable = {
   render(moveable) {
     const { left, top } = moveable.state;
     const rect = moveable.getRect();
-    return /* @__PURE__ */ React33.createElement("div", { key: "dimension-viewer", className: "moveable-dimension", style: {
+    return /* @__PURE__ */ React34.createElement("div", { key: "dimension-viewer", className: "moveable-dimension", style: {
       left: `${rect.left + rect.width / 2 - left}px`,
       top: `${rect.top + rect.height + 20 - top}px`
     } }, Math.round(rect.offsetWidth), " x ", Math.round(rect.offsetHeight));
   }
 };
-var MoveableManager = class extends React33.PureComponent {
+var MoveableManager = class extends React34.PureComponent {
   constructor() {
     super(...arguments);
-    this.moveable = React33.createRef();
+    this.moveable = React34.createRef();
   }
   getMoveable() {
     return this.moveable.current;
@@ -1529,7 +1587,7 @@ var MoveableManager = class extends React33.PureComponent {
     });
     const isShift = editor.state.isShift;
     const targetIsImage = selectedTargets.every((el) => el.tagName === "IMG");
-    return /* @__PURE__ */ React33.createElement(
+    return /* @__PURE__ */ React34.createElement(
       Moveable,
       {
         ables: [DimensionViewable],
@@ -1640,7 +1698,7 @@ var MoveableManager = class extends React33.PureComponent {
   renderViewportMoveable() {
     const viewport = this.editor.getViewport();
     const target = viewport ? viewport.viewportRef.current : null;
-    return /* @__PURE__ */ React33.createElement(
+    return /* @__PURE__ */ React34.createElement(
       Moveable,
       {
         ref: this.moveable,
@@ -1799,7 +1857,7 @@ var Debugger = class {
 };
 
 // src/Editor/utils/ClipboardManager.tsx
-var React34 = __toESM(require_react());
+var React35 = __toESM(require_react());
 import html2canvas from "html2canvas";
 var ClipboardManager = class {
   constructor(editor) {
@@ -1916,7 +1974,7 @@ var ClipboardManager = class {
     if (!isPaste && hasText) {
       const text = await navigator.clipboard.readText();
       this.editor.appendJSXs([{
-        jsx: /* @__PURE__ */ React34.createElement("div", { contentEditable: "true" }),
+        jsx: /* @__PURE__ */ React35.createElement("div", { contentEditable: "true" }),
         name: "(Text)",
         innerText: text
       }]);
@@ -1970,7 +2028,7 @@ function undoMove({ prevInfos }, editor) {
 function redoMove({ nextInfos }, editor) {
   editor.moves(nextInfos, true);
 }
-var Editor = class extends React35.PureComponent {
+var Editor = class extends React36.PureComponent {
   constructor() {
     super(...arguments);
     this.state = {
@@ -2000,15 +2058,15 @@ var Editor = class extends React35.PureComponent {
       }
     });
     this.clipboardManager = new ClipboardManager(this);
-    this.horizontalGuides = React35.createRef();
-    this.verticalGuides = React35.createRef();
-    this.infiniteViewer = React35.createRef();
-    this.selecto = React35.createRef();
-    this.menu = React35.createRef();
-    this.moveableManager = React35.createRef();
-    this.viewport = React35.createRef();
-    this.tabs = React35.createRef();
-    this.editorElement = React35.createRef();
+    this.horizontalGuides = React36.createRef();
+    this.verticalGuides = React36.createRef();
+    this.infiniteViewer = React36.createRef();
+    this.selecto = React36.createRef();
+    this.menu = React36.createRef();
+    this.moveableManager = React36.createRef();
+    this.viewport = React36.createRef();
+    this.tabs = React36.createRef();
+    this.editorElement = React36.createRef();
     this.onMenuChange = (id) => {
       this.setState({
         selectedMenu: id
@@ -2072,6 +2130,7 @@ var Editor = class extends React35.PureComponent {
       selecto,
       state
     } = this;
+    const previewMode = this.props.previewMode;
     const { selectedMenu, selectedTargets, zoom, showGuides, minZoom, width, height } = state;
     const horizontalSnapGuides = [
       0,
@@ -2081,169 +2140,182 @@ var Editor = class extends React35.PureComponent {
     ];
     const verticalSnapGuides = [0, width, width / 2, ...state.verticalGuides];
     let unit = 50;
-    return /* @__PURE__ */ React35.createElement("div", { className: prefix("editor"), ref: this.editorElement }, /* @__PURE__ */ React35.createElement(Menu, { ref: menu, editor: this, onSelect: this.onMenuChange }), showGuides && /* @__PURE__ */ React35.createElement(React35.Fragment, null, /* @__PURE__ */ React35.createElement(
+    return /* @__PURE__ */ React36.createElement(
       "div",
       {
-        className: prefix("reset"),
-        onClick: (e) => {
-          infiniteViewer.current.scrollCenter();
-        }
-      }
-    ), /* @__PURE__ */ React35.createElement(
-      Guides,
-      {
-        ref: horizontalGuides,
-        type: "horizontal",
-        className: prefix("guides", "horizontal"),
-        snapThreshold: 5,
-        snaps: horizontalSnapGuides,
-        displayDragPos: true,
-        dragPosFormat: (v) => `${v}px`,
-        zoom,
-        unit,
-        onChangeGuides: (e) => {
-          this.setState({
-            horizontalGuides: e.guides
-          });
-        }
-      }
-    ), /* @__PURE__ */ React35.createElement(
-      Guides,
-      {
-        ref: verticalGuides,
-        type: "vertical",
-        className: prefix("guides", "vertical"),
-        snapThreshold: 5,
-        snaps: verticalSnapGuides,
-        displayDragPos: true,
-        dragPosFormat: (v) => `${v}px`,
-        zoom,
-        unit,
-        onChangeGuides: (e) => {
-          this.setState({
-            verticalGuides: e.guides
-          });
-        }
-      }
-    )), /* @__PURE__ */ React35.createElement(
-      InfiniteViewer,
-      {
-        ref: infiniteViewer,
-        className: prefix("viewer"),
-        pinchThreshold: 5,
-        wheelScale: 1e-3,
-        zoom,
-        zoomRange: [0, 4],
-        threshold: 0,
-        rangeX: [0, 0],
-        rangeY: [0, 0],
-        onDragStart: (e) => {
-          const target = e.inputEvent.target;
-          this.checkBlur();
-          if (target.nodeName === "A" || moveableManager.current.getMoveable().isMoveableElement(target) || selectedTargets.some((t) => t === target || t.contains(target))) {
-            e.stop();
-          }
-        },
-        onDragEnd: (e) => {
-          if (!e.isDrag) {
-            selecto.current.clickTarget(e.inputEvent);
-          }
-        },
-        onAbortPinch: (e) => {
-          selecto.current.triggerDragStart(e.inputEvent);
-        },
-        onPinch: (e) => {
-          const zoom2 = e.zoom >= minZoom ? e.zoom : minZoom;
-          this.setState({
-            zoom: zoom2
-          });
+        className: prefix("editor"),
+        ref: this.editorElement,
+        style: {
+          width: `${width}px`
         }
       },
-      /* @__PURE__ */ React35.createElement(
-        Viewport,
+      !previewMode && /* @__PURE__ */ React36.createElement(Menu2, { ref: menu, editor: this, onSelect: this.onMenuChange }),
+      showGuides && !previewMode && /* @__PURE__ */ React36.createElement(React36.Fragment, null, /* @__PURE__ */ React36.createElement(
+        "div",
         {
-          ref: viewport,
-          onBlur: this.onBlur,
-          style: {
-            width: `${width}px`,
-            height: `${height}px`
-          },
-          editor: this,
-          background: this.props.backgroundImg
-        },
-        /* @__PURE__ */ React35.createElement(
-          MoveableManager,
-          {
-            ref: moveableManager,
-            selectedTargets,
-            selectedMenu,
-            verticalGuidelines: verticalSnapGuides,
-            horizontalGuidelines: horizontalSnapGuides,
-            editor: this
+          className: prefix("reset"),
+          onClick: (e) => {
+            infiniteViewer.current.scrollCenter();
           }
-        )
-      )
-    ), /* @__PURE__ */ React35.createElement(
-      Selecto,
-      {
-        ref: selecto,
-        hitRate: 0,
-        dragContainer: ".scena-viewer",
-        rootContainer: infiniteViewer.current && infiniteViewer.current.getContainer(),
-        container: infiniteViewer.current && infiniteViewer.current.getContainer(),
-        selectableTargets: selectedMenu === "MoveTool" ? [`.scena-viewport [${DATA_SCENA_ELEMENT_ID}].selectable`] : [],
-        selectByClick: true,
-        selectFromInside: false,
-        toggleContinueSelect: ["shift"],
-        preventDefault: true,
-        scrollOptions: infiniteViewer.current ? {
-          container: infiniteViewer.current.getContainer(),
-          threshold: 30,
-          throttleTime: 30,
-          getScrollPosition: () => {
-            const current = infiniteViewer.current;
-            return [current.getScrollLeft(), current.getScrollTop()];
+        }
+      ), /* @__PURE__ */ React36.createElement(
+        Guides,
+        {
+          ref: horizontalGuides,
+          type: "horizontal",
+          className: prefix("guides", "horizontal"),
+          snapThreshold: 5,
+          snaps: horizontalSnapGuides,
+          displayDragPos: true,
+          dragPosFormat: (v) => `${v}px`,
+          zoom,
+          unit,
+          onChangeGuides: (e) => {
+            this.setState({
+              horizontalGuides: e.guides
+            });
           }
-        } : void 0,
-        onDragStart: (e) => {
-          const inputEvent = e.inputEvent;
-          const target = inputEvent.target;
-          this.checkBlur();
-          if (selectedMenu === "Text" && target.isContentEditable) {
-            const contentElement = getContentElement(target);
-            if (contentElement && contentElement.hasAttribute(DATA_SCENA_ELEMENT_ID)) {
+        }
+      ), /* @__PURE__ */ React36.createElement(
+        Guides,
+        {
+          ref: verticalGuides,
+          type: "vertical",
+          className: prefix("guides", "vertical"),
+          snapThreshold: 5,
+          snaps: verticalSnapGuides,
+          displayDragPos: true,
+          dragPosFormat: (v) => `${v}px`,
+          zoom,
+          unit,
+          onChangeGuides: (e) => {
+            this.setState({
+              verticalGuides: e.guides
+            });
+          }
+        }
+      )),
+      /* @__PURE__ */ React36.createElement(
+        InfiniteViewer,
+        {
+          ref: infiniteViewer,
+          className: prefix("viewer"),
+          pinchThreshold: 5,
+          wheelScale: 1e-3,
+          zoom,
+          zoomRange: [0, 4],
+          threshold: 0,
+          rangeX: [0, 0],
+          rangeY: [0, 0],
+          onDragStart: (e) => {
+            const target = e.inputEvent.target;
+            this.checkBlur();
+            if (target.nodeName === "A" || moveableManager.current.getMoveable().isMoveableElement(target) || selectedTargets.some((t) => t === target || t.contains(target))) {
               e.stop();
-              this.setSelectedTargets([contentElement]);
             }
-          }
-          if (moveableManager.current.getMoveable().isMoveableElement(target) || state.selectedTargets.some(
-            (t) => t === target || t.contains(target)
-          )) {
-            e.stop();
+          },
+          onDragEnd: (e) => {
+            if (!e.isDrag) {
+              selecto.current.clickTarget(e.inputEvent);
+            }
+          },
+          onAbortPinch: (e) => {
+            selecto.current.triggerDragStart(e.inputEvent);
+          },
+          onPinch: (e) => {
+            const zoom2 = e.zoom >= minZoom ? e.zoom : minZoom;
+            this.setState({
+              zoom: zoom2
+            });
           }
         },
-        onScroll: ({ direction }) => {
-          infiniteViewer.current.scrollBy(
-            direction[0] * 10,
-            direction[1] * 10
-          );
-        },
-        onSelectEnd: ({ isDragStart, selected, inputEvent, rect }) => {
-          if (isDragStart) {
-            inputEvent.preventDefault();
-          }
-          if (this.selectEndMaker(rect)) {
-            return;
-          }
-          this.setSelectedTargets(selected).then(() => {
-            if (!isDragStart) {
+        /* @__PURE__ */ React36.createElement(
+          Viewport,
+          {
+            ref: viewport,
+            onBlur: this.onBlur,
+            style: {
+              width: `${width}px`,
+              height: `${height}px`
+            },
+            editor: this,
+            background: this.props.backgroundImg
+          },
+          !previewMode && /* @__PURE__ */ React36.createElement(
+            MoveableManager,
+            {
+              ref: moveableManager,
+              selectedTargets,
+              selectedMenu,
+              verticalGuidelines: verticalSnapGuides,
+              horizontalGuidelines: horizontalSnapGuides,
+              editor: this
+            }
+          )
+        )
+      ),
+      !previewMode && /* @__PURE__ */ React36.createElement(
+        Selecto,
+        {
+          ref: selecto,
+          hitRate: 0,
+          dragContainer: ".scena-viewer",
+          rootContainer: infiniteViewer.current && infiniteViewer.current.getContainer(),
+          container: infiniteViewer.current && infiniteViewer.current.getContainer(),
+          selectableTargets: selectedMenu === "MoveTool" ? [`.scena-viewport [${DATA_SCENA_ELEMENT_ID}].selectable`] : [],
+          selectByClick: true,
+          selectFromInside: false,
+          toggleContinueSelect: ["shift"],
+          preventDefault: true,
+          scrollOptions: infiniteViewer.current ? {
+            container: infiniteViewer.current.getContainer(),
+            threshold: 30,
+            throttleTime: 30,
+            getScrollPosition: () => {
+              const current = infiniteViewer.current;
+              return [current.getScrollLeft(), current.getScrollTop()];
+            }
+          } : void 0,
+          onDragStart: (e) => {
+            const inputEvent = e.inputEvent;
+            const target = inputEvent.target;
+            this.checkBlur();
+            if (selectedMenu === "Text" && target.isContentEditable) {
+              const contentElement = getContentElement(target);
+              if (contentElement && contentElement.hasAttribute(DATA_SCENA_ELEMENT_ID)) {
+                e.stop();
+                this.setSelectedTargets([contentElement]);
+              }
+            }
+            if (moveableManager.current.getMoveable().isMoveableElement(target) || state.selectedTargets.some(
+              (t) => t === target || t.contains(target)
+            )) {
+              e.stop();
+            }
+          },
+          onScroll: ({ direction }) => {
+            infiniteViewer.current.scrollBy(
+              direction[0] * 10,
+              direction[1] * 10
+            );
+          },
+          onSelectEnd: ({ isDragStart, selected, inputEvent, rect }) => {
+            if (isDragStart) {
+              inputEvent.preventDefault();
+            }
+            if (this.selectEndMaker(rect)) {
               return;
             }
-            moveableManager.current.getMoveable().dragStart(inputEvent);
-          });
+            this.setSelectedTargets(selected).then(() => {
+              if (!isDragStart) {
+                return;
+              }
+              moveableManager.current.getMoveable().dragStart(inputEvent);
+            });
+          }
         }
-      }
-    ));
+      )
+    );
   }
   componentDidMount() {
     const { infiniteViewer, memory, eventBus } = this;
@@ -2373,7 +2445,7 @@ var Editor = class extends React35.PureComponent {
     );
     this.historyManager.registerType("move", undoMove, redoMove);
     if (this.props.initialJSX && this.props.initialJSX.length > 0) {
-      let initialJSX = this.props.initialJSX.map((jsx) => {
+      let initialJSX = this.props.initialJSX.filter((jsx) => this.props.previewMode ? jsx.name !== "(PrintArea)" : true).map((jsx) => {
         if (jsx.name === "(PrintArea)") {
           if (!jsx.attrs) {
             jsx.attrs = {};
@@ -2588,10 +2660,10 @@ var Editor = class extends React35.PureComponent {
         }
         if (!jsx && componentId) {
           const Component2 = viewport.getComponent(componentId);
-          jsx = /* @__PURE__ */ React35.createElement(Component2, null);
+          jsx = /* @__PURE__ */ React36.createElement(Component2, null);
         }
         if (!jsx) {
-          jsx = React35.createElement(data.tagName);
+          jsx = React36.createElement(data.tagName);
         }
         return {
           ...data,
@@ -2630,7 +2702,7 @@ var Editor = class extends React35.PureComponent {
   appendBlob(blob) {
     const url = URL.createObjectURL(blob);
     return this.appendJSX({
-      jsx: /* @__PURE__ */ React35.createElement("img", { src: url, alt: "appended blob" }),
+      jsx: /* @__PURE__ */ React36.createElement("img", { src: url, alt: "appended blob" }),
       name: "(Image)"
     });
   }
@@ -2785,7 +2857,7 @@ var Editor = class extends React35.PureComponent {
       const zoom = this.state.zoom;
       this.setState({ isScreenshot: true, zoom: 1 }, async () => {
         const viewer = document.getElementById("scene-viewport");
-        resolve(await domtoimage.toBlob(viewer, { cacheBust: true }));
+        resolve(await domtoimage.toBlob(viewer, { cacheBust: true, quality: 100 }));
         this.setState({ isScreenshot: false, zoom });
       });
     });
