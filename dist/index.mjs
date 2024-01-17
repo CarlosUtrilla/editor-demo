@@ -2481,6 +2481,7 @@ var Editor = class extends React36.PureComponent {
       });
       this.appendJSXs(initialJSX, true);
     }
+    this.onResize();
     if (!this.state.loadedViewer) {
       this.forceUpdate();
     }

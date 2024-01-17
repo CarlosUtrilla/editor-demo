@@ -4629,6 +4629,7 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                     });
                     this.appendJSXs(initialJSX, true);
                 }
+                this.onResize();
                 if (!this.state.loadedViewer) {
                     this.forceUpdate();
                 }

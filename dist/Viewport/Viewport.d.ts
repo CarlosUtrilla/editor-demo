@@ -1,6 +1,6 @@
 import 'react';
 import '@daybrush/utils';
-export { A as AddedInfo, c as ElementInfo, M as MovedInfo, b as MovedResult, R as RemovedInfo, V as default } from '../Editor-4b7d1911.js';
+export { A as AddedInfo, c as ElementInfo, M as MovedInfo, b as MovedResult, R as RemovedInfo, V as default } from '../Editor-f32d33fe.js';
 import 'react-moveable';
 import 'react-infinite-viewer';
 import '@scena/react-guides';

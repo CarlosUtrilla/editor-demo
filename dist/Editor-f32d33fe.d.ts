@@ -363,7 +363,7 @@ declare class Editor extends React.PureComponent<{
     selectEndMaker(rect: Rect, extraProps?: any): boolean;
     private move;
     private checkBlur;
-    private onResize;
+    onResize: () => void;
     private onBlur;
     resetToolbar(): void;
     private moveInside;

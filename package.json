@@ -1,6 +1,6 @@
 {
   "name": "reno-capital-editor",
-  "version": "0.3.6",
+  "version": "0.3.8",
   "devDependencies": {
     "@babel/cli": "^7.23.0",
     "@babel/core": "^7.23.3",
@@ -29,7 +29,7 @@
   },
   "homepage": "./",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=3002 react-scripts start",
     "build": "tsup",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
