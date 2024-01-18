@@ -143,3 +143,10 @@ export function isDivInsideAnother(div1: any, parentDiv: any) {
         rect1.bottom <= (rect2.bottom + 1)
     );
 }
+
+export function convertToSnakeCase(str: string) {
+    str = str[0].toLowerCase() + str.slice(1, str.length).replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
+    str = str.replaceAll(" _", "-")
+
+    return str.replaceAll(" ", "-").replace(/(^-*|-*$)/g, '');;
+}

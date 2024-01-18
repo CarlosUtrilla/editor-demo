@@ -6,7 +6,7 @@ import ColorIconPicker from "../../Inputs/ColorIconPicker";
 export default class BorderColorIcon extends Icon {
 	public static id = "BorderColorIcon";
 	protected colorInput = React.createRef<ColorIconPicker>();
-	public propertyName = "border-color"
+	public propertyName = "outline-color"
 	public propertyValue = "transparent"
 	public renderIcon() {
 		const color = this.getOldValue() || "transparent"

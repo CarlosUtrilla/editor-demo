@@ -7,9 +7,9 @@ export default class TextColorIcon extends Icon {
 	public static id = "TextColor";
 	protected colorInput = React.createRef<ColorIconPicker>();
 	public propertyName = "color"
-	public propertyValue = "#000"
+	public propertyValue = "#fff"
 	public renderIcon() {
-		const color = this.getOldValue() || "#000"
+		const color = this.getOldValue() || "#fff"
 		return (
 			<ColorIconPicker
 				icon={<i className="fa-solid fa-a"></i>}
@@ -22,7 +22,7 @@ export default class TextColorIcon extends Icon {
 	public onChangeTextColor = (v: string) => {
         this.memory.set("color", v);
         this.editor.setProperty(["color"], v, true);
-				this.forceUpdate()
+				this.editor.forceUpdate()
 	}
 	public getOldValue(){
 		const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["none"])

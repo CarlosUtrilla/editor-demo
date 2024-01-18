@@ -116,19 +116,24 @@ export default class MoveableManager extends React.PureComponent<{
         const isShift = editor.state.isShift;
         const isAdmin = editor.props.isAdmin;
         const targetIsImage = selectedTargets.every(el => el.tagName === 'IMG');
+        const targetIsText = selectedTargets.some(el => el.className.includes('Text'));
+        const keepRatio = targetIsText ||
+            (targetIsImage && !isShift) ||
+            (!targetIsImage && isShift) ||
+            selectedTargets.length > 1
         return <Moveable<DimensionViewableProps>
             ables={[DimensionViewable]}
             ref={this.moveable}
             targets={selectedTargets}
             dimensionViewable={true}
             draggable={true}
-            resizable={true}
+            resizable={!targetIsText}
             throttleResize={1}
             clippable={selectedMenu === "Crop"}
             dragArea={selectedTargets.length > 1 || selectedMenu !== "Text"}
             checkInput={selectedMenu === "Text"}
             throttleDragRotate={isShift ? 45 : 0}
-            keepRatio={(targetIsImage && !isShift) || (!targetIsImage && isShift)}
+            keepRatio={keepRatio}
             rotatable={true}
             snappable={true}
             snapGap={false}

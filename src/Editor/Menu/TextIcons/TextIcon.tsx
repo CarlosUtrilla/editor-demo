@@ -16,12 +16,14 @@ export default class TextIcon extends Icon {
             "font-weight": memory.get("font-weight"),
             "font-style": memory.get("font-style"),
             "text-decoration": memory.get("text-decoration"),
-            "font-family": memory.get("font-family")
+            "font-family": memory.get("font-family"),
+            width: "auto",
+            height: "auto",
         },
     });
     public static makeThen = (target: HTMLElement | SVGElement, id: string, menu: Menu) => {
         target.focus();
-        menu.select(id);
+        menu.select("Text");
     };
     public renderIcon() {
         return (

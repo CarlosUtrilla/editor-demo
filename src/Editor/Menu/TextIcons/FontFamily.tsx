@@ -37,9 +37,11 @@ export default class FontFamily extends Icon {
 		this.memory.set(this.propertyName, v);
 		this.editor.setProperty([this.propertyName], v, true);
 		this.forceUpdate()
+		this.editor.forceUpdate()
 	};
 	private setTargets = () => {
-    this.forceUpdate();
+		this.forceUpdate();
+		this.editor.forceUpdate()
   }
 	componentDidMount(): void {
 		this.editor.eventBus.on("setSelectedTargets", this.setTargets);

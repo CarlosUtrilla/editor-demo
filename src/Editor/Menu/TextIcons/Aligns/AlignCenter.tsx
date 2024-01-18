@@ -29,7 +29,8 @@ export default class AlignCenterIcon extends Icon {
 		}
 	}
 	private setTargets = () => {
-    this.forceUpdate();
+		this.forceUpdate();
+		this.editor.forceUpdate()
   }
 	componentDidUpdate(): void {
 		this.loadFirtData()

@@ -63,7 +63,7 @@ export default class Viewport extends React.PureComponent<{
         const {editor} = this.props
         const isScreenshot = editor.state.isScreenshot
         const previewMode = editor.props.previewMode
-        return <div  className={prefix("viewport-container")} onBlur={this.props.onBlur} style={style}>
+        return <div className={prefix("viewport-container")} onBlur={this.props.onBlur} style={style}>
             {this.props.children}
             <div
                 className={prefix("viewport")}
@@ -97,7 +97,7 @@ export default class Viewport extends React.PureComponent<{
                 key: id,
             };
             if (editor.props.isAdmin || (!editor.props.isAdmin && info.name !== "(PrintArea)")) {
-                props.className = "selectable"
+                props.className = `selectable ${info.name === "(Text)" ? "Text" : ""}`
             }
 
             if (info.name !== "(PrintArea)" && info.el && !editor.props.previewMode) {

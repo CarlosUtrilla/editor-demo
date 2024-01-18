@@ -34,6 +34,7 @@ import { NameType } from "scenejs";
 import html2canvas from "html2canvas";
 import domtoimage from "dom-to-image";
 import { color } from "html2canvas/dist/types/css/types/color";
+import TextEditor from "./TextEditor";
 
 function undoCreateElements(
   { infos, prevSelected }: IObject<any>,
@@ -158,7 +159,7 @@ export default class Editor extends React.PureComponent<
     ];
     const verticalSnapGuides = [0, width, width / 2, ...state.verticalGuides];
     let unit = 50;
-
+    this.console.log(selectedMenu, selectedTargets)
     return (
       <div
         className={prefix("editor")}
@@ -214,149 +215,162 @@ export default class Editor extends React.PureComponent<
               ></Guides>
           </React.Fragment>
         }
-        <InfiniteViewer
-          ref={infiniteViewer}
-          className={prefix("viewer")}
-          pinchThreshold={5}
-          wheelScale={0.001}
-          zoom={zoom}
-          zoomRange={[0, 4]}
-          threshold={0}
-          rangeX={[0, 0]}
-          rangeY={[0, 0]}
-          onDragStart={(e) => {
-            const target = e.inputEvent.target;
-            this.checkBlur();
-
-            if (
-              target.nodeName === "A" ||
-              moveableManager
-                .current!.getMoveable()
-                .isMoveableElement(target) ||
-              selectedTargets.some((t) => t === target || t.contains(target))
-            ) {
-              e.stop();
-            }
-          }}
-          onDragEnd={(e) => {
-            if (!e.isDrag) {
-              selecto.current!.clickTarget(e.inputEvent);
-            }
-          }}
-          onAbortPinch={(e) => {
-            selecto.current!.triggerDragStart(e.inputEvent);
-          }}
-          onPinch={(e) => {
-            const zoom = e.zoom >= minZoom ? e.zoom : minZoom
-            this.setState({
-              zoom
-            });
-          }}
-        >
-            <Viewport
-              ref={viewport}
-              onBlur={this.onBlur}
-              style={{
-                width: `${width}px`,
-                height: `${height}px`,
-              }}
+        <div className="scena-editor-container">
+          {
+            selectedMenu === "Text" && selectedTargets.length === 1
+            &&
+            <TextEditor
+              element={this.viewport.current?.getInfoByElement(selectedTargets[0])!}
+              memory={this.memory}
               editor={this}
-              background={this.props.backgroundImg}
-          >
-            {
-              !previewMode &&
-                <MoveableManager
-                ref={moveableManager}
-                selectedTargets={selectedTargets}
-                selectedMenu={selectedMenu}
-                verticalGuidelines={verticalSnapGuides}
-                horizontalGuidelines={horizontalSnapGuides}
-                editor={this}
-                ></MoveableManager>
-            }
-            </Viewport>
-        </InfiniteViewer>
-        {!previewMode &&
-          <Selecto
-            ref={selecto}
-            hitRate={0}
-            dragContainer={".scena-viewer"}
-            rootContainer={infiniteViewer.current && infiniteViewer.current.getContainer()}
-            container={infiniteViewer.current && infiniteViewer.current.getContainer()}
-            selectableTargets={selectedMenu === "MoveTool" ?[`.scena-viewport [${DATA_SCENA_ELEMENT_ID}].selectable`]:[]}
-            selectByClick={true}
-            selectFromInside={false}
-            toggleContinueSelect={["shift"]}
-            preventDefault={true}
-            scrollOptions={
-              infiniteViewer.current
-                ? {
-                    container: infiniteViewer.current.getContainer(),
-                    threshold: 30,
-                    throttleTime: 30,
-                    getScrollPosition: () => {
-                      const current = infiniteViewer.current!;
-                      return [current.getScrollLeft(), current.getScrollTop()];
-                    }
-                  }
-                : undefined
-            }
+            />
+          }
+          <InfiniteViewer
+            ref={infiniteViewer}
+            className={prefix("viewer")}
+            pinchThreshold={5}
+            wheelScale={0.001}
+            zoom={zoom}
+            zoomRange={[0, 4]}
+            threshold={0}
+            rangeX={[0, 0]}
+            rangeY={[0, 0]}
             onDragStart={(e) => {
-              const inputEvent = e.inputEvent;
-              const target = inputEvent.target;
-
+              const target = e.inputEvent.target;
               this.checkBlur();
-              if (selectedMenu === "Text" && target.isContentEditable) {
-                const contentElement = getContentElement(target);
-
-                if (
-                  contentElement &&
-                  contentElement.hasAttribute(DATA_SCENA_ELEMENT_ID)
-                ) {
-                  e.stop();
-                  this.setSelectedTargets([contentElement]);
-                }
-              }
               if (
+                target.nodeName === "A" ||
                 moveableManager
                   .current!.getMoveable()
                   .isMoveableElement(target) ||
-                state.selectedTargets.some(
-                  (t) => t === target || t.contains(target)
-                )
+                selectedTargets.some((t) => t === target || t.contains(target))
               ) {
                 e.stop();
               }
             }}
-            onScroll={({ direction }) => {
-              infiniteViewer.current!.scrollBy(
-                direction[0] * 10,
-                direction[1] * 10
-              );
+            onDragEnd={(e) => {
+              if (!e.isDrag) {
+                selecto.current!.clickTarget(e.inputEvent);
+              }
             }}
-            onSelectEnd={({ isDragStart, selected, inputEvent, rect }) => {
-              if (isDragStart) {
-                inputEvent.preventDefault();
-              }
-              if (this.selectEndMaker(rect)) {
-                return;
-              }
-              this.setSelectedTargets(selected).then(() => {
-                if (!isDragStart) {
-                  return;
-                }
-                moveableManager.current!.getMoveable().dragStart(inputEvent);
+            onAbortPinch={(e) => {
+              selecto.current!.triggerDragStart(e.inputEvent);
+            }}
+            onPinch={(e) => {
+              const zoom = e.zoom >= minZoom ? e.zoom : minZoom
+              this.setState({
+                zoom
               });
             }}
-          ></Selecto>
-        }
+          >
+              <Viewport
+                ref={viewport}
+                onBlur={this.onBlur}
+                style={{
+                  width: `${width}px`,
+                  height: `${height}px`,
+                }}
+                editor={this}
+                background={this.props.backgroundImg}
+            >
+              {
+                !previewMode &&
+                  <MoveableManager
+                  ref={moveableManager}
+                  selectedTargets={selectedTargets}
+                  selectedMenu={selectedMenu}
+                  verticalGuidelines={verticalSnapGuides}
+                  horizontalGuidelines={horizontalSnapGuides}
+                  editor={this}
+                  ></MoveableManager>
+              }
+              </Viewport>
+          </InfiniteViewer>
+          {!previewMode &&
+            <Selecto
+              ref={selecto}
+              hitRate={0}
+              dragContainer={".scena-viewer"}
+              rootContainer={infiniteViewer.current && infiniteViewer.current.getContainer()}
+              container={infiniteViewer.current && infiniteViewer.current.getContainer()}
+              selectableTargets={selectedMenu === "MoveTool" ?[`.scena-viewport [${DATA_SCENA_ELEMENT_ID}].selectable`]:[]}
+              selectByClick={true}
+              selectFromInside={false}
+              toggleContinueSelect={["shift"]}
+              preventDefault={true}
+              scrollOptions={
+                infiniteViewer.current
+                  ? {
+                      container: infiniteViewer.current.getContainer(),
+                      threshold: 30,
+                      throttleTime: 30,
+                      getScrollPosition: () => {
+                        const current = infiniteViewer.current!;
+                        return [current.getScrollLeft(), current.getScrollTop()];
+                      }
+                    }
+                  : undefined
+              }
+              onDragStart={(e) => {
+                const inputEvent = e.inputEvent;
+                const target = inputEvent.target;
+                this.checkBlur();
+                if (selectedMenu === "Text") {
+                  const bounds = this.infiniteViewer.current!.getContainer().getBoundingClientRect();
+                  const width = 10;
+                  const height = 20;
+                  if(this.selectEndMaker({
+                    top: bounds.y + 250 - (height / 2),
+                    left: bounds.x + 250 - (width / 2),
+                    bottom: 0,
+                    right: 0,
+                    width: "auto",
+                    height: "auto",
+                  })) {
+                    e.stop()
+                  }
+                }
+                if (
+                  moveableManager
+                    .current!.getMoveable()
+                    .isMoveableElement(target) ||
+                  state.selectedTargets.some(
+                    (t) => t === target || t.contains(target)
+                  )
+                ) {
+                  e.stop();
+                }
+              }}
+              onScroll={({ direction }) => {
+                infiniteViewer.current!.scrollBy(
+                  direction[0] * 10,
+                  direction[1] * 10
+                );
+              }}
+              onSelectEnd={({ isDragStart, selected, inputEvent, rect }) => {
+                if (isDragStart) {
+                  inputEvent.preventDefault();
+                }
+                if (this.selectEndMaker(rect)) {
+                  return;
+                }
+                this.setSelectedTargets(selected).then(() => {
+                  if (!isDragStart) {
+                    return;
+                  }
+                  moveableManager.current!.getMoveable().dragStart(inputEvent);
+                });
+              }}
+            ></Selecto>
+          }
+        </div>
       </div>
     );
   }
   public componentDidMount() {
     const { infiniteViewer, memory, eventBus } = this;
     memory.set("background-color", "#4af");
-    memory.set("color", "#333");
+    memory.set("color", "#fff");
     memory.set("border-color", "#000");
 
 
@@ -524,6 +538,14 @@ export default class Editor extends React.PureComponent<
 
     if (!this.state.loadedViewer) {
       this.forceUpdate()
+    }
+  }
+  public componentDidUpdate() {
+    const { selectedMenu, selectedTargets, } = this.state;
+    if (selectedMenu === "Text" && selectedTargets.length === 1) {
+      this.keyManager.stop()
+    } else {
+      this.keyManager.start()
     }
   }
   public componentWillUnmount() {
@@ -869,6 +891,10 @@ export default class Editor extends React.PureComponent<
     }).then((el) => {
       selectIcon.makeThen(el, selectIcon.id as string, this.menu.current!)
       this.menu.current?.forceUpdate()
+      if (selectIcon.id === "Text") {
+        this.setSelectedTargets([el])
+        this.menu.current?.select("Text")
+      }
     });
     return true;
   }
@@ -909,7 +935,7 @@ export default class Editor extends React.PureComponent<
   };
   private onBlur = (e: any) => {
     const target = e.target as HTMLElement | SVGElement;
-    this.resetToolbar()
+    //this.resetToolbar()
 
 
     if (!checkInput(target)) {
