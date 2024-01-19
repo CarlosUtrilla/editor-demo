@@ -356,7 +356,7 @@ var Viewport = /*#__PURE__*/ function(_React_PureComponent) {
                         key: id
                     };
                     if (editor.props.isAdmin || !editor.props.isAdmin && info.name !== "(PrintArea)") {
-                        props.className = "selectable";
+                        props.className = "selectable ".concat(info.name === "(Text)" ? "Text" : "");
                     }
                     if (info.name !== "(PrintArea)" && info.el && !editor.props.previewMode) {
                         var printAreas = allInfos.filter(function(e) {

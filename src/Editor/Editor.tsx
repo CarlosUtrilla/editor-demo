@@ -160,7 +160,6 @@ export default class Editor extends React.PureComponent<
     ];
     const verticalSnapGuides = [0, width, width / 2, ...state.verticalGuides];
     let unit = 50;
-    this.console.log(selectedMenu, selectedTargets)
     return (
       <div
         className={prefix("editor")}
@@ -317,19 +316,7 @@ export default class Editor extends React.PureComponent<
                 const target = inputEvent.target;
                 this.checkBlur();
                 if (selectedMenu === "Text") {
-                  const bounds = this.infiniteViewer.current!.getContainer().getBoundingClientRect();
-                  const width = 10;
-                  const height = 20;
-                  if(this.selectEndMaker({
-                    top: bounds.y + 250 - (height / 2),
-                    left: bounds.x + 250 - (width / 2),
-                    bottom: 0,
-                    right: 0,
-                    width: "auto",
-                    height: "auto",
-                  })) {
                     e.stop()
-                  }
                 }
                 if (
                   moveableManager
@@ -749,6 +736,11 @@ export default class Editor extends React.PureComponent<
       this.moveableManager.current!.updateRect();
     }
     this.eventBus.requestTrigger("render");
+
+    const targets = this.getSelectedTargets()
+    if (targets.length && this.moveableManager.current) {
+      targets.forEach(target => this.moveableManager.current!.updateRender(target))
+    }
   }
   public setOrders(scope: string[], orders: NameType[], isUpdate?: boolean) {
     const infos = this.moveableData.setOrders(scope, orders);
@@ -848,7 +840,6 @@ export default class Editor extends React.PureComponent<
     const selectIcon = icon || this.menu.current!.getSelected();
     const width = rect.width;
     const height = rect.height;
-    this.console.log(selectIcon)
     if (!selectIcon || !selectIcon.maker || !width || !height) {
       return false;
     }

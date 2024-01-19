@@ -29,15 +29,6 @@ var TYPE_SCENA_LAYERS = "application/x-scena-layers";
 function prefix(...classNames) {
   return prefixNames(PREFIX, ...classNames);
 }
-function getContentElement(el) {
-  if (el.contentEditable === "inherit") {
-    return getContentElement(el.parentElement);
-  }
-  if (el.contentEditable === "true") {
-    return el;
-  }
-  return null;
-}
 function connectEditorProps(component) {
   const prototype = component.prototype;
   Object.defineProperty(prototype, "editor", {
@@ -121,6 +112,12 @@ function isDivInsideAnother(div1, parentDiv) {
   var rect2 = parentDiv.getBoundingClientRect();
   return rect1.left >= rect2.left - 3 && rect1.right <= rect2.right + 1 && rect1.top >= rect2.top - 3 && rect1.bottom <= rect2.bottom + 1;
 }
+function convertToSnakeCase(str) {
+  str = str[0].toLowerCase() + str.slice(1, str.length).replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+  str = str.replaceAll(" _", "-");
+  return str.replaceAll(" ", "-").replace(/(^-*|-*$)/g, "");
+  ;
+}
 
 // src/Editor/Viewport/Viewport.tsx
 var Viewport = class extends React.PureComponent {
@@ -180,7 +177,7 @@ var Viewport = class extends React.PureComponent {
         key: id
       };
       if (editor.props.isAdmin || !editor.props.isAdmin && info.name !== "(PrintArea)") {
-        props.className = "selectable";
+        props.className = `selectable ${info.name === "(Text)" ? "Text" : ""}`;
       }
       if (info.name !== "(PrintArea)" && info.el && !editor.props.previewMode) {
         const printAreas = allInfos.filter((e) => e.name === "(PrintArea)");
@@ -520,7 +517,6 @@ export {
   DATA_SCENA_ELEMENT_ID,
   TYPE_SCENA_LAYERS,
   prefix,
-  getContentElement,
   connectEditorProps,
   getId,
   getIds,
@@ -529,5 +525,6 @@ export {
   getParnetScenaElement,
   makeScenaFunctionComponent,
   getScenaAttrs,
+  convertToSnakeCase,
   Viewport
 };

@@ -6,23 +6,23 @@ import {
   checkImageLoaded,
   checkInput,
   connectEditorProps,
-  getContentElement,
+  convertToSnakeCase,
   getId,
   getIds,
   getParnetScenaElement,
   getScenaAttrs,
   makeScenaFunctionComponent,
   prefix
-} from "./chunk-M72IUDI3.mjs";
+} from "./chunk-2FXM3BQI.mjs";
 
 // src/Editor/Editor.tsx
-import * as React36 from "react";
+import * as React40 from "react";
 import InfiniteViewer from "react-infinite-viewer";
 import Guides from "@scena/react-guides";
 import Selecto from "react-selecto";
 
 // src/Editor/Menu/Menu.tsx
-import * as React33 from "react";
+import * as React36 from "react";
 
 // src/Editor/Menu/Divider.tsx
 import * as React2 from "react";
@@ -325,17 +325,34 @@ ShapesIcon.id = subMenu.map((s) => s.id);
 
 // src/Editor/Menu/TextIcons/TextIcon.tsx
 import * as React10 from "react";
-var TextIcon = class extends Icon {
+var _TextIcon = class _TextIcon extends Icon {
   constructor() {
     super(...arguments);
     this.keys = ["t"];
+    this.onClick = () => {
+      this.editor.setState({
+        selectedMenu: "Text"
+      }, () => {
+        const bounds = this.editor.infiniteViewer.current.getContainer().getBoundingClientRect();
+        const width = 10;
+        const height = 20;
+        this.editor.selectEndMaker({
+          top: bounds.y + 250 - height / 2,
+          left: bounds.x + 250 - width / 2,
+          bottom: 0,
+          right: 0,
+          width: "auto",
+          height: "auto"
+        }, {}, _TextIcon);
+      });
+    };
   }
   renderIcon() {
     return /* @__PURE__ */ React10.createElement("i", { className: "fa-solid fa-text" });
   }
 };
-TextIcon.id = "Text";
-TextIcon.maker = (memory) => ({
+_TextIcon.id = "Text";
+_TextIcon.maker = (memory) => ({
   tag: "div",
   attrs: {
     contenteditable: true
@@ -345,13 +362,16 @@ TextIcon.maker = (memory) => ({
     "font-weight": memory.get("font-weight"),
     "font-style": memory.get("font-style"),
     "text-decoration": memory.get("text-decoration"),
-    "font-family": memory.get("font-family")
+    "font-family": memory.get("font-family"),
+    width: "auto",
+    height: "auto"
   }
 });
-TextIcon.makeThen = (target, id, menu) => {
+_TextIcon.makeThen = (target, id, menu) => {
   target.focus();
-  menu.select(id);
+  menu.select("Text");
 };
+var TextIcon = _TextIcon;
 
 // src/Editor/Menu/CropIcon.tsx
 import * as React13 from "react";
@@ -600,8 +620,7 @@ var ColorIconPicker = class extends Input {
         ref: this.input
       },
       /* @__PURE__ */ React18.createElement("input", { style: { opacity: 0 }, ref: this.textInput, onFocus: this.onFocus }),
-      this.props.icon,
-      /* @__PURE__ */ React18.createElement("div", { className: "color-preview", style: { background: this.props.value } }),
+      !this.props.isTextIcon ? /* @__PURE__ */ React18.createElement(React18.Fragment, null, this.props.icon, /* @__PURE__ */ React18.createElement("div", { className: "color-preview", style: { background: this.props.value } })) : /* @__PURE__ */ React18.createElement("span", { className: "color-preview-circle", style: { background: this.props.value } }),
       this.renderPicker()
     );
   }
@@ -642,11 +661,11 @@ var TextColorIcon = class extends Icon {
     super(...arguments);
     this.colorInput = React19.createRef();
     this.propertyName = "color";
-    this.propertyValue = "#000";
+    this.propertyValue = "#fff";
     this.onChangeTextColor = (v) => {
       this.memory.set("color", v);
       this.editor.setProperty(["color"], v, true);
-      this.forceUpdate();
+      this.editor.forceUpdate();
     };
     this.onClick = () => {
       this.colorInput.current?.onClick();
@@ -656,14 +675,15 @@ var TextColorIcon = class extends Icon {
     };
   }
   renderIcon() {
-    const color = this.getOldValue() || "#000";
+    const color = this.getOldValue() || "#fff";
     return /* @__PURE__ */ React19.createElement(
       ColorIconPicker,
       {
         icon: /* @__PURE__ */ React19.createElement("i", { className: "fa-solid fa-a" }),
         onChange: this.onChangeTextColor,
         value: color,
-        ref: this.colorInput
+        ref: this.colorInput,
+        isTextIcon: true
       }
     );
   }
@@ -695,10 +715,12 @@ var BoldIcon = class extends Icon {
       }
       this.memory.set(this.propertyName, v);
       this.editor.setProperty([this.propertyName], v, true);
-      this.forceUpdate();
+      this.editor.forceUpdate();
+      this.loadFirtData();
     };
     this.setTargets = () => {
       this.forceUpdate();
+      this.editor.forceUpdate();
     };
   }
   renderIcon() {
@@ -714,9 +736,6 @@ var BoldIcon = class extends Icon {
     } else {
       this.setState({ selected: false });
     }
-  }
-  componentDidUpdate() {
-    this.loadFirtData();
   }
   componentDidMount() {
     this.loadFirtData();
@@ -742,10 +761,12 @@ var ItalicIcon = class extends Icon {
       }
       this.memory.set(this.propertyName, v);
       this.editor.setProperty([this.propertyName], v, true);
-      this.forceUpdate();
+      this.editor.forceUpdate();
+      this.loadFirtData();
     };
     this.setTargets = () => {
       this.forceUpdate();
+      this.editor.forceUpdate();
     };
   }
   renderIcon() {
@@ -761,9 +782,6 @@ var ItalicIcon = class extends Icon {
     } else {
       this.setState({ selected: false });
     }
-  }
-  componentDidUpdate() {
-    this.loadFirtData();
   }
   componentDidMount() {
     this.loadFirtData();
@@ -789,10 +807,12 @@ var UnderlineIcon = class extends Icon {
       }
       this.memory.set(this.propertyName, v);
       this.editor.setProperty([this.propertyName], v, true);
-      this.forceUpdate();
+      this.loadFirtData();
+      this.editor.forceUpdate();
     };
     this.setTargets = () => {
       this.forceUpdate();
+      this.editor.forceUpdate();
     };
   }
   renderIcon() {
@@ -808,9 +828,6 @@ var UnderlineIcon = class extends Icon {
     } else {
       this.setState({ selected: false });
     }
-  }
-  componentDidUpdate() {
-    this.loadFirtData();
   }
   componentDidMount() {
     this.loadFirtData();
@@ -880,9 +897,11 @@ var FontFamily = class extends Icon {
       this.memory.set(this.propertyName, v);
       this.editor.setProperty([this.propertyName], v, true);
       this.forceUpdate();
+      this.editor.forceUpdate();
     };
     this.setTargets = () => {
       this.forceUpdate();
+      this.editor.forceUpdate();
     };
   }
   render() {
@@ -934,9 +953,11 @@ var FontSize = class extends Icon {
       this.memory.set(this.propertyName, v);
       this.editor.setProperty([this.propertyName], v, true);
       this.forceUpdate();
+      this.editor.forceUpdate();
     };
     this.setTargets = () => {
       this.forceUpdate();
+      this.editor.forceUpdate();
     };
   }
   render() {
@@ -1094,6 +1115,7 @@ var AlignCenterIcon = class extends Icon {
     };
     this.setTargets = () => {
       this.forceUpdate();
+      this.editor.forceUpdate();
     };
   }
   renderIcon() {
@@ -1223,7 +1245,7 @@ var BorderColorIcon = class extends Icon {
   constructor() {
     super(...arguments);
     this.colorInput = React31.createRef();
-    this.propertyName = "border-color";
+    this.propertyName = "outline-color";
     this.propertyValue = "transparent";
     this.onChangeTextColor = (v) => {
       this.memory.set(this.propertyName, v);
@@ -1263,6 +1285,60 @@ var BorderColorIcon = class extends Icon {
 };
 BorderColorIcon.id = "BorderColorIcon";
 
+// src/Editor/Menu/Zoom/MoreZoom.tsx
+import * as React32 from "react";
+var MoreZoomIcon = class extends Icon {
+  constructor() {
+    super(...arguments);
+    this.onClick = () => {
+      const newZoom = this.editor.state.zoom + 0.1;
+      this.editor.setState({ zoom: newZoom });
+    };
+  }
+  renderIcon() {
+    return /* @__PURE__ */ React32.createElement("i", { className: "fa-solid fa-plus" });
+  }
+};
+MoreZoomIcon.id = "MoreZoom";
+
+// src/Editor/Menu/Zoom/LessZoom.tsx
+import * as React33 from "react";
+var LessZoomIcon = class extends Icon {
+  constructor() {
+    super(...arguments);
+    this.onClick = () => {
+      const newZoom = this.editor.state.zoom - 0.1;
+      this.editor.setState({ zoom: newZoom <= 1 ? 1 : newZoom });
+    };
+  }
+  renderIcon() {
+    return /* @__PURE__ */ React33.createElement("i", { className: "fa-solid fa-minus" });
+  }
+};
+LessZoomIcon.id = "LessZoom";
+
+// src/Editor/Menu/Zoom/ZoomText.tsx
+import * as React34 from "react";
+var ZoomTextIcon = class extends Icon {
+  constructor() {
+    super(...arguments);
+    this.onClick = () => {
+    };
+  }
+  renderIcon() {
+    return /* @__PURE__ */ React34.createElement(
+      "span",
+      {
+        style: {
+          fontSize: "0.8rem"
+        }
+      },
+      "Zoom"
+    );
+  }
+};
+ZoomTextIcon.id = "ZoomText";
+
 // src/Editor/Menu/MenusList.ts
 var HomeMenu = [
   MoveToolIcon,
@@ -1270,6 +1346,10 @@ var HomeMenu = [
   PrintAreaIcon,
   TextIcon,
   ImageIcon,
+  Divider,
+  LessZoomIcon,
+  ZoomTextIcon,
+  MoreZoomIcon,
   Divider,
   UndoIcon,
   RedoIcon
@@ -1319,10 +1399,10 @@ var CompleteMenu = [
 ];
 
 // src/Editor/Menu/DropdownIcon.tsx
-import * as React32 from "react";
+import * as React35 from "react";
 import Menu from "@mui/material/Menu";
 function DropdownIcon({ children }) {
-  const [anchorEl, setAnchorEl] = React32.useState(null);
+  const [anchorEl, setAnchorEl] = React35.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -1330,14 +1410,14 @@ function DropdownIcon({ children }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  return /* @__PURE__ */ React32.createElement(React32.Fragment, null, /* @__PURE__ */ React32.createElement(
+  return /* @__PURE__ */ React35.createElement(React35.Fragment, null, /* @__PURE__ */ React35.createElement(
     "div",
     {
       className: "scena-icon",
       onClick: handleClick
     },
-    /* @__PURE__ */ React32.createElement("i", { className: "fa-solid fa-ellipsis-vertical" })
-  ), /* @__PURE__ */ React32.createElement(
+    /* @__PURE__ */ React35.createElement("i", { className: "fa-solid fa-ellipsis-vertical" })
+  ), /* @__PURE__ */ React35.createElement(
     Menu,
     {
       anchorEl,
@@ -1350,14 +1430,14 @@ function DropdownIcon({ children }) {
 }
 
 // src/Editor/Menu/Menu.tsx
-var Menu2 = class extends React33.PureComponent {
+var Menu2 = class extends React36.PureComponent {
   constructor() {
     super(...arguments);
     this.state = {
       selected: "MoveTool"
     };
     this.menuRefs = [];
-    this.menuContainerRef = React33.createRef();
+    this.menuContainerRef = React36.createRef();
     this.select = (id) => {
       this.setState({
         selected: id
@@ -1366,7 +1446,7 @@ var Menu2 = class extends React33.PureComponent {
     };
   }
   render() {
-    return /* @__PURE__ */ React33.createElement("div", { className: prefix("menu"), ref: this.menuContainerRef }, this.renderMenus());
+    return /* @__PURE__ */ React36.createElement("div", { className: prefix("menu"), ref: this.menuContainerRef }, this.renderMenus());
   }
   renderMenus() {
     let selected = this.state.selected;
@@ -1412,9 +1492,9 @@ var Menu2 = class extends React33.PureComponent {
         dropedMenu.push(menuItem);
       }
     });
-    return /* @__PURE__ */ React33.createElement(React33.Fragment, null, filteredMenu.map((MenuClass, i) => {
+    return /* @__PURE__ */ React36.createElement(React36.Fragment, null, filteredMenu.map((MenuClass, i) => {
       return this.renderIcon(MenuClass, i, selected);
-    }), dropedMenu.length > 0 && /* @__PURE__ */ React33.createElement(DropdownIcon, null, dropedMenu.map((MenuClass, i) => {
+    }), dropedMenu.length > 0 && /* @__PURE__ */ React36.createElement(DropdownIcon, null, dropedMenu.map((MenuClass, i) => {
       return this.renderIcon(MenuClass, i, selected);
     })));
   }
@@ -1423,12 +1503,12 @@ var Menu2 = class extends React33.PureComponent {
     const editor = this.props.editor;
     const id = MenuClass.id;
     if (!menuRefs[i]) {
-      menuRefs[i] = React33.createRef();
+      menuRefs[i] = React36.createRef();
     }
     if (id === "Divider") {
-      return /* @__PURE__ */ React33.createElement(MenuClass, { key: i, editor });
+      return /* @__PURE__ */ React36.createElement(MenuClass, { key: i, editor });
     }
-    return /* @__PURE__ */ React33.createElement(
+    return /* @__PURE__ */ React36.createElement(
       MenuClass,
       {
         ref: menuRefs[i],
@@ -1491,7 +1571,7 @@ var Memory = class {
 };
 
 // src/Editor/Viewport/MoveableMananger.tsx
-import * as React34 from "react";
+import * as React37 from "react";
 import Moveable from "react-moveable";
 import { diff } from "@egjs/list-differ";
 function restoreRender(id, state, prevState, orders, editor) {
@@ -1550,16 +1630,16 @@ var DimensionViewable = {
   render(moveable) {
     const { left, top } = moveable.state;
     const rect = moveable.getRect();
-    return /* @__PURE__ */ React34.createElement("div", { key: "dimension-viewer", className: "moveable-dimension", style: {
+    return /* @__PURE__ */ React37.createElement("div", { key: "dimension-viewer", className: "moveable-dimension", style: {
       left: `${rect.left + rect.width / 2 - left}px`,
       top: `${rect.top + rect.height + 20 - top}px`
     } }, Math.round(rect.offsetWidth), " x ", Math.round(rect.offsetHeight));
   }
 };
-var MoveableManager = class extends React34.PureComponent {
+var MoveableManager = class extends React37.PureComponent {
   constructor() {
     super(...arguments);
-    this.moveable = React34.createRef();
+    this.moveable = React37.createRef();
   }
   getMoveable() {
     return this.moveable.current;
@@ -1587,7 +1667,9 @@ var MoveableManager = class extends React34.PureComponent {
     const isShift = editor.state.isShift;
     const isAdmin = editor.props.isAdmin;
     const targetIsImage = selectedTargets.every((el) => el.tagName === "IMG");
-    return /* @__PURE__ */ React34.createElement(
+    const targetIsText = selectedTargets.some((el) => el.className.includes("Text"));
+    const keepRatio = targetIsText || targetIsImage && !isShift || !targetIsImage && isShift || selectedTargets.length > 1;
+    return /* @__PURE__ */ React37.createElement(
       Moveable,
       {
         ables: [DimensionViewable],
@@ -1595,13 +1677,13 @@ var MoveableManager = class extends React34.PureComponent {
         targets: selectedTargets,
         dimensionViewable: true,
         draggable: true,
-        resizable: true,
+        resizable: !targetIsText,
         throttleResize: 1,
         clippable: selectedMenu === "Crop",
         dragArea: selectedTargets.length > 1 || selectedMenu !== "Text",
         checkInput: selectedMenu === "Text",
         throttleDragRotate: isShift ? 45 : 0,
-        keepRatio: targetIsImage && !isShift || !targetIsImage && isShift,
+        keepRatio,
         rotatable: true,
         snappable: true,
         snapGap: false,
@@ -1657,9 +1739,9 @@ var MoveableManager = class extends React34.PureComponent {
           const target = e.inputTarget;
           if (e.isDouble && target.isContentEditable) {
             editor.selectMenu("Text");
-            const el = getContentElement(target);
-            if (el) {
-              el.focus();
+            const info = this.editor.viewport.current?.getInfoByElement(target);
+            if (info && info.frame) {
+              this.loadTextStylesOnMemory(info.frame);
             }
           }
         },
@@ -1716,7 +1798,7 @@ var MoveableManager = class extends React34.PureComponent {
   renderViewportMoveable() {
     const viewport = this.editor.getViewport();
     const target = viewport ? viewport.viewportRef.current : null;
-    return /* @__PURE__ */ React34.createElement(
+    return /* @__PURE__ */ React37.createElement(
       Moveable,
       {
         ref: this.moveable,
@@ -1740,6 +1822,12 @@ var MoveableManager = class extends React34.PureComponent {
     element.frame = moveableData.getFrame(e).get();
     await viewport.appendJSXs([element], -1);
     this.editor.forceUpdate();
+  }
+  loadTextStylesOnMemory(styles) {
+    const memory = this.editor.memory;
+    Object.entries(styles).forEach(([key, value]) => {
+      memory.set(key, value);
+    });
   }
 };
 MoveableManager = __decorateClass([
@@ -1847,7 +1935,7 @@ var HistoryManager = class {
       return;
     }
     this.editor.console.log(`Undo History: ${undoAction.type}`, undoAction.props);
-    this.types[undoAction.type].undo(undoAction.props, this.editor);
+    this.types[undoAction.type]?.undo(undoAction.props, this.editor);
     this.redoStack.push(undoAction);
   }
   redo() {
@@ -1856,7 +1944,7 @@ var HistoryManager = class {
       return;
     }
     this.editor.console.log(`Redo History: ${redoAction.type}`, redoAction.props);
-    this.types[redoAction.type].redo(redoAction.props, this.editor);
+    this.types[redoAction.type]?.redo(redoAction.props, this.editor);
     this.undoStack.push(redoAction);
   }
 };
@@ -1875,7 +1963,7 @@ var Debugger = class {
 };
 
 // src/Editor/utils/ClipboardManager.tsx
-import * as React35 from "react";
+import * as React38 from "react";
 import html2canvas from "html2canvas";
 var ClipboardManager = class {
   constructor(editor) {
@@ -1992,7 +2080,7 @@ var ClipboardManager = class {
     if (!isPaste && hasText) {
       const text = await navigator.clipboard.readText();
       this.editor.appendJSXs([{
-        jsx: /* @__PURE__ */ React35.createElement("div", { contentEditable: "true" }),
+        jsx: /* @__PURE__ */ React38.createElement("div", { contentEditable: "true" }),
         name: "(Text)",
         innerText: text
       }]);
@@ -2002,6 +2090,104 @@ var ClipboardManager = class {
 
 // src/Editor/Editor.tsx
 import domtoimage from "dom-to-image";
+
+// src/Editor/TextEditor.tsx
+import React39, { useEffect, useLayoutEffect, useRef, useState as useState2 } from "react";
+function TextEditor({ element, memory, editor }) {
+  const textareaRef = useRef(null);
+  const [text, setText] = useState2(element.innerText || "");
+  useEffect(() => {
+    adjustTextareaSize();
+  });
+  useLayoutEffect(() => {
+    const timer = window.setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    }, 200);
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, []);
+  const handleTextareaChange = (event) => {
+    setText(event.target.value);
+    adjustTextareaSize();
+  };
+  const adjustTextareaSize = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.width = "10px";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      textareaRef.current.style.width = `${textareaRef.current.scrollWidth}px`;
+    }
+  };
+  const handleSave = () => {
+    const el = element;
+    if (text.trim().length > 0) {
+      el.innerText = text;
+      const styles2 = {
+        color: memory.get("color"),
+        fontFamily: memory.get("font-family"),
+        fontSize: memory.get("font-size"),
+        textAlign: memory.get("text-align"),
+        fontWeight: memory.get("font-weight"),
+        fontStyle: memory.get("font-style"),
+        textDecoration: memory.get("text-decoration")
+      };
+      const newFrame = Object.fromEntries(Object.entries(styles2).map((style) => {
+        const [key, value] = style;
+        return [convertToSnakeCase(key), value];
+      }));
+      console.log("newFrame", newFrame);
+      el.frame = {
+        ...el.frame,
+        ...newFrame
+      };
+      if (el.el) {
+        el.el.textContent = text;
+        Object.entries(styles2).forEach((style) => {
+          const [key, value] = style;
+          el.el.style[key] = value;
+        });
+      }
+      editor.appendJSXs([el], true);
+    } else {
+      editor.removeByIds([el.id]);
+    }
+    editor.menu.current?.select("MoveTool");
+    editor.setSelectedTargets([]);
+  };
+  const styles = {
+    color: memory.get("color"),
+    fontFamily: memory.get("font-family"),
+    fontSize: memory.get("font-size"),
+    textAlign: memory.get("text-align"),
+    fontWeight: memory.get("font-weight"),
+    fontStyle: memory.get("font-style"),
+    textDecoration: memory.get("text-decoration")
+  };
+  console.log(styles);
+  return /* @__PURE__ */ React39.createElement("div", { className: "text-editor", onClick: handleSave }, /* @__PURE__ */ React39.createElement(
+    "textarea",
+    {
+      ref: textareaRef,
+      autoFocus: true,
+      value: text,
+      onChange: handleTextareaChange,
+      wrap: "off",
+      style: styles,
+      placeholder: "Agregar texto",
+      onClick: (e) => e.stopPropagation(),
+      onFocus: (e) => {
+        var val = e.target.value;
+        e.target.value = "";
+        e.target.value = val;
+      }
+    }
+  ));
+}
+
+// src/Editor/Editor.tsx
 function undoCreateElements({ infos, prevSelected }, editor) {
   const res = editor.removeByIds(
     infos.map((info) => info.id),
@@ -2024,12 +2210,6 @@ function restoreElements({ infos }, editor) {
     true
   );
 }
-function undoSelectTargets({ prevs, nexts }, editor) {
-  editor.setSelectedTargets(editor.viewport.current.getElements(prevs), true);
-}
-function redoSelectTargets({ prevs, nexts }, editor) {
-  editor.setSelectedTargets(editor.viewport.current.getElements(nexts), true);
-}
 function undoChangeText({ prev, next, id }, editor) {
   const info = editor.getViewport().getInfo(id);
   info.innerText = prev;
@@ -2046,7 +2226,7 @@ function undoMove({ prevInfos }, editor) {
 function redoMove({ nextInfos }, editor) {
   editor.moves(nextInfos, true);
 }
-var Editor = class extends React36.PureComponent {
+var Editor = class extends React40.PureComponent {
   constructor() {
     super(...arguments);
     this.state = {
@@ -2076,15 +2256,15 @@ var Editor = class extends React36.PureComponent {
       }
     });
     this.clipboardManager = new ClipboardManager(this);
-    this.horizontalGuides = React36.createRef();
-    this.verticalGuides = React36.createRef();
-    this.infiniteViewer = React36.createRef();
-    this.selecto = React36.createRef();
-    this.menu = React36.createRef();
-    this.moveableManager = React36.createRef();
-    this.viewport = React36.createRef();
-    this.tabs = React36.createRef();
-    this.editorElement = React36.createRef();
+    this.horizontalGuides = React40.createRef();
+    this.verticalGuides = React40.createRef();
+    this.infiniteViewer = React40.createRef();
+    this.selecto = React40.createRef();
+    this.menu = React40.createRef();
+    this.moveableManager = React40.createRef();
+    this.viewport = React40.createRef();
+    this.tabs = React40.createRef();
+    this.editorElement = React40.createRef();
     this.onMenuChange = (id) => {
       this.setState({
         selectedMenu: id
@@ -2112,7 +2292,6 @@ var Editor = class extends React36.PureComponent {
     };
     this.onBlur = (e) => {
       const target = e.target;
-      this.resetToolbar();
       if (!checkInput(target)) {
         return;
       }
@@ -2120,20 +2299,6 @@ var Editor = class extends React36.PureComponent {
       if (!parentTarget) {
         return;
       }
-      const info = this.getViewport().getInfoByElement(parentTarget);
-      if (!info.attrs.contenteditable) {
-        return;
-      }
-      const nextText = parentTarget.innerText;
-      if (info.innerText === nextText) {
-        return;
-      }
-      this.historyManager.addAction("changeText", {
-        id: info.id,
-        prev: info.innerText,
-        next: nextText
-      });
-      info.innerText = nextText;
     };
   }
   render() {
@@ -2157,7 +2322,7 @@ var Editor = class extends React36.PureComponent {
     ];
     const verticalSnapGuides = [0, width, width / 2, ...state.verticalGuides];
     let unit = 50;
-    return /* @__PURE__ */ React36.createElement(
+    return /* @__PURE__ */ React40.createElement(
       "div",
       {
         className: prefix("editor"),
@@ -2166,8 +2331,8 @@ var Editor = class extends React36.PureComponent {
           maxWidth: `${width}px`
         }
       },
-      !previewMode && /* @__PURE__ */ React36.createElement(Menu2, { ref: menu, editor: this, onSelect: this.onMenuChange }),
-      showGuides && !previewMode && /* @__PURE__ */ React36.createElement(React36.Fragment, null, /* @__PURE__ */ React36.createElement(
+      !previewMode && /* @__PURE__ */ React40.createElement(Menu2, { ref: menu, editor: this, onSelect: this.onMenuChange }),
+      showGuides && !previewMode && /* @__PURE__ */ React40.createElement(React40.Fragment, null, /* @__PURE__ */ React40.createElement(
         "div",
         {
           className: prefix("reset"),
@@ -2175,7 +2340,7 @@ var Editor = class extends React36.PureComponent {
             infiniteViewer.current.scrollCenter();
           }
         }
-      ), /* @__PURE__ */ React36.createElement(
+      ), /* @__PURE__ */ React40.createElement(
         Guides,
         {
           ref: horizontalGuides,
@@ -2193,7 +2358,7 @@ var Editor = class extends React36.PureComponent {
             });
           }
         }
-      ), /* @__PURE__ */ React36.createElement(
+      ), /* @__PURE__ */ React40.createElement(
         Guides,
         {
           ref: verticalGuides,
@@ -2212,7 +2377,14 @@ var Editor = class extends React36.PureComponent {
           }
         }
       )),
-      /* @__PURE__ */ React36.createElement(
+      /* @__PURE__ */ React40.createElement("div", { className: "scena-editor-container" }, selectedMenu === "Text" && selectedTargets.length === 1 && /* @__PURE__ */ React40.createElement(
+        TextEditor,
+        {
+          element: this.viewport.current?.getInfoByElement(selectedTargets[0]),
+          memory: this.memory,
+          editor: this
+        }
+      ), /* @__PURE__ */ React40.createElement(
         InfiniteViewer,
         {
           ref: infiniteViewer,
@@ -2246,7 +2418,7 @@ var Editor = class extends React36.PureComponent {
             });
           }
         },
-        /* @__PURE__ */ React36.createElement(
+        /* @__PURE__ */ React40.createElement(
           Viewport,
           {
             ref: viewport,
@@ -2258,7 +2430,7 @@ var Editor = class extends React36.PureComponent {
             editor: this,
             background: this.props.backgroundImg
           },
-          !previewMode && /* @__PURE__ */ React36.createElement(
+          !previewMode && /* @__PURE__ */ React40.createElement(
             MoveableManager,
             {
               ref: moveableManager,
@@ -2270,8 +2442,7 @@ var Editor = class extends React36.PureComponent {
             }
           )
         )
-      ),
-      !previewMode && /* @__PURE__ */ React36.createElement(
+      ), !previewMode && /* @__PURE__ */ React40.createElement(
         Selecto,
         {
           ref: selecto,
@@ -2297,12 +2468,8 @@ var Editor = class extends React36.PureComponent {
             const inputEvent = e.inputEvent;
             const target = inputEvent.target;
             this.checkBlur();
-            if (selectedMenu === "Text" && target.isContentEditable) {
-              const contentElement = getContentElement(target);
-              if (contentElement && contentElement.hasAttribute(DATA_SCENA_ELEMENT_ID)) {
-                e.stop();
-                this.setSelectedTargets([contentElement]);
-              }
+            if (selectedMenu === "Text") {
+              e.stop();
             }
             if (moveableManager.current.getMoveable().isMoveableElement(target) || state.selectedTargets.some(
               (t) => t === target || t.contains(target)
@@ -2331,13 +2498,13 @@ var Editor = class extends React36.PureComponent {
             });
           }
         }
-      )
+      ))
     );
   }
   componentDidMount() {
     const { infiniteViewer, memory, eventBus } = this;
     memory.set("background-color", "#4af");
-    memory.set("color", "#333");
+    memory.set("color", "#fff");
     memory.set("border-color", "#000");
     requestAnimationFrame(() => {
       infiniteViewer.current.scrollCenter();
@@ -2451,11 +2618,6 @@ var Editor = class extends React36.PureComponent {
       undoCreateElements
     );
     this.historyManager.registerType(
-      "selectTargets",
-      undoSelectTargets,
-      redoSelectTargets
-    );
-    this.historyManager.registerType(
       "changeText",
       undoChangeText,
       redoChangeText
@@ -2481,9 +2643,16 @@ var Editor = class extends React36.PureComponent {
       });
       this.appendJSXs(initialJSX, true);
     }
-    this.onResize();
     if (!this.state.loadedViewer) {
       this.forceUpdate();
+    }
+  }
+  componentDidUpdate() {
+    const { selectedMenu, selectedTargets } = this.state;
+    if (selectedMenu === "Text" && selectedTargets.length === 1) {
+      this.keyManager.stop();
+    } else {
+      this.keyManager.start();
     }
   }
   componentWillUnmount() {
@@ -2525,13 +2694,6 @@ var Editor = class extends React36.PureComponent {
     return this.promiseState({
       selectedTargets: targets
     }).then(() => {
-      if (!isRestore) {
-        const prevs = getIds(this.moveableData.getSelectedTargets());
-        const nexts = getIds(targets);
-        if (prevs.length !== nexts.length || !prevs.every((prev, i) => nexts[i] === prev)) {
-          this.historyManager.addAction("selectTargets", { prevs, nexts });
-        }
-      }
       this.selecto.current.setSelectedTargets(targets);
       this.moveableData.setSelectedTargets(targets);
       this.eventBus.trigger("setSelectedTargets");
@@ -2659,6 +2821,10 @@ var Editor = class extends React36.PureComponent {
       this.moveableManager.current.updateRect();
     }
     this.eventBus.requestTrigger("render");
+    const targets = this.getSelectedTargets();
+    if (targets.length && this.moveableManager.current) {
+      targets.forEach((target) => this.moveableManager.current.updateRender(target));
+    }
   }
   setOrders(scope, orders, isUpdate) {
     const infos = this.moveableData.setOrders(scope, orders);
@@ -2682,10 +2848,10 @@ var Editor = class extends React36.PureComponent {
         }
         if (!jsx && componentId) {
           const Component2 = viewport.getComponent(componentId);
-          jsx = /* @__PURE__ */ React36.createElement(Component2, null);
+          jsx = /* @__PURE__ */ React40.createElement(Component2, null);
         }
         if (!jsx) {
-          jsx = React36.createElement(data.tagName);
+          jsx = React40.createElement(data.tagName);
         }
         return {
           ...data,
@@ -2724,7 +2890,7 @@ var Editor = class extends React36.PureComponent {
   appendBlob(blob) {
     const url = URL.createObjectURL(blob);
     return this.appendJSX({
-      jsx: /* @__PURE__ */ React36.createElement("img", { src: url, alt: "appended blob" }),
+      jsx: /* @__PURE__ */ React40.createElement("img", { src: url, alt: "appended blob" }),
       name: "(Image)"
     });
   }
@@ -2732,9 +2898,9 @@ var Editor = class extends React36.PureComponent {
     const frameMap = this.removeFrames(movedInfos.map(({ info }) => info.el));
     return this.getViewport().moves(movedInfos).then((result) => this.moveComplete(result, frameMap, isRestore));
   }
-  selectEndMaker(rect, extraProps) {
+  selectEndMaker(rect, extraProps, icon) {
     const infiniteViewer = this.infiniteViewer.current;
-    const selectIcon = this.menu.current.getSelected();
+    const selectIcon = icon || this.menu.current.getSelected();
     const width = rect.width;
     const height = rect.height;
     if (!selectIcon || !selectIcon.maker || !width || !height) {
@@ -2765,6 +2931,10 @@ var Editor = class extends React36.PureComponent {
     }).then((el) => {
       selectIcon.makeThen(el, selectIcon.id, this.menu.current);
       this.menu.current?.forceUpdate();
+      if (selectIcon.id === "Text") {
+        this.setSelectedTargets([el]);
+        this.menu.current?.select("Text");
+      }
     });
     return true;
   }

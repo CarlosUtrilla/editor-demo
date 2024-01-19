@@ -197,10 +197,9 @@ export default class MoveableManager extends React.PureComponent<{
                 const target = e.inputTarget as any;
                 if (e.isDouble && target.isContentEditable) {
                     editor.selectMenu("Text");
-                    const el = getContentElement(target);
-
-                    if (el) {
-                        el.focus();
+                    const info = this.editor.viewport.current?.getInfoByElement(target)
+                    if (info && info.frame) { 
+                        this.loadTextStylesOnMemory(info.frame)
                     }
                 }
             }}
@@ -273,7 +272,7 @@ export default class MoveableManager extends React.PureComponent<{
     public updateRect() {
         this.getMoveable().updateRect();
     }
-    private async updateRender(e: HTMLElement | SVGElement) {
+    public async updateRender(e: HTMLElement | SVGElement) {
         const { moveableData} = this.editor
         const viewport = this.editor.getViewport()
         const element = viewport.getInfoByElement(e)
@@ -282,6 +281,12 @@ export default class MoveableManager extends React.PureComponent<{
         element.frame = moveableData.getFrame(e).get()
         await viewport.appendJSXs([element], -1)
         this.editor.forceUpdate()
+    }
+    public loadTextStylesOnMemory(styles: IObject<any>) {
+        const memory = this.editor.memory
+        Object.entries(styles).forEach(([key, value]) => {
+            memory.set(key, value)
+        })
     }
 }
 export default interface MoveableManager extends EditorInterface { }

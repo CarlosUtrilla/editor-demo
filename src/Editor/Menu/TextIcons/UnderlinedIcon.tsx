@@ -21,7 +21,7 @@ export default class UnderlineIcon extends Icon {
 		}
 		this.memory.set(this.propertyName, v);
 		this.editor.setProperty([this.propertyName], v, true);
-		this.forceUpdate()
+		this.loadFirtData()
 		this.editor.forceUpdate()
 	};
 	public loadFirtData() {
@@ -35,9 +35,7 @@ export default class UnderlineIcon extends Icon {
 		this.forceUpdate();
 		this.editor.forceUpdate()
   }
-	componentDidUpdate(): void {
-		this.loadFirtData()
-	}
+
 	componentDidMount(): void {
 		this.loadFirtData()
 		this.editor.eventBus.on("setSelectedTargets", this.setTargets);

@@ -21,8 +21,8 @@ export default class BoldIcon extends Icon {
 		}
 		this.memory.set(this.propertyName, v);
 		this.editor.setProperty([this.propertyName], v, true);
-		this.forceUpdate()
 		this.editor.forceUpdate()
+		this.loadFirtData()
 	};
 	public loadFirtData() {
 		if (this.getOldValue()  === this.propertyValue) {
@@ -35,9 +35,6 @@ export default class BoldIcon extends Icon {
 		this.forceUpdate();
 		this.editor.forceUpdate()
   }
-	componentDidUpdate(): void {
-		this.loadFirtData()
-	}
 	componentDidMount(): void {
 		this.loadFirtData()
 		this.editor.eventBus.on("setSelectedTargets", this.setTargets);

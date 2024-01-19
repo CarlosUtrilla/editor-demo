@@ -68,7 +68,8 @@ declare class MoveableManager extends React.PureComponent<{
     renderViewportMoveable(): React.JSX.Element;
     componentDidMount(): void;
     updateRect(): void;
-    private updateRender;
+    updateRender(e: HTMLElement | SVGElement): Promise<void>;
+    loadTextStylesOnMemory(styles: IObject<any>): void;
 }
 interface MoveableManager extends EditorInterface {
 }
@@ -338,6 +339,7 @@ declare class Editor extends React.PureComponent<{
     editorElement: React.RefObject<HTMLDivElement>;
     render(): React.JSX.Element;
     componentDidMount(): void;
+    componentDidUpdate(): void;
     componentWillUnmount(): void;
     promiseState(state: Partial<ScenaEditorState>): Promise<unknown>;
     getSelectedTargets(): (HTMLElement | SVGElement)[];
@@ -359,11 +361,11 @@ declare class Editor extends React.PureComponent<{
     getViewportInfos(): ElementInfo[];
     appendBlob(blob: Blob): Promise<HTMLElement | SVGElement>;
     moves(movedInfos: MovedInfo[], isRestore?: boolean): Promise<MovedResult>;
-    private onMenuChange;
-    selectEndMaker(rect: Rect, extraProps?: any): boolean;
+    onMenuChange: (id: string) => void;
+    selectEndMaker(rect: Rect, extraProps?: any, icon?: typeof Icon): boolean;
     private move;
     private checkBlur;
-    onResize: () => void;
+    private onResize;
     private onBlur;
     resetToolbar(): void;
     private moveInside;

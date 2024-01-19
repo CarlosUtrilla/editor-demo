@@ -401,12 +401,12 @@ __export(Editor_exports, {
 });
 module.exports = __toCommonJS(Editor_exports);
 // src/Editor/Editor.tsx
-var React37 = __toESM(require("react"));
+var React41 = __toESM(require("react"));
 var import_react_infinite_viewer = __toESM(require("react-infinite-viewer"));
 var import_react_guides = __toESM(require("@scena/react-guides"));
 var import_react_selecto = __toESM(require("react-selecto"));
 // src/Editor/Menu/Menu.tsx
-var React33 = __toESM(require("react"));
+var React36 = __toESM(require("react"));
 // src/Editor/utils/utils.ts
 var import_framework_utils = require("framework-utils");
 // src/Editor/consts.ts
@@ -432,15 +432,6 @@ function prefix() {
     return (0, import_framework_utils.prefixNames).apply(this, [
         PREFIX
     ].concat(_to_consumable_array(classNames)));
-}
-function getContentElement(el) {
-    if (el.contentEditable === "inherit") {
-        return getContentElement(el.parentElement);
-    }
-    if (el.contentEditable === "true") {
-        return el;
-    }
-    return null;
 }
 function connectEditorProps(component) {
     var prototype = component.prototype;
@@ -528,6 +519,14 @@ function isDivInsideAnother(div1, parentDiv) {
     var rect1 = div1.getBoundingClientRect();
     var rect2 = parentDiv.getBoundingClientRect();
     return rect1.left >= rect2.left - 3 && rect1.right <= rect2.right + 1 && rect1.top >= rect2.top - 3 && rect1.bottom <= rect2.bottom + 1;
+}
+function convertToSnakeCase(str) {
+    str = str[0].toLowerCase() + str.slice(1, str.length).replace(/[A-Z]/g, function(letter) {
+        return "-".concat(letter.toLowerCase());
+    });
+    str = str.replaceAll(" _", "-");
+    return str.replaceAll(" ", "-").replace(/(^-*|-*$)/g, "");
+    ;
 }
 // src/Editor/Menu/Divider.tsx
 var React2 = __toESM(require("react"));
@@ -1002,11 +1001,11 @@ ShapesIcon.id = subMenu.map(function(s) {
 });
 // src/Editor/Menu/TextIcons/TextIcon.tsx
 var React10 = __toESM(require("react"));
-var TextIcon = /*#__PURE__*/ function(Icon) {
-    _inherits(TextIcon, Icon);
-    var _super = _create_super(TextIcon);
-    function TextIcon() {
-        _class_call_check(this, TextIcon);
+var _TextIcon = /*#__PURE__*/ function(Icon) {
+    _inherits(_TextIcon, Icon);
+    var _super = _create_super(_TextIcon);
+    function _TextIcon() {
+        _class_call_check(this, _TextIcon);
         var _this;
         _this = _super.call.apply(_super, [
             this
@@ -1014,9 +1013,26 @@ var TextIcon = /*#__PURE__*/ function(Icon) {
         _this.keys = [
             "t"
         ];
+        _this.onClick = function() {
+            _this.editor.setState({
+                selectedMenu: "Text"
+            }, function() {
+                var bounds = _this.editor.infiniteViewer.current.getContainer().getBoundingClientRect();
+                var width = 10;
+                var height = 20;
+                _this.editor.selectEndMaker({
+                    top: bounds.y + 250 - height / 2,
+                    left: bounds.x + 250 - width / 2,
+                    bottom: 0,
+                    right: 0,
+                    width: "auto",
+                    height: "auto"
+                }, {}, _TextIcon);
+            });
+        };
         return _this;
     }
-    _create_class(TextIcon, [
+    _create_class(_TextIcon, [
         {
             key: "renderIcon",
             value: function renderIcon() {
@@ -1026,10 +1042,10 @@ var TextIcon = /*#__PURE__*/ function(Icon) {
             }
         }
     ]);
-    return TextIcon;
+    return _TextIcon;
 }(Icon);
-TextIcon.id = "Text";
-TextIcon.maker = function(memory) {
+_TextIcon.id = "Text";
+_TextIcon.maker = function(memory) {
     return {
         tag: "div",
         attrs: {
@@ -1040,14 +1056,17 @@ TextIcon.maker = function(memory) {
             "font-weight": memory.get("font-weight"),
             "font-style": memory.get("font-style"),
             "text-decoration": memory.get("text-decoration"),
-            "font-family": memory.get("font-family")
+            "font-family": memory.get("font-family"),
+            width: "auto",
+            height: "auto"
         }
     };
 };
-TextIcon.makeThen = function(target, id, menu) {
+_TextIcon.makeThen = function(target, id, menu) {
     target.focus();
-    menu.select(id);
+    menu.select("Text");
 };
+var TextIcon = _TextIcon;
 // src/Editor/Menu/CropIcon.tsx
 var React13 = __toESM(require("react"));
 var import_utils4 = require("@daybrush/utils");
@@ -1436,8 +1455,13 @@ var ColorIconPicker = /*#__PURE__*/ function(Input) {
                     },
                     ref: this.textInput,
                     onFocus: this.onFocus
-                }), this.props.icon, /* @__PURE__ */ React18.createElement("div", {
+                }), !this.props.isTextIcon ? /* @__PURE__ */ React18.createElement(React18.Fragment, null, this.props.icon, /* @__PURE__ */ React18.createElement("div", {
                     className: "color-preview",
+                    style: {
+                        background: this.props.value
+                    }
+                })) : /* @__PURE__ */ React18.createElement("span", {
+                    className: "color-preview-circle",
                     style: {
                         background: this.props.value
                     }
@@ -1485,13 +1509,13 @@ var TextColorIcon = /*#__PURE__*/ function(Icon) {
         ].concat(Array.prototype.slice.call(arguments)));
         _this.colorInput = React19.createRef();
         _this.propertyName = "color";
-        _this.propertyValue = "#000";
+        _this.propertyValue = "#fff";
         _this.onChangeTextColor = function(v) {
             _this.memory.set("color", v);
             _this.editor.setProperty([
                 "color"
             ], v, true);
-            _this.forceUpdate();
+            _this.editor.forceUpdate();
         };
         _this.onClick = function() {
             var _this_colorInput_current;
@@ -1506,14 +1530,15 @@ var TextColorIcon = /*#__PURE__*/ function(Icon) {
         {
             key: "renderIcon",
             value: function renderIcon() {
-                var color = this.getOldValue() || "#000";
+                var color = this.getOldValue() || "#fff";
                 return /* @__PURE__ */ React19.createElement(ColorIconPicker, {
                     icon: /* @__PURE__ */ React19.createElement("i", {
                         className: "fa-solid fa-a"
                     }),
                     onChange: this.onChangeTextColor,
                     value: color,
-                    ref: this.colorInput
+                    ref: this.colorInput,
+                    isTextIcon: true
                 });
             }
         },
@@ -1569,10 +1594,12 @@ var BoldIcon = /*#__PURE__*/ function(Icon) {
             _this.editor.setProperty([
                 _this.propertyName
             ], v, true);
-            _this.forceUpdate();
+            _this.editor.forceUpdate();
+            _this.loadFirtData();
         };
         _this.setTargets = function() {
             _this.forceUpdate();
+            _this.editor.forceUpdate();
         };
         return _this;
     }
@@ -1610,12 +1637,6 @@ var BoldIcon = /*#__PURE__*/ function(Icon) {
                         selected: false
                     });
                 }
-            }
-        },
-        {
-            key: "componentDidUpdate",
-            value: function componentDidUpdate() {
-                this.loadFirtData();
             }
         },
         {
@@ -1657,10 +1678,12 @@ var ItalicIcon = /*#__PURE__*/ function(Icon) {
             _this.editor.setProperty([
                 _this.propertyName
             ], v, true);
-            _this.forceUpdate();
+            _this.editor.forceUpdate();
+            _this.loadFirtData();
         };
         _this.setTargets = function() {
             _this.forceUpdate();
+            _this.editor.forceUpdate();
         };
         return _this;
     }
@@ -1698,12 +1721,6 @@ var ItalicIcon = /*#__PURE__*/ function(Icon) {
                         selected: false
                     });
                 }
-            }
-        },
-        {
-            key: "componentDidUpdate",
-            value: function componentDidUpdate() {
-                this.loadFirtData();
             }
         },
         {
@@ -1745,10 +1762,12 @@ var UnderlineIcon = /*#__PURE__*/ function(Icon) {
             _this.editor.setProperty([
                 _this.propertyName
             ], v, true);
-            _this.forceUpdate();
+            _this.loadFirtData();
+            _this.editor.forceUpdate();
         };
         _this.setTargets = function() {
             _this.forceUpdate();
+            _this.editor.forceUpdate();
         };
         return _this;
     }
@@ -1786,12 +1805,6 @@ var UnderlineIcon = /*#__PURE__*/ function(Icon) {
                         selected: false
                     });
                 }
-            }
-        },
-        {
-            key: "componentDidUpdate",
-            value: function componentDidUpdate() {
-                this.loadFirtData();
             }
         },
         {
@@ -1893,9 +1906,11 @@ var FontFamily = /*#__PURE__*/ function(Icon) {
                 _this.propertyName
             ], v, true);
             _this.forceUpdate();
+            _this.editor.forceUpdate();
         };
         _this.setTargets = function() {
             _this.forceUpdate();
+            _this.editor.forceUpdate();
         };
         return _this;
     }
@@ -1980,9 +1995,11 @@ var FontSize = /*#__PURE__*/ function(Icon) {
                 _this.propertyName
             ], v, true);
             _this.forceUpdate();
+            _this.editor.forceUpdate();
         };
         _this.setTargets = function() {
             _this.forceUpdate();
+            _this.editor.forceUpdate();
         };
         return _this;
     }
@@ -2251,6 +2268,7 @@ var AlignCenterIcon = /*#__PURE__*/ function(Icon) {
         };
         _this.setTargets = function() {
             _this.forceUpdate();
+            _this.editor.forceUpdate();
         };
         return _this;
     }
@@ -2489,7 +2507,7 @@ var BorderColorIcon = /*#__PURE__*/ function(Icon) {
             this
         ].concat(Array.prototype.slice.call(arguments)));
         _this.colorInput = React31.createRef();
-        _this.propertyName = "border-color";
+        _this.propertyName = "outline-color";
         _this.propertyValue = "transparent";
         _this.onChangeTextColor = function(v) {
             _this.memory.set(_this.propertyName, v);
@@ -2552,6 +2570,99 @@ var BorderColorIcon = /*#__PURE__*/ function(Icon) {
     return BorderColorIcon;
 }(Icon);
 BorderColorIcon.id = "BorderColorIcon";
+// src/Editor/Menu/Zoom/MoreZoom.tsx
+var React32 = __toESM(require("react"));
+var MoreZoomIcon = /*#__PURE__*/ function(Icon) {
+    _inherits(MoreZoomIcon, Icon);
+    var _super = _create_super(MoreZoomIcon);
+    function MoreZoomIcon() {
+        _class_call_check(this, MoreZoomIcon);
+        var _this;
+        _this = _super.call.apply(_super, [
+            this
+        ].concat(Array.prototype.slice.call(arguments)));
+        _this.onClick = function() {
+            var newZoom = _this.editor.state.zoom + 0.1;
+            _this.editor.setState({
+                zoom: newZoom
+            });
+        };
+        return _this;
+    }
+    _create_class(MoreZoomIcon, [
+        {
+            key: "renderIcon",
+            value: function renderIcon() {
+                return /* @__PURE__ */ React32.createElement("i", {
+                    className: "fa-solid fa-plus"
+                });
+            }
+        }
+    ]);
+    return MoreZoomIcon;
+}(Icon);
+MoreZoomIcon.id = "MoreZoom";
+// src/Editor/Menu/Zoom/LessZoom.tsx
+var React33 = __toESM(require("react"));
+var LessZoomIcon = /*#__PURE__*/ function(Icon) {
+    _inherits(LessZoomIcon, Icon);
+    var _super = _create_super(LessZoomIcon);
+    function LessZoomIcon() {
+        _class_call_check(this, LessZoomIcon);
+        var _this;
+        _this = _super.call.apply(_super, [
+            this
+        ].concat(Array.prototype.slice.call(arguments)));
+        _this.onClick = function() {
+            var newZoom = _this.editor.state.zoom - 0.1;
+            _this.editor.setState({
+                zoom: newZoom <= 1 ? 1 : newZoom
+            });
+        };
+        return _this;
+    }
+    _create_class(LessZoomIcon, [
+        {
+            key: "renderIcon",
+            value: function renderIcon() {
+                return /* @__PURE__ */ React33.createElement("i", {
+                    className: "fa-solid fa-minus"
+                });
+            }
+        }
+    ]);
+    return LessZoomIcon;
+}(Icon);
+LessZoomIcon.id = "LessZoom";
+// src/Editor/Menu/Zoom/ZoomText.tsx
+var React34 = __toESM(require("react"));
+var ZoomTextIcon = /*#__PURE__*/ function(Icon) {
+    _inherits(ZoomTextIcon, Icon);
+    var _super = _create_super(ZoomTextIcon);
+    function ZoomTextIcon() {
+        _class_call_check(this, ZoomTextIcon);
+        var _this;
+        _this = _super.call.apply(_super, [
+            this
+        ].concat(Array.prototype.slice.call(arguments)));
+        _this.onClick = function() {};
+        return _this;
+    }
+    _create_class(ZoomTextIcon, [
+        {
+            key: "renderIcon",
+            value: function renderIcon() {
+                return /* @__PURE__ */ React34.createElement("span", {
+                    style: {
+                        fontSize: "0.8rem"
+                    }
+                }, "Zoom");
+            }
+        }
+    ]);
+    return ZoomTextIcon;
+}(Icon);
+ZoomTextIcon.id = "ZoomText";
 // src/Editor/Menu/MenusList.ts
 var HomeMenu = [
     MoveToolIcon,
@@ -2559,6 +2670,10 @@ var HomeMenu = [
     PrintAreaIcon,
     TextIcon,
     ImageIcon,
+    Divider,
+    LessZoomIcon,
+    ZoomTextIcon,
+    MoreZoomIcon,
     Divider,
     UndoIcon,
     RedoIcon
@@ -2607,11 +2722,11 @@ var CompleteMenu = [
     FontFamily
 ];
 // src/Editor/Menu/DropdownIcon.tsx
-var React32 = __toESM(require("react"));
+var React35 = __toESM(require("react"));
 var import_Menu = __toESM(require("@mui/material/Menu"));
 function DropdownIcon(param) {
     var children = param.children;
-    var _React32_useState = _sliced_to_array(React32.useState(null), 2), anchorEl = _React32_useState[0], setAnchorEl = _React32_useState[1];
+    var _React35_useState = _sliced_to_array(React35.useState(null), 2), anchorEl = _React35_useState[0], setAnchorEl = _React35_useState[1];
     var open = Boolean(anchorEl);
     var handleClick = function(event) {
         setAnchorEl(event.currentTarget);
@@ -2619,12 +2734,12 @@ function DropdownIcon(param) {
     var handleClose = function() {
         setAnchorEl(null);
     };
-    return /* @__PURE__ */ React32.createElement(React32.Fragment, null, /* @__PURE__ */ React32.createElement("div", {
+    return /* @__PURE__ */ React35.createElement(React35.Fragment, null, /* @__PURE__ */ React35.createElement("div", {
         className: "scena-icon",
         onClick: handleClick
-    }, /* @__PURE__ */ React32.createElement("i", {
+    }, /* @__PURE__ */ React35.createElement("i", {
         className: "fa-solid fa-ellipsis-vertical"
-    })), /* @__PURE__ */ React32.createElement(import_Menu.default, {
+    })), /* @__PURE__ */ React35.createElement(import_Menu.default, {
         anchorEl: anchorEl,
         open: open,
         onClose: handleClose,
@@ -2632,8 +2747,8 @@ function DropdownIcon(param) {
     }, children));
 }
 // src/Editor/Menu/Menu.tsx
-var Menu2 = /*#__PURE__*/ function(_React33_PureComponent) {
-    _inherits(Menu2, _React33_PureComponent);
+var Menu2 = /*#__PURE__*/ function(_React36_PureComponent) {
+    _inherits(Menu2, _React36_PureComponent);
     var _super = _create_super(Menu2);
     function Menu2() {
         _class_call_check(this, Menu2);
@@ -2645,7 +2760,7 @@ var Menu2 = /*#__PURE__*/ function(_React33_PureComponent) {
             selected: "MoveTool"
         };
         _this.menuRefs = [];
-        _this.menuContainerRef = React33.createRef();
+        _this.menuContainerRef = React36.createRef();
         _this.select = function(id) {
             _this.setState({
                 selected: id
@@ -2658,7 +2773,7 @@ var Menu2 = /*#__PURE__*/ function(_React33_PureComponent) {
         {
             key: "render",
             value: function render() {
-                return /* @__PURE__ */ React33.createElement("div", {
+                return /* @__PURE__ */ React36.createElement("div", {
                     className: prefix("menu"),
                     ref: this.menuContainerRef
                 }, this.renderMenus());
@@ -2740,9 +2855,9 @@ var Menu2 = /*#__PURE__*/ function(_React33_PureComponent) {
                         dropedMenu.push(menuItem);
                     }
                 });
-                return /* @__PURE__ */ React33.createElement(React33.Fragment, null, filteredMenu.map(function(MenuClass, i) {
+                return /* @__PURE__ */ React36.createElement(React36.Fragment, null, filteredMenu.map(function(MenuClass, i) {
                     return _this.renderIcon(MenuClass, i, selected);
-                }), dropedMenu.length > 0 && /* @__PURE__ */ React33.createElement(DropdownIcon, null, dropedMenu.map(function(MenuClass, i) {
+                }), dropedMenu.length > 0 && /* @__PURE__ */ React36.createElement(DropdownIcon, null, dropedMenu.map(function(MenuClass, i) {
                     return _this.renderIcon(MenuClass, i, selected);
                 })));
             }
@@ -2754,15 +2869,15 @@ var Menu2 = /*#__PURE__*/ function(_React33_PureComponent) {
                 var editor = this.props.editor;
                 var id = MenuClass.id;
                 if (!menuRefs[i]) {
-                    menuRefs[i] = React33.createRef();
+                    menuRefs[i] = React36.createRef();
                 }
                 if (id === "Divider") {
-                    return /* @__PURE__ */ React33.createElement(MenuClass, {
+                    return /* @__PURE__ */ React36.createElement(MenuClass, {
                         key: i,
                         editor: editor
                     });
                 }
-                return /* @__PURE__ */ React33.createElement(MenuClass, {
+                return /* @__PURE__ */ React36.createElement(MenuClass, {
                     ref: menuRefs[i],
                     key: i,
                     editor: editor,
@@ -2800,12 +2915,12 @@ var Menu2 = /*#__PURE__*/ function(_React33_PureComponent) {
         }
     ]);
     return Menu2;
-}(React33.PureComponent);
+}(React36.PureComponent);
 // src/Editor/Viewport/Viewport.tsx
-var React34 = __toESM(require("react"));
+var React37 = __toESM(require("react"));
 var import_utils9 = require("@daybrush/utils");
-var Viewport = /*#__PURE__*/ function(_React34_PureComponent) {
-    _inherits(Viewport, _React34_PureComponent);
+var Viewport = /*#__PURE__*/ function(_React37_PureComponent) {
+    _inherits(Viewport, _React37_PureComponent);
     var _super = _create_super(Viewport);
     function Viewport() {
         _class_call_check(this, Viewport);
@@ -2816,7 +2931,7 @@ var Viewport = /*#__PURE__*/ function(_React34_PureComponent) {
         _this.components = {};
         _this.jsxs = {};
         _this.viewport = {
-            jsx: /* @__PURE__ */ React34.createElement("div", null),
+            jsx: /* @__PURE__ */ React37.createElement("div", null),
             name: "Viewport",
             id: "viewport",
             children: []
@@ -2825,7 +2940,7 @@ var Viewport = /*#__PURE__*/ function(_React34_PureComponent) {
             viewport: _this.viewport
         };
         _this.state = {};
-        _this.viewportRef = React34.createRef();
+        _this.viewportRef = React37.createRef();
         return _this;
     }
     _create_class(Viewport, [
@@ -2837,11 +2952,11 @@ var Viewport = /*#__PURE__*/ function(_React34_PureComponent) {
                 var editor = this.props.editor;
                 var isScreenshot = editor.state.isScreenshot;
                 var previewMode = editor.props.previewMode;
-                return /* @__PURE__ */ React34.createElement("div", {
+                return /* @__PURE__ */ React37.createElement("div", {
                     className: prefix("viewport-container"),
                     onBlur: this.props.onBlur,
                     style: style
-                }, this.props.children, /* @__PURE__ */ React34.createElement("div", _object_spread_props(_object_spread({
+                }, this.props.children, /* @__PURE__ */ React37.createElement("div", _object_spread_props(_object_spread({
                     className: prefix("viewport"),
                     id: "scene-viewport"
                 }, _define_property({}, DATA_SCENA_ELEMENT_ID, "viewport")), {
@@ -2866,7 +2981,7 @@ var Viewport = /*#__PURE__*/ function(_React34_PureComponent) {
                 var _this = this;
                 var areErrors = false;
                 var renders = children.map(function(info, _, allInfos) {
-                    var _React34;
+                    var _React37;
                     var _jsx_props;
                     var editor = _this.props.editor;
                     var jsx = info.jsx;
@@ -2875,13 +2990,13 @@ var Viewport = /*#__PURE__*/ function(_React34_PureComponent) {
                     var id = info.id;
                     var isScreenshot = editor.state.isScreenshot;
                     if (isScreenshot && info.name === "(PrintArea)") {
-                        return /* @__PURE__ */ React34.createElement("div", null);
+                        return /* @__PURE__ */ React37.createElement("div", null);
                     }
                     var props = {
                         key: id
                     };
                     if (editor.props.isAdmin || !editor.props.isAdmin && info.name !== "(PrintArea)") {
-                        props.className = "selectable";
+                        props.className = "selectable ".concat(info.name === "(Text)" ? "Text" : "");
                     }
                     if (info.name !== "(PrintArea)" && info.el && !editor.props.previewMode) {
                         var printAreas = allInfos.filter(function(e) {
@@ -2901,9 +3016,9 @@ var Viewport = /*#__PURE__*/ function(_React34_PureComponent) {
                         }
                     }
                     if ((0, import_utils9.isString)(jsx)) {
-                        var _React341;
+                        var _React371;
                         props[DATA_SCENA_ELEMENT_ID] = id;
-                        return (_React341 = React34).createElement.apply(_React341, [
+                        return (_React371 = React37).createElement.apply(_React371, [
                             jsx,
                             props
                         ].concat(_to_consumable_array(renderedChildren)));
@@ -2912,7 +3027,7 @@ var Viewport = /*#__PURE__*/ function(_React34_PureComponent) {
                         props.scenaAttrs = info.attrs || {};
                         props.scenaText = info.innerText;
                         props.scenaHTML = info.innerHTML;
-                        return React34.createElement(jsx, props);
+                        return React37.createElement(jsx, props);
                     } else if ((0, import_utils9.isString)(jsx.type)) {
                         props[DATA_SCENA_ELEMENT_ID] = id;
                     } else {
@@ -2922,7 +3037,7 @@ var Viewport = /*#__PURE__*/ function(_React34_PureComponent) {
                         props.scenaHTML = info.innerHTML;
                     }
                     var jsxChildren = (jsx === null || jsx === void 0 ? void 0 : (_jsx_props = jsx.props) === null || _jsx_props === void 0 ? void 0 : _jsx_props.children) || [];
-                    return (_React34 = React34).cloneElement.apply(_React34, [
+                    return (_React37 = React37).cloneElement.apply(_React37, [
                         jsx,
                         _object_spread({}, jsx.props, props)
                     ].concat(_to_consumable_array((0, import_utils9.isArray)(jsxChildren) ? jsxChildren : [
@@ -3333,7 +3448,7 @@ var Viewport = /*#__PURE__*/ function(_React34_PureComponent) {
         }
     ]);
     return Viewport;
-}(React34.PureComponent);
+}(React37.PureComponent);
 // src/Editor/utils/EventBus.ts
 var import_component = __toESM(require("@egjs/component"));
 var EventBus = /*#__PURE__*/ function(_import_component_default) {
@@ -3394,7 +3509,7 @@ var Memory = /*#__PURE__*/ function() {
     return Memory;
 }();
 // src/Editor/Viewport/MoveableMananger.tsx
-var React35 = __toESM(require("react"));
+var React38 = __toESM(require("react"));
 var import_react_moveable = __toESM(require("react-moveable"));
 var import_list_differ = require("@egjs/list-differ");
 function restoreRender(id, state, prevState, orders, editor) {
@@ -3459,7 +3574,7 @@ var DimensionViewable = {
     render: function render(moveable) {
         var _moveable_state = moveable.state, left = _moveable_state.left, top = _moveable_state.top;
         var rect = moveable.getRect();
-        return /* @__PURE__ */ React35.createElement("div", {
+        return /* @__PURE__ */ React38.createElement("div", {
             key: "dimension-viewer",
             className: "moveable-dimension",
             style: {
@@ -3469,8 +3584,8 @@ var DimensionViewable = {
         }, Math.round(rect.offsetWidth), " x ", Math.round(rect.offsetHeight));
     }
 };
-var MoveableManager = /*#__PURE__*/ function(_React35_PureComponent) {
-    _inherits(MoveableManager, _React35_PureComponent);
+var MoveableManager = /*#__PURE__*/ function(_React38_PureComponent) {
+    _inherits(MoveableManager, _React38_PureComponent);
     var _super = _create_super(MoveableManager);
     function MoveableManager() {
         _class_call_check(this, MoveableManager);
@@ -3478,7 +3593,7 @@ var MoveableManager = /*#__PURE__*/ function(_React35_PureComponent) {
         _this = _super.call.apply(_super, [
             this
         ].concat(Array.prototype.slice.call(arguments)));
-        _this.moveable = React35.createRef();
+        _this.moveable = React38.createRef();
         return _this;
     }
     _create_class(MoveableManager, [
@@ -3505,9 +3620,13 @@ var MoveableManager = /*#__PURE__*/ function(_React35_PureComponent) {
                 var targetIsImage = selectedTargets.every(function(el) {
                     return el.tagName === "IMG";
                 });
+                var targetIsText = selectedTargets.some(function(el) {
+                    return el.className.includes("Text");
+                });
+                var keepRatio = targetIsText || targetIsImage && !isShift || !targetIsImage && isShift || selectedTargets.length > 1;
                 var _this1 = this;
                 var _this2 = this;
-                return /* @__PURE__ */ React35.createElement(import_react_moveable.default, {
+                return /* @__PURE__ */ React38.createElement(import_react_moveable.default, {
                     ables: [
                         DimensionViewable
                     ],
@@ -3515,13 +3634,13 @@ var MoveableManager = /*#__PURE__*/ function(_React35_PureComponent) {
                     targets: selectedTargets,
                     dimensionViewable: true,
                     draggable: true,
-                    resizable: true,
+                    resizable: !targetIsText,
                     throttleResize: 1,
                     clippable: selectedMenu === "Crop",
                     dragArea: selectedTargets.length > 1 || selectedMenu !== "Text",
                     checkInput: selectedMenu === "Text",
                     throttleDragRotate: isShift ? 45 : 0,
-                    keepRatio: targetIsImage && !isShift || !targetIsImage && isShift,
+                    keepRatio: keepRatio,
                     rotatable: true,
                     snappable: true,
                     snapGap: false,
@@ -3582,10 +3701,11 @@ var MoveableManager = /*#__PURE__*/ function(_React35_PureComponent) {
                     onClick: function(e) {
                         var target = e.inputTarget;
                         if (e.isDouble && target.isContentEditable) {
+                            var _this_editor_viewport_current;
                             editor.selectMenu("Text");
-                            var el = getContentElement(target);
-                            if (el) {
-                                el.focus();
+                            var info = (_this_editor_viewport_current = _this.editor.viewport.current) === null || _this_editor_viewport_current === void 0 ? void 0 : _this_editor_viewport_current.getInfoByElement(target);
+                            if (info && info.frame) {
+                                _this.loadTextStylesOnMemory(info.frame);
                             }
                         }
                     },
@@ -3668,7 +3788,7 @@ var MoveableManager = /*#__PURE__*/ function(_React35_PureComponent) {
             value: function renderViewportMoveable() {
                 var viewport = this.editor.getViewport();
                 var target = viewport ? viewport.viewportRef.current : null;
-                return /* @__PURE__ */ React35.createElement(import_react_moveable.default, {
+                return /* @__PURE__ */ React38.createElement(import_react_moveable.default, {
                     ref: this.moveable,
                     rotatable: false,
                     target: target,
@@ -3718,10 +3838,20 @@ var MoveableManager = /*#__PURE__*/ function(_React35_PureComponent) {
                     });
                 })();
             }
+        },
+        {
+            key: "loadTextStylesOnMemory",
+            value: function loadTextStylesOnMemory(styles) {
+                var memory = this.editor.memory;
+                Object.entries(styles).forEach(function(param) {
+                    var _param = _sliced_to_array(param, 2), key = _param[0], value = _param[1];
+                    memory.set(key, value);
+                });
+            }
         }
     ]);
     return MoveableManager;
-}(React35.PureComponent);
+}(React38.PureComponent);
 MoveableManager = __decorateClass([
     connectEditorProps
 ], MoveableManager);
@@ -3891,24 +4021,26 @@ var HistoryManager = /*#__PURE__*/ function() {
         {
             key: "undo",
             value: function undo() {
+                var _this_types_undoAction_type;
                 var undoAction = this.undoStack.pop();
                 if (!undoAction) {
                     return;
                 }
                 this.editor.console.log("Undo History: ".concat(undoAction.type), undoAction.props);
-                this.types[undoAction.type].undo(undoAction.props, this.editor);
+                (_this_types_undoAction_type = this.types[undoAction.type]) === null || _this_types_undoAction_type === void 0 ? void 0 : _this_types_undoAction_type.undo(undoAction.props, this.editor);
                 this.redoStack.push(undoAction);
             }
         },
         {
             key: "redo",
             value: function redo() {
+                var _this_types_redoAction_type;
                 var redoAction = this.redoStack.pop();
                 if (!redoAction) {
                     return;
                 }
                 this.editor.console.log("Redo History: ".concat(redoAction.type), redoAction.props);
-                this.types[redoAction.type].redo(redoAction.props, this.editor);
+                (_this_types_redoAction_type = this.types[redoAction.type]) === null || _this_types_redoAction_type === void 0 ? void 0 : _this_types_redoAction_type.redo(redoAction.props, this.editor);
                 this.undoStack.push(redoAction);
             }
         }
@@ -3942,7 +4074,7 @@ var Debugger = /*#__PURE__*/ function() {
     return Debugger;
 }();
 // src/Editor/utils/ClipboardManager.tsx
-var React36 = __toESM(require("react"));
+var React39 = __toESM(require("react"));
 var import_html2canvas = __toESM(require("html2canvas"));
 var ClipboardManager = /*#__PURE__*/ function() {
     function ClipboardManager(editor) {
@@ -4124,7 +4256,7 @@ var ClipboardManager = /*#__PURE__*/ function() {
                                 text = _state.sent();
                                 _this.editor.appendJSXs([
                                     {
-                                        jsx: /* @__PURE__ */ React36.createElement("div", {
+                                        jsx: /* @__PURE__ */ React39.createElement("div", {
                                             contentEditable: "true"
                                         }),
                                         name: "(Text)",
@@ -4146,6 +4278,110 @@ var ClipboardManager = /*#__PURE__*/ function() {
 }();
 // src/Editor/Editor.tsx
 var import_dom_to_image = __toESM(require("dom-to-image"));
+// src/Editor/TextEditor.tsx
+var import_react = __toESM(require("react"));
+function TextEditor(param) {
+    var element = param.element, memory = param.memory, editor = param.editor;
+    var textareaRef = (0, import_react.useRef)(null);
+    var _ref = _sliced_to_array((0, import_react.useState)(element.innerText || ""), 2), text = _ref[0], setText = _ref[1];
+    (0, import_react.useEffect)(function() {
+        adjustTextareaSize();
+    });
+    (0, import_react.useLayoutEffect)(function() {
+        var timer = window.setTimeout(function() {
+            if (textareaRef.current) {
+                textareaRef.current.focus();
+            }
+        }, 200);
+        return function() {
+            window.clearTimeout(timer);
+        };
+    }, []);
+    var handleTextareaChange = function(event) {
+        setText(event.target.value);
+        adjustTextareaSize();
+    };
+    var adjustTextareaSize = function() {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = "auto";
+            textareaRef.current.style.width = "10px";
+            textareaRef.current.style.height = "".concat(textareaRef.current.scrollHeight, "px");
+            textareaRef.current.style.width = "".concat(textareaRef.current.scrollWidth, "px");
+        }
+    };
+    var handleSave = function() {
+        var _editor_menu_current;
+        var el = element;
+        if (text.trim().length > 0) {
+            el.innerText = text;
+            var styles2 = {
+                color: memory.get("color"),
+                fontFamily: memory.get("font-family"),
+                fontSize: memory.get("font-size"),
+                textAlign: memory.get("text-align"),
+                fontWeight: memory.get("font-weight"),
+                fontStyle: memory.get("font-style"),
+                textDecoration: memory.get("text-decoration")
+            };
+            var newFrame = Object.fromEntries(Object.entries(styles2).map(function(style) {
+                var _style = _sliced_to_array(style, 2), key = _style[0], value = _style[1];
+                return [
+                    convertToSnakeCase(key),
+                    value
+                ];
+            }));
+            console.log("newFrame", newFrame);
+            el.frame = _object_spread({}, el.frame, newFrame);
+            if (el.el) {
+                el.el.textContent = text;
+                Object.entries(styles2).forEach(function(style) {
+                    var _style = _sliced_to_array(style, 2), key = _style[0], value = _style[1];
+                    el.el.style[key] = value;
+                });
+            }
+            editor.appendJSXs([
+                el
+            ], true);
+        } else {
+            editor.removeByIds([
+                el.id
+            ]);
+        }
+        (_editor_menu_current = editor.menu.current) === null || _editor_menu_current === void 0 ? void 0 : _editor_menu_current.select("MoveTool");
+        editor.setSelectedTargets([]);
+    };
+    var styles = {
+        color: memory.get("color"),
+        fontFamily: memory.get("font-family"),
+        fontSize: memory.get("font-size"),
+        textAlign: memory.get("text-align"),
+        fontWeight: memory.get("font-weight"),
+        fontStyle: memory.get("font-style"),
+        textDecoration: memory.get("text-decoration")
+    };
+    console.log(styles);
+    return /* @__PURE__ */ import_react.default.createElement("div", {
+        className: "text-editor",
+        onClick: handleSave
+    }, /* @__PURE__ */ import_react.default.createElement("textarea", {
+        ref: textareaRef,
+        autoFocus: true,
+        value: text,
+        onChange: handleTextareaChange,
+        wrap: "off",
+        style: styles,
+        placeholder: "Agregar texto",
+        onClick: function(e) {
+            return e.stopPropagation();
+        },
+        onFocus: function(e) {
+            var val = e.target.value;
+            e.target.value = "";
+            e.target.value = val;
+        }
+    }));
+}
+// src/Editor/Editor.tsx
 function undoCreateElements(param, editor) {
     var infos = param.infos, prevSelected = param.prevSelected;
     var res = editor.removeByIds(infos.map(function(info) {
@@ -4162,14 +4398,6 @@ function restoreElements(param, editor) {
     editor.appendJSXs(infos.map(function(info) {
         return _object_spread({}, info);
     }), true);
-}
-function undoSelectTargets(param, editor) {
-    var prevs = param.prevs, nexts = param.nexts;
-    editor.setSelectedTargets(editor.viewport.current.getElements(prevs), true);
-}
-function redoSelectTargets(param, editor) {
-    var prevs = param.prevs, nexts = param.nexts;
-    editor.setSelectedTargets(editor.viewport.current.getElements(nexts), true);
 }
 function undoChangeText(param, editor) {
     var prev = param.prev, next = param.next, id = param.id;
@@ -4191,8 +4419,8 @@ function redoMove(param, editor) {
     var nextInfos = param.nextInfos;
     editor.moves(nextInfos, true);
 }
-var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
-    _inherits(Editor, _React37_PureComponent);
+var Editor = /*#__PURE__*/ function(_React41_PureComponent) {
+    _inherits(Editor, _React41_PureComponent);
     var _super = _create_super(Editor);
     function Editor() {
         _class_call_check(this, Editor);
@@ -4227,15 +4455,15 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
             }
         });
         _this.clipboardManager = new ClipboardManager(_assert_this_initialized(_this));
-        _this.horizontalGuides = React37.createRef();
-        _this.verticalGuides = React37.createRef();
-        _this.infiniteViewer = React37.createRef();
-        _this.selecto = React37.createRef();
-        _this.menu = React37.createRef();
-        _this.moveableManager = React37.createRef();
-        _this.viewport = React37.createRef();
-        _this.tabs = React37.createRef();
-        _this.editorElement = React37.createRef();
+        _this.horizontalGuides = React41.createRef();
+        _this.verticalGuides = React41.createRef();
+        _this.infiniteViewer = React41.createRef();
+        _this.selecto = React41.createRef();
+        _this.menu = React41.createRef();
+        _this.moveableManager = React41.createRef();
+        _this.viewport = React41.createRef();
+        _this.tabs = React41.createRef();
+        _this.editorElement = React41.createRef();
         _this.onMenuChange = function(id) {
             _this.setState({
                 selectedMenu: id
@@ -4269,7 +4497,6 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
         };
         _this.onBlur = function(e) {
             var target = e.target;
-            _this.resetToolbar();
             if (!checkInput(target)) {
                 return;
             }
@@ -4277,20 +4504,6 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
             if (!parentTarget) {
                 return;
             }
-            var info = _this.getViewport().getInfoByElement(parentTarget);
-            if (!info.attrs.contenteditable) {
-                return;
-            }
-            var nextText = parentTarget.innerText;
-            if (info.innerText === nextText) {
-                return;
-            }
-            _this.historyManager.addAction("changeText", {
-                id: info.id,
-                prev: info.innerText,
-                next: nextText
-            });
-            info.innerText = nextText;
         };
         return _this;
     }
@@ -4299,6 +4512,7 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
             key: "render",
             value: function render() {
                 var _this = this;
+                var _this_viewport_current;
                 var _this1 = this, horizontalGuides = _this1.horizontalGuides, verticalGuides = _this1.verticalGuides, infiniteViewer = _this1.infiniteViewer, moveableManager = _this1.moveableManager, viewport = _this1.viewport, menu = _this1.menu, selecto = _this1.selecto, state = _this1.state;
                 var previewMode = this.props.previewMode;
                 var selectedMenu = state.selectedMenu, selectedTargets = state.selectedTargets, zoom = state.zoom, showGuides = state.showGuides, minZoom = state.minZoom, width = state.width, height = state.height;
@@ -4313,22 +4527,22 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                     width / 2
                 ].concat(_to_consumable_array(state.verticalGuides));
                 var unit = 50;
-                return /* @__PURE__ */ React37.createElement("div", {
+                return /* @__PURE__ */ React41.createElement("div", {
                     className: prefix("editor"),
                     ref: this.editorElement,
                     style: {
                         maxWidth: "".concat(width, "px")
                     }
-                }, !previewMode && /* @__PURE__ */ React37.createElement(Menu2, {
+                }, !previewMode && /* @__PURE__ */ React41.createElement(Menu2, {
                     ref: menu,
                     editor: this,
                     onSelect: this.onMenuChange
-                }), showGuides && !previewMode && /* @__PURE__ */ React37.createElement(React37.Fragment, null, /* @__PURE__ */ React37.createElement("div", {
+                }), showGuides && !previewMode && /* @__PURE__ */ React41.createElement(React41.Fragment, null, /* @__PURE__ */ React41.createElement("div", {
                     className: prefix("reset"),
                     onClick: function(e) {
                         infiniteViewer.current.scrollCenter();
                     }
-                }), /* @__PURE__ */ React37.createElement(import_react_guides.default, {
+                }), /* @__PURE__ */ React41.createElement(import_react_guides.default, {
                     ref: horizontalGuides,
                     type: "horizontal",
                     className: prefix("guides", "horizontal"),
@@ -4345,7 +4559,7 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                             horizontalGuides: e.guides
                         });
                     }
-                }), /* @__PURE__ */ React37.createElement(import_react_guides.default, {
+                }), /* @__PURE__ */ React41.createElement(import_react_guides.default, {
                     ref: verticalGuides,
                     type: "vertical",
                     className: prefix("guides", "vertical"),
@@ -4362,7 +4576,13 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                             verticalGuides: e.guides
                         });
                     }
-                })), /* @__PURE__ */ React37.createElement(import_react_infinite_viewer.default, {
+                })), /* @__PURE__ */ React41.createElement("div", {
+                    className: "scena-editor-container"
+                }, selectedMenu === "Text" && selectedTargets.length === 1 && /* @__PURE__ */ React41.createElement(TextEditor, {
+                    element: (_this_viewport_current = this.viewport.current) === null || _this_viewport_current === void 0 ? void 0 : _this_viewport_current.getInfoByElement(selectedTargets[0]),
+                    memory: this.memory,
+                    editor: this
+                }), /* @__PURE__ */ React41.createElement(import_react_infinite_viewer.default, {
                     ref: infiniteViewer,
                     className: prefix("viewer"),
                     pinchThreshold: 5,
@@ -4404,7 +4624,7 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                             zoom: zoom2
                         });
                     }
-                }, /* @__PURE__ */ React37.createElement(Viewport, {
+                }, /* @__PURE__ */ React41.createElement(Viewport, {
                     ref: viewport,
                     onBlur: this.onBlur,
                     style: {
@@ -4413,14 +4633,14 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                     },
                     editor: this,
                     background: this.props.backgroundImg
-                }, !previewMode && /* @__PURE__ */ React37.createElement(MoveableManager, {
+                }, !previewMode && /* @__PURE__ */ React41.createElement(MoveableManager, {
                     ref: moveableManager,
                     selectedTargets: selectedTargets,
                     selectedMenu: selectedMenu,
                     verticalGuidelines: verticalSnapGuides,
                     horizontalGuidelines: horizontalSnapGuides,
                     editor: this
-                }))), !previewMode && /* @__PURE__ */ React37.createElement(import_react_selecto.default, {
+                }))), !previewMode && /* @__PURE__ */ React41.createElement(import_react_selecto.default, {
                     ref: selecto,
                     hitRate: 0,
                     dragContainer: ".scena-viewer",
@@ -4451,14 +4671,8 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                         var inputEvent = e.inputEvent;
                         var target = inputEvent.target;
                         _this.checkBlur();
-                        if (selectedMenu === "Text" && target.isContentEditable) {
-                            var contentElement = getContentElement(target);
-                            if (contentElement && contentElement.hasAttribute(DATA_SCENA_ELEMENT_ID)) {
-                                e.stop();
-                                _this.setSelectedTargets([
-                                    contentElement
-                                ]);
-                            }
+                        if (selectedMenu === "Text") {
+                            e.stop();
                         }
                         if (moveableManager.current.getMoveable().isMoveableElement(target) || state.selectedTargets.some(function(t) {
                             return t === target || t.contains(target);
@@ -4485,7 +4699,7 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                             moveableManager.current.getMoveable().dragStart(inputEvent);
                         });
                     }
-                }));
+                })));
             }
         },
         {
@@ -4494,7 +4708,7 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                 var _this = this;
                 var _this1 = this, infiniteViewer = _this1.infiniteViewer, memory = _this1.memory, eventBus = _this1.eventBus;
                 memory.set("background-color", "#4af");
-                memory.set("color", "#333");
+                memory.set("color", "#fff");
                 memory.set("border-color", "#000");
                 requestAnimationFrame(function() {
                     infiniteViewer.current.scrollCenter();
@@ -4600,7 +4814,6 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                 });
                 this.historyManager.registerType("createElements", undoCreateElements, restoreElements);
                 this.historyManager.registerType("removeElements", restoreElements, undoCreateElements);
-                this.historyManager.registerType("selectTargets", undoSelectTargets, redoSelectTargets);
                 this.historyManager.registerType("changeText", undoChangeText, redoChangeText);
                 this.historyManager.registerType("move", undoMove, redoMove);
                 if (this.props.initialJSX && this.props.initialJSX.length > 0) {
@@ -4629,9 +4842,19 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                     });
                     this.appendJSXs(initialJSX, true);
                 }
-                this.onResize();
                 if (!this.state.loadedViewer) {
                     this.forceUpdate();
+                }
+            }
+        },
+        {
+            key: "componentDidUpdate",
+            value: function componentDidUpdate() {
+                var _this_state = this.state, selectedMenu = _this_state.selectedMenu, selectedTargets = _this_state.selectedTargets;
+                if (selectedMenu === "Text" && selectedTargets.length === 1) {
+                    this.keyManager.stop();
+                } else {
+                    this.keyManager.start();
                 }
             }
         },
@@ -4693,18 +4916,6 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                     selectedTargets: targets
                 }).then(function() {
                     var _this_menu_current;
-                    if (!isRestore) {
-                        var prevs = getIds(_this.moveableData.getSelectedTargets());
-                        var nexts = getIds(targets);
-                        if (prevs.length !== nexts.length || !prevs.every(function(prev, i) {
-                            return nexts[i] === prev;
-                        })) {
-                            _this.historyManager.addAction("selectTargets", {
-                                prevs: prevs,
-                                nexts: nexts
-                            });
-                        }
-                    }
                     _this.selecto.current.setSelectedTargets(targets);
                     _this.moveableData.setSelectedTargets(targets);
                     _this.eventBus.trigger("setSelectedTargets");
@@ -4858,6 +5069,7 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
         {
             key: "setProperty",
             value: function setProperty(scope, value, isUpdate) {
+                var _this = this;
                 var infos = this.moveableData.setProperty(scope, value);
                 this.historyManager.addAction("renders", {
                     infos: infos
@@ -4866,6 +5078,12 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                     this.moveableManager.current.updateRect();
                 }
                 this.eventBus.requestTrigger("render");
+                var targets = this.getSelectedTargets();
+                if (targets.length && this.moveableManager.current) {
+                    targets.forEach(function(target) {
+                        return _this.moveableManager.current.updateRender(target);
+                    });
+                }
             }
         },
         {
@@ -4899,10 +5117,10 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                     }
                     if (!jsx && componentId) {
                         var Component2 = viewport.getComponent(componentId);
-                        jsx = /* @__PURE__ */ React37.createElement(Component2, null);
+                        jsx = /* @__PURE__ */ React41.createElement(Component2, null);
                     }
                     if (!jsx) {
-                        jsx = React37.createElement(data.tagName);
+                        jsx = React41.createElement(data.tagName);
                     }
                     return _object_spread_props(_object_spread({}, data), {
                         children: children.map(loadData),
@@ -4955,7 +5173,7 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
             value: function appendBlob(blob) {
                 var url = URL.createObjectURL(blob);
                 return this.appendJSX({
-                    jsx: /* @__PURE__ */ React37.createElement("img", {
+                    jsx: /* @__PURE__ */ React41.createElement("img", {
                         src: url,
                         alt: "appended blob"
                     }),
@@ -4978,10 +5196,10 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
         },
         {
             key: "selectEndMaker",
-            value: function selectEndMaker(rect, extraProps) {
+            value: function selectEndMaker(rect, extraProps, icon) {
                 var _this = this;
                 var infiniteViewer = this.infiniteViewer.current;
-                var selectIcon = this.menu.current.getSelected();
+                var selectIcon = icon || this.menu.current.getSelected();
                 var width = rect.width;
                 var height = rect.height;
                 if (!selectIcon || !selectIcon.maker || !width || !height) {
@@ -5014,6 +5232,13 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
                     var _this_menu_current;
                     selectIcon.makeThen(el, selectIcon.id, _this.menu.current);
                     (_this_menu_current = _this.menu.current) === null || _this_menu_current === void 0 ? void 0 : _this_menu_current.forceUpdate();
+                    if (selectIcon.id === "Text") {
+                        var _this_menu_current1;
+                        _this.setSelectedTargets([
+                            el
+                        ]);
+                        (_this_menu_current1 = _this.menu.current) === null || _this_menu_current1 === void 0 ? void 0 : _this_menu_current1.select("Text");
+                    }
                 });
                 return true;
             }
@@ -5313,7 +5538,7 @@ var Editor = /*#__PURE__*/ function(_React37_PureComponent) {
         }
     ]);
     return Editor;
-}(React37.PureComponent);
+}(React41.PureComponent);
 // src/Editor/index.ts
 var Editor_default = Editor;
 // Annotate the CommonJS export names for ESM import in node:

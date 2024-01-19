@@ -11,6 +11,7 @@ type TextEditorProps = {
 export default function TextEditor({ element, memory, editor }: TextEditorProps) {
 	const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 	const [text, setText] = useState(element.innerText || "")
+
 	useEffect(() => {
 		adjustTextareaSize()
 	})
@@ -20,7 +21,7 @@ export default function TextEditor({ element, memory, editor }: TextEditorProps)
 				textareaRef.current.focus()
 			}
 		}, 200)
-		return () => { 
+		return () => {
 			window.clearTimeout(timer)
 		}
 	},[])
@@ -41,37 +42,52 @@ export default function TextEditor({ element, memory, editor }: TextEditorProps)
 
 	const handleSave = () => {
 		const el = element
+		if (text.trim().length > 0) {
 
-		el.innerText = text
+			el.innerText = text
 
-		const styles = {
-					color: memory.get("color"),
-					fontFamily: memory.get("font-family"),
-					fontSize: memory.get("font-size"),
-					textAlign: memory.get("text-align"),
-					fontWeight: memory.get("font-weight"),
-					fontStyle: memory.get("font-style"),
-          textDecoration: memory.get("text-decoration"),
-				}
-
-		el.frame = {
-			...el.frame,
-			...Object.fromEntries(Object.entries(styles).map(style => {
-				const [key, value] = style
-				return [convertToSnakeCase(key) ,value]
+			const styles = {
+				color: memory.get("color"),
+				fontFamily: memory.get("font-family"),
+				fontSize: memory.get("font-size"),
+				textAlign: memory.get("text-align"),
+				fontWeight: memory.get("font-weight"),
+				fontStyle: memory.get("font-style"),
+				textDecoration: memory.get("text-decoration"),
+			}
+			const newFrame = Object.fromEntries(Object.entries(styles).map(style => {
+					const [key, value] = style
+					return [convertToSnakeCase(key), value]
 			}))
+			console.log("newFrame", newFrame)
+			el.frame = {
+				...el.frame,
+				...newFrame
+			}
+			if (el.el) {
+				el.el.textContent = text
+				Object.entries(styles).forEach(style => {
+					const [key, value] = style
+					el.el!.style[key as any] = value
+				})
+			}
+			editor.appendJSXs([el], true)
+		} else {
+			editor.removeByIds([el.id!])
 		}
-		if (el.el){
-			el.el.textContent = text
-			Object.entries(styles).forEach(style => {
-				const [key, value] = style
-				el.el!.style[key as any] = value
-			})
-		}
-		editor.appendJSXs([el], true)
 		editor.menu.current?.select("MoveTool")
 		editor.setSelectedTargets([])
 	}
+	const styles = {
+			color: memory.get("color"),
+			fontFamily: memory.get("font-family"),
+			fontSize: memory.get("font-size"),
+			textAlign: memory.get("text-align"),
+			fontWeight: memory.get("font-weight"),
+			fontStyle: memory.get("font-style"),
+			textDecoration: memory.get("text-decoration"),
+	}
+	console.log(styles)
 	return (
 		<div className='text-editor' onClick={handleSave}>
 			<textarea
@@ -80,15 +96,7 @@ export default function TextEditor({ element, memory, editor }: TextEditorProps)
 				value={text}
 				onChange={handleTextareaChange}
 				wrap="off"
-				style={{
-					color: memory.get("color"),
-					fontFamily: memory.get("font-family"),
-					fontSize: memory.get("font-size"),
-					textAlign: memory.get("text-align"),
-					fontWeight: memory.get("font-weight"),
-					fontStyle: memory.get("font-style"),
-          textDecoration: memory.get("text-decoration"),
-				}}
+				style={styles}
 				placeholder='Agregar texto'
 				onClick={e => e.stopPropagation()}
 				onFocus={(e)=> {
