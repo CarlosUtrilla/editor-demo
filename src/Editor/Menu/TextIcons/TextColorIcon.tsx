@@ -16,6 +16,7 @@ export default class TextColorIcon extends Icon {
 				onChange={this.onChangeTextColor}
 				value={color}
 				ref={this.colorInput}
+				isTextIcon
 			/>
 		);
 	}

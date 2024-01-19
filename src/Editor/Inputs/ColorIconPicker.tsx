@@ -6,7 +6,8 @@ import ColorPicker from "./ColorPicker";
 import "./ColorBox.css";
 
 export default class ColorIconPicker extends Input<{
-	icon: React.ReactElement,
+    icon: React.ReactElement,
+    isTextIcon?: boolean
 }, {}, HTMLDivElement> {
     protected inputAttributes: IObject<any> = {};
     protected colorInput = React.createRef<ColorPicker>();
@@ -23,9 +24,15 @@ export default class ColorIconPicker extends Input<{
                 onBlur={this.onBlur}
                 ref={this.input}
             >
-                <input style={{ opacity: 0}} ref={this.textInput} onFocus={this.onFocus}/>
-                {this.props.icon}
-                <div className="color-preview" style={{ background: this.props.value }}></div>
+                <input style={{ opacity: 0 }} ref={this.textInput} onFocus={this.onFocus} />
+                {
+                    !this.props.isTextIcon ?
+                    <>
+                        {this.props.icon}
+                        <div className="color-preview" style={{ background: this.props.value }}></div>
+                    </>:
+                    <span className="color-preview-circle" style={{background: this.props.value }} />
+                }
                 {this.renderPicker()}
             </div>
         );

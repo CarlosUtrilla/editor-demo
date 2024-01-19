@@ -41,6 +41,7 @@ export default function TextEditor({ element, memory, editor }: TextEditorProps)
 
 	const handleSave = () => {
 		const el = element
+
 		el.innerText = text
 
 		const styles = {
@@ -88,8 +89,13 @@ export default function TextEditor({ element, memory, editor }: TextEditorProps)
 					fontStyle: memory.get("font-style"),
           textDecoration: memory.get("text-decoration"),
 				}}
-				placeholder='Start typing'
-				onClick={e=> e.stopPropagation()}
+				placeholder='Agregar texto'
+				onClick={e => e.stopPropagation()}
+				onFocus={(e)=> {
+					var val = e.target.value;
+					e.target.value = '';
+					e.target.value = val;
+				}}
 			/>
 		</div>
 	)

@@ -35,6 +35,7 @@ import html2canvas from "html2canvas";
 import domtoimage from "dom-to-image";
 import { color } from "html2canvas/dist/types/css/types/color";
 import TextEditor from "./TextEditor";
+import Icon from "./Menu/Icon";
 
 function undoCreateElements(
   { infos, prevSelected }: IObject<any>,
@@ -501,11 +502,7 @@ export default class Editor extends React.PureComponent<
       restoreElements,
       undoCreateElements
     );
-    this.historyManager.registerType(
-      "selectTargets",
-      undoSelectTargets,
-      redoSelectTargets
-    );
+
     this.historyManager.registerType(
       "changeText",
       undoChangeText,
@@ -592,17 +589,6 @@ export default class Editor extends React.PureComponent<
     return this.promiseState({
       selectedTargets: targets
     }).then(() => {
-      if (!isRestore) {
-        const prevs = getIds(this.moveableData.getSelectedTargets());
-        const nexts = getIds(targets);
-
-        if (
-          prevs.length !== nexts.length ||
-          !prevs.every((prev, i) => nexts[i] === prev)
-        ) {
-          this.historyManager.addAction("selectTargets", { prevs, nexts });
-        }
-      }
       this.selecto.current!.setSelectedTargets(targets);
       this.moveableData.setSelectedTargets(targets);
       this.eventBus.trigger("setSelectedTargets");
@@ -852,17 +838,17 @@ export default class Editor extends React.PureComponent<
       .then((result) => this.moveComplete(result, frameMap, isRestore));
   }
 
-  private onMenuChange = (id: string) => {
+  public onMenuChange = (id: string) => {
     this.setState({
       selectedMenu: id
     });
   };
-  public selectEndMaker(rect: Rect, extraProps?: any) {
+  public selectEndMaker(rect: Rect, extraProps?: any, icon?:typeof Icon) {
     const infiniteViewer = this.infiniteViewer.current!;
-    const selectIcon = this.menu.current!.getSelected();
+    const selectIcon = icon || this.menu.current!.getSelected();
     const width = rect.width;
     const height = rect.height;
-
+    this.console.log(selectIcon)
     if (!selectIcon || !selectIcon.maker || !width || !height) {
       return false;
     }
@@ -946,22 +932,6 @@ export default class Editor extends React.PureComponent<
     if (!parentTarget) {
       return;
     }
-    const info = this.getViewport().getInfoByElement(parentTarget)!;
-
-    if (!info.attrs!.contenteditable) {
-      return;
-    }
-    const nextText = (parentTarget as HTMLElement).innerText;
-
-    if (info.innerText === nextText) {
-      return;
-    }
-    this.historyManager.addAction("changeText", {
-      id: info.id,
-      prev: info.innerText,
-      next: nextText
-    });
-    info.innerText = nextText;
   };
   public resetToolbar() {
     this.menu.current?.select("MoveTool")

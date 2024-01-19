@@ -7,8 +7,8 @@ export default class RedoIcon extends Icon {
         return (
             <i className="fa-solid fa-rotate-right"></i>
         );
-		}
-		public onClick = () => {
-			this.editor.historyManager.redo()
-		};
+    }
+    public onClick = () => {
+        this.editor.historyManager.redo()
+    };
 }

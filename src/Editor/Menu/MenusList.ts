@@ -24,6 +24,9 @@ import AlignCenterIcon from "./TextIcons/Aligns/AlignCenter";
 import AlignJustifyIcon from "./TextIcons/Aligns/AlignJustify";
 import FillIcon from "./ShapeIcons/FillIcon";
 import BorderColorIcon from "./ShapeIcons/BorderColorIcon";
+import MoreZoomIcon from "./Zoom/MoreZoom";
+import LessZoomIcon from "./Zoom/LessZoom";
+import ZoomTextIcon from "./Zoom/ZoomText";
 
 export const HomeMenu: Array<typeof Icon> = [
 	MoveToolIcon,
@@ -31,6 +34,10 @@ export const HomeMenu: Array<typeof Icon> = [
 	PrintAreaIcon,
 	TextIcon,
 	ImageIcon,
+	Divider,
+	LessZoomIcon,
+	ZoomTextIcon,
+	MoreZoomIcon,
 	Divider,
 	UndoIcon,
 	RedoIcon

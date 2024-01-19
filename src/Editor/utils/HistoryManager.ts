@@ -28,12 +28,11 @@ export default class HistoryManager {
     }
     public undo() {
         const undoAction = this.undoStack.pop();
-
         if (!undoAction) {
             return;
         }
         this.editor.console.log(`Undo History: ${undoAction.type}`, undoAction.props);
-        this.types[undoAction.type].undo(undoAction.props, this.editor);
+        this.types[undoAction.type]?.undo(undoAction.props, this.editor);
         this.redoStack.push(undoAction);
     }
     public redo() {
@@ -43,7 +42,7 @@ export default class HistoryManager {
             return;
         }
         this.editor.console.log(`Redo History: ${redoAction.type}`, redoAction.props);
-        this.types[redoAction.type].redo(redoAction.props, this.editor);
+        this.types[redoAction.type]?.redo(redoAction.props, this.editor);
         this.undoStack.push(redoAction);
     }
 }

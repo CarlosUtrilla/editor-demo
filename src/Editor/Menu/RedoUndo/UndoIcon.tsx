@@ -9,6 +9,6 @@ export default class UndoIcon extends Icon {
         );
 		}
 		public onClick = () => {
-			this.editor.historyManager.undo()
+            this.editor.historyManager.undo()
 		};
 }
