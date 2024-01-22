@@ -12,7 +12,8 @@ export default class Menu extends React.PureComponent<{
     onSelect: (id: string) => any
 }> {
     public state = {
-        selected: "MoveTool"
+        selected: "MoveTool",
+        width: 0
     };
     public menuRefs: Array<React.RefObject<Icon>> = [];
     public menuContainerRef = React.createRef<HTMLDivElement>();
@@ -59,17 +60,18 @@ export default class Menu extends React.PureComponent<{
 
         menu = menu
             .filter(m => !editor.props.isAdmin ? m.id !== "PrintArea" : true)
-        const maxWidth = this.menuContainerRef.current?.clientWidth || 0
+        const maxWidth = this.state.width
         let currentWidth = 0;
 
         const filteredMenu: (typeof Icon)[] = []
         const dropedMenu: (typeof Icon)[] = []
-        menu.forEach(menuItem => {
-            if (maxWidth > (currentWidth)) {
+        menu.forEach((menuItem, i) => {
+            console.log(maxWidth, currentWidth)
+            if (maxWidth > (currentWidth - (i + 1 === menu.length ? menuItem.width : - 5)))  {
                 filteredMenu.push(menuItem)
                 currentWidth += menuItem.width
             } else {
-                currentWidth = maxWidth;
+                currentWidth += menuItem.width
                 dropedMenu.push(menuItem)
             }
         })
@@ -131,8 +133,19 @@ export default class Menu extends React.PureComponent<{
             ref.current.blur();
         });
     }
-
+    updateDimensions = () => {
+        const container = this.menuContainerRef.current!
+        let width = container.clientWidth || 0
+        width = width - (parseFloat(window.getComputedStyle(container).paddingLeft) + parseFloat(window.getComputedStyle(container).paddingRight));
+        console.log("width", width)
+        this.setState({ width });
+    };
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateDimensions);
+    }
     componentDidMount(): void {
+        window.addEventListener('resize', this.updateDimensions);
+        this.updateDimensions()
         this.forceUpdate()
     }
 }

@@ -127,7 +127,7 @@ export default class MoveableManager extends React.PureComponent<{
             targets={selectedTargets}
             dimensionViewable={true}
             draggable={true}
-            resizable={!targetIsText}
+            resizable={true}
             throttleResize={1}
             clippable={selectedMenu === "Crop"}
             dragArea={selectedTargets.length > 1 || selectedMenu !== "Text"}
@@ -174,7 +174,16 @@ export default class MoveableManager extends React.PureComponent<{
             onScaleGroup={moveableData.onScaleGroup}
 
             onResizeStart={moveableData.onResizeStart}
-            onResize={moveableData.onResize}
+            onResize={(e) => {
+                moveableData.onResize(e)
+                //TODO: Agregar redimension de texto
+               /*  const targets = e.currentTarget.getTargets()
+                const textTargets = targets.filter(t => t.className.includes("Text"))
+                console.log("")
+                if (textTargets.length > 0) {
+                    
+                } */
+            }}
             onResizeGroupStart={moveableData.onResizeGroupStart}
             onResizeGroup={moveableData.onResizeGroup}
 
@@ -198,7 +207,7 @@ export default class MoveableManager extends React.PureComponent<{
                 if (e.isDouble && target.isContentEditable) {
                     editor.selectMenu("Text");
                     const info = this.editor.viewport.current?.getInfoByElement(target)
-                    if (info && info.frame) { 
+                    if (info && info.frame) {
                         this.loadTextStylesOnMemory(info.frame)
                     }
                 }
