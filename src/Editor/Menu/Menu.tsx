@@ -136,7 +136,6 @@ export default class Menu extends React.PureComponent<{
         const container = this.menuContainerRef.current!
         let width = container.clientWidth || 0
         width = width - (parseFloat(window.getComputedStyle(container).paddingLeft) + parseFloat(window.getComputedStyle(container).paddingRight));
-        console.log("width", width)
         this.setState({ width });
     };
     componentWillUnmount() {

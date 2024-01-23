@@ -1450,7 +1450,6 @@ var Menu2 = class extends React36.PureComponent {
       const container = this.menuContainerRef.current;
       let width = container.clientWidth || 0;
       width = width - (parseFloat(window.getComputedStyle(container).paddingLeft) + parseFloat(window.getComputedStyle(container).paddingRight));
-      console.log("width", width);
       this.setState({ width });
     };
   }
@@ -2816,7 +2815,6 @@ var Editor = class extends React40.PureComponent {
   }
   setProperty(scope, value, isUpdate) {
     const infos = this.moveableData.setProperty(scope, value);
-    this.historyManager.addAction("renders", { infos });
     if (isUpdate) {
       this.moveableManager.current.updateRect();
     }
@@ -2825,6 +2823,7 @@ var Editor = class extends React40.PureComponent {
     if (targets.length && this.moveableManager.current) {
       targets.forEach((target) => this.moveableManager.current.updateRender(target));
     }
+    this.historyManager.addAction("renders", { infos });
   }
   setOrders(scope, orders, isUpdate) {
     const infos = this.moveableData.setOrders(scope, orders);

@@ -724,8 +724,6 @@ export default class Editor extends React.PureComponent<
   public setProperty(scope: string[], value: any, isUpdate?: boolean) {
     const infos = this.moveableData.setProperty(scope, value);
 
-    this.historyManager.addAction("renders", { infos });
-
     if (isUpdate) {
       this.moveableManager.current!.updateRect();
     }
@@ -735,6 +733,7 @@ export default class Editor extends React.PureComponent<
     if (targets.length && this.moveableManager.current) {
       targets.forEach(target => this.moveableManager.current!.updateRender(target))
     }
+     this.historyManager.addAction("renders", { infos });
   }
   public setOrders(scope: string[], orders: NameType[], isUpdate?: boolean) {
     const infos = this.moveableData.setOrders(scope, orders);

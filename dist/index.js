@@ -2773,7 +2773,6 @@ var Menu2 = /*#__PURE__*/ function(_React36_PureComponent) {
             var container = _this.menuContainerRef.current;
             var width = container.clientWidth || 0;
             width = width - (parseFloat(window.getComputedStyle(container).paddingLeft) + parseFloat(window.getComputedStyle(container).paddingRight));
-            console.log("width", width);
             _this.setState({
                 width: width
             });
@@ -5088,9 +5087,6 @@ var Editor = /*#__PURE__*/ function(_React41_PureComponent) {
             value: function setProperty(scope, value, isUpdate) {
                 var _this = this;
                 var infos = this.moveableData.setProperty(scope, value);
-                this.historyManager.addAction("renders", {
-                    infos: infos
-                });
                 if (isUpdate) {
                     this.moveableManager.current.updateRect();
                 }
@@ -5101,6 +5097,9 @@ var Editor = /*#__PURE__*/ function(_React41_PureComponent) {
                         return _this.moveableManager.current.updateRender(target);
                     });
                 }
+                this.historyManager.addAction("renders", {
+                    infos: infos
+                });
             }
         },
         {
