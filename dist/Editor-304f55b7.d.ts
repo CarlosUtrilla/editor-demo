@@ -369,7 +369,7 @@ declare class Editor extends React.PureComponent<{
     selectEndMaker(rect: Rect, extraProps?: any, icon?: typeof Icon): boolean;
     private move;
     private checkBlur;
-    private onResize;
+    onResize: () => void;
     private onBlur;
     resetToolbar(): void;
     private moveInside;

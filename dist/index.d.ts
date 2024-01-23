@@ -1,4 +1,4 @@
-import { S as ScenaProps, a as ScenaFunctionComponent, E as Editor } from './Editor-a546f1c2.js';
+import { S as ScenaProps, a as ScenaFunctionComponent, E as Editor } from './Editor-304f55b7.js';
 import { IObject } from '@daybrush/utils';
 import 'react-moveable';
 import 'react';

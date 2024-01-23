@@ -13,7 +13,7 @@ import {
   getScenaAttrs,
   makeScenaFunctionComponent,
   prefix
-} from "./chunk-Y65WCMTT.mjs";
+} from "./chunk-TG5OCE4W.mjs";
 
 // src/Editor/Editor.tsx
 import * as React40 from "react";
@@ -1493,7 +1493,6 @@ var Menu2 = class extends React36.PureComponent {
     const filteredMenu = [];
     const dropedMenu = [];
     menu.forEach((menuItem, i) => {
-      console.log(maxWidth, currentWidth);
       if (maxWidth > currentWidth + (i + 1 < menu.length ? menuItem.width : 0)) {
         filteredMenu.push(menuItem);
         currentWidth += menuItem.width;
@@ -2138,31 +2137,30 @@ function TextEditor({ element, memory, editor }) {
       textareaRef.current.style.width = `${textareaRef.current.scrollWidth}px`;
     }
   };
+  const styles = {
+    color: memory.get("color"),
+    fontFamily: memory.get("font-family"),
+    fontSize: memory.get("font-size"),
+    textAlign: memory.get("text-align"),
+    fontWeight: memory.get("font-weight"),
+    fontStyle: memory.get("font-style"),
+    textDecoration: memory.get("text-decoration")
+  };
   const handleSave = () => {
     const el = element;
     if (text.trim().length > 0) {
       el.innerText = text;
-      const styles2 = {
-        color: memory.get("color"),
-        fontFamily: memory.get("font-family"),
-        fontSize: memory.get("font-size"),
-        textAlign: memory.get("text-align"),
-        fontWeight: memory.get("font-weight"),
-        fontStyle: memory.get("font-style"),
-        textDecoration: memory.get("text-decoration")
-      };
-      const newFrame = Object.fromEntries(Object.entries(styles2).map((style) => {
+      const newFrame = Object.fromEntries(Object.entries(styles).map((style) => {
         const [key, value] = style;
         return [convertToSnakeCase(key), value];
       }));
-      console.log("newFrame", newFrame);
       el.frame = {
         ...el.frame,
         ...newFrame
       };
       if (el.el) {
         el.el.textContent = text;
-        Object.entries(styles2).forEach((style) => {
+        Object.entries(styles).forEach((style) => {
           const [key, value] = style;
           el.el.style[key] = value;
         });
@@ -2173,15 +2171,6 @@ function TextEditor({ element, memory, editor }) {
     }
     editor.menu.current?.select("MoveTool");
     editor.setSelectedTargets([]);
-  };
-  const styles = {
-    color: memory.get("color"),
-    fontFamily: memory.get("font-family"),
-    fontSize: memory.get("font-size"),
-    textAlign: memory.get("text-align"),
-    fontWeight: memory.get("font-weight"),
-    fontStyle: memory.get("font-style"),
-    textDecoration: memory.get("text-decoration")
   };
   return /* @__PURE__ */ React39.createElement("div", { className: "text-editor", onClick: handleSave }, /* @__PURE__ */ React39.createElement(
     "textarea",

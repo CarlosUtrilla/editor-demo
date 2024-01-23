@@ -6,14 +6,50 @@ import { ElementInfo } from "../Editor/Viewport/Viewport";
 const elements = [
     {
         "jsx": "div",
+        "name": "(PrintArea)",
+        "frame": {
+            "top": "147.125px",
+            "left": "176.359375px",
+            "position": "absolute",
+            "width": "144px",
+            "height": "177px",
+            "background-color": "transparent",
+            "outline-width": "2px",
+            "outline-style": "dashed",
+            "outline-color": "rgba(155, 155, 155, 1)"
+        },
+        "children": [],
+        "scopeId": "viewport",
+        "componentId": "",
+        "jsxId": "",
+        "id": "scena85897629",
+        "index": 0,
+        "innerHTML": "",
+        "attrs": {}
+    },
+    {
+        "jsx": "div",
         "attrs": {
-            "class": "selectable Text",
-            "contenteditable": "true"
+            "style": {
+                "transform": "translate(-17px,-16.4px) rotate(0deg) scale(1,1)",
+                "top": "240px",
+                "left": "245px",
+                "position": "absolute",
+                "width": "auto",
+                "height": "auto",
+                "color": "rgba(255,255,255,1)",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "textDecoration": "none",
+                "fontFamily": "Avenir",
+                "fontSize": "16px",
+                "textAlign": "left"
+            }
         },
         "name": "(Text)",
         "frame": {
             "transform": {
-                "translate": "-13.59375px,20px",
+                "translate": "-17px,-16.4px",
                 "rotate": "0deg",
                 "scale": "1,1"
             },
@@ -37,8 +73,8 @@ const elements = [
         "scopeId": "viewport",
         "componentId": "",
         "jsxId": "",
-        "id": "scena47177056",
-        "index": 0,
+        "id": "scena2650487",
+        "index": 1,
         "innerText": "Hola"
     }
 ] as ElementInfo[]

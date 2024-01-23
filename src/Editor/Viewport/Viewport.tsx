@@ -121,6 +121,12 @@ export default class Viewport extends React.PureComponent<{
                     props.style.border = undefined
                 }
             }
+            if (!info.attrs) {
+                info.attrs = {}
+            }
+            if (info.name === "(Text)" && !info.attrs?.contenteditable) {
+                info.attrs.contenteditable = "true"
+            }
             if (isString(jsx)) {
                 props[DATA_SCENA_ELEMENT_ID] = id;
                 return React.createElement(jsx, props, ...renderedChildren) as ScenaJSXElement;

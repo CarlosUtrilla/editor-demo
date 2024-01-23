@@ -2857,7 +2857,6 @@ var Menu2 = /*#__PURE__*/ function(_React36_PureComponent) {
                 var filteredMenu = [];
                 var dropedMenu = [];
                 menu.forEach(function(menuItem, i) {
-                    console.log(maxWidth, currentWidth);
                     if (maxWidth > currentWidth + (i + 1 < menu.length ? menuItem.width : 0)) {
                         filteredMenu.push(menuItem);
                         currentWidth += menuItem.width;
@@ -3001,7 +3000,7 @@ var Viewport = /*#__PURE__*/ function(_React37_PureComponent) {
                 var areErrors = false;
                 var renders = children.map(function(info, _, allInfos) {
                     var _React37;
-                    var _jsx_props;
+                    var _info_attrs, _jsx_props;
                     var editor = _this.props.editor;
                     var jsx = info.jsx;
                     var nextChildren = info.children;
@@ -3040,6 +3039,12 @@ var Viewport = /*#__PURE__*/ function(_React37_PureComponent) {
                         } else {
                             props.style.border = void 0;
                         }
+                    }
+                    if (!info.attrs) {
+                        info.attrs = {};
+                    }
+                    if (info.name === "(Text)" && !((_info_attrs = info.attrs) === null || _info_attrs === void 0 ? void 0 : _info_attrs.contenteditable)) {
+                        info.attrs.contenteditable = "true";
                     }
                     if ((0, import_utils9.isString)(jsx)) {
                         var _React371;
@@ -4337,32 +4342,31 @@ function TextEditor(param) {
             textareaRef.current.style.width = "".concat(textareaRef.current.scrollWidth, "px");
         }
     };
+    var styles = {
+        color: memory.get("color"),
+        fontFamily: memory.get("font-family"),
+        fontSize: memory.get("font-size"),
+        textAlign: memory.get("text-align"),
+        fontWeight: memory.get("font-weight"),
+        fontStyle: memory.get("font-style"),
+        textDecoration: memory.get("text-decoration")
+    };
     var handleSave = function() {
         var _editor_menu_current;
         var el = element;
         if (text.trim().length > 0) {
             el.innerText = text;
-            var styles2 = {
-                color: memory.get("color"),
-                fontFamily: memory.get("font-family"),
-                fontSize: memory.get("font-size"),
-                textAlign: memory.get("text-align"),
-                fontWeight: memory.get("font-weight"),
-                fontStyle: memory.get("font-style"),
-                textDecoration: memory.get("text-decoration")
-            };
-            var newFrame = Object.fromEntries(Object.entries(styles2).map(function(style) {
+            var newFrame = Object.fromEntries(Object.entries(styles).map(function(style) {
                 var _style = _sliced_to_array(style, 2), key = _style[0], value = _style[1];
                 return [
                     convertToSnakeCase(key),
                     value
                 ];
             }));
-            console.log("newFrame", newFrame);
             el.frame = _object_spread({}, el.frame, newFrame);
             if (el.el) {
                 el.el.textContent = text;
-                Object.entries(styles2).forEach(function(style) {
+                Object.entries(styles).forEach(function(style) {
                     var _style = _sliced_to_array(style, 2), key = _style[0], value = _style[1];
                     el.el.style[key] = value;
                 });
@@ -4377,15 +4381,6 @@ function TextEditor(param) {
         }
         (_editor_menu_current = editor.menu.current) === null || _editor_menu_current === void 0 ? void 0 : _editor_menu_current.select("MoveTool");
         editor.setSelectedTargets([]);
-    };
-    var styles = {
-        color: memory.get("color"),
-        fontFamily: memory.get("font-family"),
-        fontSize: memory.get("font-size"),
-        textAlign: memory.get("text-align"),
-        fontWeight: memory.get("font-weight"),
-        fontStyle: memory.get("font-style"),
-        textDecoration: memory.get("text-decoration")
     };
     return /* @__PURE__ */ import_react.default.createElement("div", {
         className: "text-editor",

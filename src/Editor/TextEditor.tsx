@@ -40,26 +40,24 @@ export default function TextEditor({ element, memory, editor }: TextEditorProps)
     }
 	};
 
+	const styles = {
+			color: memory.get("color"),
+			fontFamily: memory.get("font-family"),
+			fontSize: memory.get("font-size"),
+			textAlign: memory.get("text-align"),
+			fontWeight: memory.get("font-weight"),
+			fontStyle: memory.get("font-style"),
+			textDecoration: memory.get("text-decoration"),
+	}
 	const handleSave = () => {
 		const el = element
 		if (text.trim().length > 0) {
 
 			el.innerText = text
-
-			const styles = {
-				color: memory.get("color"),
-				fontFamily: memory.get("font-family"),
-				fontSize: memory.get("font-size"),
-				textAlign: memory.get("text-align"),
-				fontWeight: memory.get("font-weight"),
-				fontStyle: memory.get("font-style"),
-				textDecoration: memory.get("text-decoration"),
-			}
 			const newFrame = Object.fromEntries(Object.entries(styles).map(style => {
 					const [key, value] = style
 					return [convertToSnakeCase(key), value]
 			}))
-			console.log("newFrame", newFrame)
 			el.frame = {
 				...el.frame,
 				...newFrame
@@ -78,15 +76,7 @@ export default function TextEditor({ element, memory, editor }: TextEditorProps)
 		editor.menu.current?.select("MoveTool")
 		editor.setSelectedTargets([])
 	}
-	const styles = {
-			color: memory.get("color"),
-			fontFamily: memory.get("font-family"),
-			fontSize: memory.get("font-size"),
-			textAlign: memory.get("text-align"),
-			fontWeight: memory.get("font-weight"),
-			fontStyle: memory.get("font-style"),
-			textDecoration: memory.get("text-decoration"),
-	}
+
 	return (
 		<div className='text-editor' onClick={handleSave}>
 			<textarea

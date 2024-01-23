@@ -201,6 +201,12 @@ var Viewport = class extends React.PureComponent {
           props.style.border = void 0;
         }
       }
+      if (!info.attrs) {
+        info.attrs = {};
+      }
+      if (info.name === "(Text)" && !info.attrs?.contenteditable) {
+        info.attrs.contenteditable = "true";
+      }
       if (isString(jsx)) {
         props[DATA_SCENA_ELEMENT_ID] = id;
         return React.createElement(jsx, props, ...renderedChildren);

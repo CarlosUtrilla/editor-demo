@@ -884,7 +884,7 @@ export default class Editor extends React.PureComponent<
     }
     this.eventBus.trigger("blur");
   }
-  private onResize = () => {
+  public onResize = () => {
     if (this.horizontalGuides.current && this.verticalGuides.current) {
       this.horizontalGuides.current!.resize();
       this.verticalGuides.current!.resize();

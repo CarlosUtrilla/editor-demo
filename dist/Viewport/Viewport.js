@@ -342,7 +342,7 @@ var Viewport = /*#__PURE__*/ function(_React_PureComponent) {
                 var areErrors = false;
                 var renders = children.map(function(info, _, allInfos) {
                     var _React;
-                    var _jsx_props;
+                    var _info_attrs, _jsx_props;
                     var editor = _this.props.editor;
                     var jsx = info.jsx;
                     var nextChildren = info.children;
@@ -381,6 +381,12 @@ var Viewport = /*#__PURE__*/ function(_React_PureComponent) {
                         } else {
                             props.style.border = void 0;
                         }
+                    }
+                    if (!info.attrs) {
+                        info.attrs = {};
+                    }
+                    if (info.name === "(Text)" && !((_info_attrs = info.attrs) === null || _info_attrs === void 0 ? void 0 : _info_attrs.contenteditable)) {
+                        info.attrs.contenteditable = "true";
                     }
                     if ((0, import_utils.isString)(jsx)) {
                         var _React1;
