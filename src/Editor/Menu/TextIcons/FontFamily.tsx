@@ -10,7 +10,7 @@ const fontFamily = [
 
 export default class FontFamily extends Icon {
 	public static id = "FontFamily";
-	public static width = 92;
+	public static width = 93;
 	public propertyName = "font-family";
 	public propertyValue = "Avenir"
 	public render() {

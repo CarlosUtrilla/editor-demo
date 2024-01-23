@@ -13,7 +13,7 @@ import {
   getScenaAttrs,
   makeScenaFunctionComponent,
   prefix
-} from "./chunk-2FXM3BQI.mjs";
+} from "./chunk-Y65WCMTT.mjs";
 
 // src/Editor/Editor.tsx
 import * as React40 from "react";
@@ -156,6 +156,7 @@ var Divider = class extends Icon {
   }
 };
 Divider.id = "Divider";
+Divider.width = 18;
 
 // src/Editor/Menu/ImageIcon.tsx
 import * as React3 from "react";
@@ -930,7 +931,7 @@ var FontFamily = class extends Icon {
   }
 };
 FontFamily.id = "FontFamily";
-FontFamily.width = 92;
+FontFamily.width = 93;
 
 // src/Editor/Menu/TextIcons/FontSize.tsx
 import * as React25 from "react";
@@ -1006,7 +1007,7 @@ var FontSize = class extends Icon {
   }
 };
 FontSize.id = "FontSize";
-FontSize.width = 97;
+FontSize.width = 98;
 
 // src/Editor/Menu/TextIcons/Aligns/AlignLeftIcon.tsx
 import * as React26 from "react";
@@ -1434,7 +1435,8 @@ var Menu2 = class extends React36.PureComponent {
   constructor() {
     super(...arguments);
     this.state = {
-      selected: "MoveTool"
+      selected: "MoveTool",
+      width: 0
     };
     this.menuRefs = [];
     this.menuContainerRef = React36.createRef();
@@ -1443,6 +1445,13 @@ var Menu2 = class extends React36.PureComponent {
         selected: id
       });
       this.props.onSelect(id);
+    };
+    this.updateDimensions = () => {
+      const container = this.menuContainerRef.current;
+      let width = container.clientWidth || 0;
+      width = width - (parseFloat(window.getComputedStyle(container).paddingLeft) + parseFloat(window.getComputedStyle(container).paddingRight));
+      console.log("width", width);
+      this.setState({ width });
     };
   }
   render() {
@@ -1479,16 +1488,17 @@ var Menu2 = class extends React36.PureComponent {
       }
     }
     menu = menu.filter((m) => !editor.props.isAdmin ? m.id !== "PrintArea" : true);
-    const maxWidth = this.menuContainerRef.current?.clientWidth || 0;
+    const maxWidth = this.state.width;
     let currentWidth = 0;
     const filteredMenu = [];
     const dropedMenu = [];
-    menu.forEach((menuItem) => {
-      if (maxWidth > currentWidth) {
+    menu.forEach((menuItem, i) => {
+      console.log(maxWidth, currentWidth);
+      if (maxWidth > currentWidth + (i + 1 < menu.length ? menuItem.width : 0)) {
         filteredMenu.push(menuItem);
         currentWidth += menuItem.width;
       } else {
-        currentWidth = maxWidth;
+        currentWidth += menuItem.width;
         dropedMenu.push(menuItem);
       }
     });
@@ -1532,7 +1542,12 @@ var Menu2 = class extends React36.PureComponent {
       ref.current.blur();
     });
   }
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateDimensions);
+  }
   componentDidMount() {
+    window.addEventListener("resize", this.updateDimensions);
+    this.updateDimensions();
     this.forceUpdate();
   }
 };
@@ -1721,7 +1736,9 @@ var MoveableManager = class extends React37.PureComponent {
         onScaleGroupStart: moveableData.onScaleGroupStart,
         onScaleGroup: moveableData.onScaleGroup,
         onResizeStart: moveableData.onResizeStart,
-        onResize: moveableData.onResize,
+        onResize: (e) => {
+          moveableData.onResize(e);
+        },
         onResizeGroupStart: moveableData.onResizeGroupStart,
         onResizeGroup: moveableData.onResizeGroup,
         onRotateStart: moveableData.onRotateStart,
@@ -2166,7 +2183,6 @@ function TextEditor({ element, memory, editor }) {
     fontStyle: memory.get("font-style"),
     textDecoration: memory.get("text-decoration")
   };
-  console.log(styles);
   return /* @__PURE__ */ React39.createElement("div", { className: "text-editor", onClick: handleSave }, /* @__PURE__ */ React39.createElement(
     "textarea",
     {
@@ -2628,11 +2644,6 @@ var Editor = class extends React40.PureComponent {
         if (jsx.name === "(PrintArea)") {
           if (!jsx.attrs) {
             jsx.attrs = {};
-          }
-          if (this.props.isAdmin) {
-            jsx.attrs.class = "selectable";
-          } else {
-            jsx.attrs.class = void 0;
           }
           const newFrame = Object.entries(jsx.frame).map(([key, value]) => {
             return [key.replace(/border/g, "outline"), value];

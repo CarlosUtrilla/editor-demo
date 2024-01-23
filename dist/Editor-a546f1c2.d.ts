@@ -185,6 +185,7 @@ declare class Menu extends React.PureComponent<{
 }> {
     state: {
         selected: string;
+        width: number;
     };
     menuRefs: Array<React.RefObject<Icon>>;
     menuContainerRef: React.RefObject<HTMLDivElement>;
@@ -194,6 +195,8 @@ declare class Menu extends React.PureComponent<{
     select: (id: string) => void;
     getSelected(): typeof Icon | undefined;
     blur(): void;
+    updateDimensions: () => void;
+    componentWillUnmount(): void;
     componentDidMount(): void;
 }
 
@@ -319,6 +322,7 @@ declare class Editor extends React.PureComponent<{
     fontFamily?: string[];
     onValidate?: (errors: boolean) => void;
     previewMode?: boolean;
+    printAreaSize?: string;
 }, Partial<ScenaEditorState>> {
     state: ScenaEditorState;
     historyManager: HistoryManager;

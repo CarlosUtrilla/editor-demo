@@ -3,7 +3,45 @@ import "./App.css";
 import Editor from "../Editor";
 import { ElementInfo } from "../Editor/Viewport/Viewport";
 
-const elements = [] as ElementInfo[]
+const elements = [
+    {
+        "jsx": "div",
+        "attrs": {
+            "class": "selectable Text",
+            "contenteditable": "true"
+        },
+        "name": "(Text)",
+        "frame": {
+            "transform": {
+                "translate": "-13.59375px,20px",
+                "rotate": "0deg",
+                "scale": "1,1"
+            },
+            "top": "240px",
+            "left": "245px",
+            "position": "absolute",
+            "width": "auto",
+            "height": "auto",
+            "color": "rgba(255,255,255,1)",
+            "font-weight": "normal",
+            "font-style": "normal",
+            "text-decoration": "none",
+            "font-family": "Avenir",
+            "font-size": "16px",
+            "text-align": "left"
+        },
+        "colors": [
+            "#fff"
+        ],
+        "children": [],
+        "scopeId": "viewport",
+        "componentId": "",
+        "jsxId": "",
+        "id": "scena47177056",
+        "index": 0,
+        "innerText": "Hola"
+    }
+] as ElementInfo[]
 class App extends React.Component {
     public editor = React.createRef<Editor>();
     public state = {
@@ -34,6 +72,8 @@ class App extends React.Component {
                     initialJSX={elements}
                     backgroundImg="https://api.renoshop.mx/productsImg/5a0c0476-36e9-45db-95de-447fa0a23db9.webp"
                     onUploadImage={this.uploadFile}
+                    printAreaSize="20cmx20cm"
+                    onChange={console.log}
                     isAdmin
                 />
             </div>

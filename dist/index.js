@@ -697,6 +697,7 @@ var Divider = /*#__PURE__*/ function(Icon) {
     return Divider;
 }(Icon);
 Divider.id = "Divider";
+Divider.width = 18;
 // src/Editor/Menu/ImageIcon.tsx
 var React3 = __toESM(require("react"));
 var ImageIcon = /*#__PURE__*/ function(Icon) {
@@ -1966,7 +1967,7 @@ var FontFamily = /*#__PURE__*/ function(Icon) {
     return FontFamily;
 }(Icon);
 FontFamily.id = "FontFamily";
-FontFamily.width = 92;
+FontFamily.width = 93;
 // src/Editor/Menu/TextIcons/FontSize.tsx
 var React25 = __toESM(require("react"));
 var sizes = [
@@ -2070,7 +2071,7 @@ var FontSize = /*#__PURE__*/ function(Icon) {
     return FontSize;
 }(Icon);
 FontSize.id = "FontSize";
-FontSize.width = 97;
+FontSize.width = 98;
 // src/Editor/Menu/TextIcons/Aligns/AlignLeftIcon.tsx
 var React26 = __toESM(require("react"));
 var AlignLeftIcon = /*#__PURE__*/ function(Icon) {
@@ -2757,7 +2758,8 @@ var Menu2 = /*#__PURE__*/ function(_React36_PureComponent) {
             this
         ].concat(Array.prototype.slice.call(arguments)));
         _this.state = {
-            selected: "MoveTool"
+            selected: "MoveTool",
+            width: 0
         };
         _this.menuRefs = [];
         _this.menuContainerRef = React36.createRef();
@@ -2766,6 +2768,15 @@ var Menu2 = /*#__PURE__*/ function(_React36_PureComponent) {
                 selected: id
             });
             _this.props.onSelect(id);
+        };
+        _this.updateDimensions = function() {
+            var container = _this.menuContainerRef.current;
+            var width = container.clientWidth || 0;
+            width = width - (parseFloat(window.getComputedStyle(container).paddingLeft) + parseFloat(window.getComputedStyle(container).paddingRight));
+            console.log("width", width);
+            _this.setState({
+                width: width
+            });
         };
         return _this;
     }
@@ -2783,7 +2794,6 @@ var Menu2 = /*#__PURE__*/ function(_React36_PureComponent) {
             key: "renderMenus",
             value: function renderMenus() {
                 var _this = this;
-                var _this_menuContainerRef_current;
                 var selected = this.state.selected;
                 var editor = this.props.editor;
                 var viewport = editor.getViewport();
@@ -2842,16 +2852,17 @@ var Menu2 = /*#__PURE__*/ function(_React36_PureComponent) {
                 menu = menu.filter(function(m) {
                     return !editor.props.isAdmin ? m.id !== "PrintArea" : true;
                 });
-                var maxWidth = ((_this_menuContainerRef_current = this.menuContainerRef.current) === null || _this_menuContainerRef_current === void 0 ? void 0 : _this_menuContainerRef_current.clientWidth) || 0;
+                var maxWidth = this.state.width;
                 var currentWidth = 0;
                 var filteredMenu = [];
                 var dropedMenu = [];
-                menu.forEach(function(menuItem) {
-                    if (maxWidth > currentWidth) {
+                menu.forEach(function(menuItem, i) {
+                    console.log(maxWidth, currentWidth);
+                    if (maxWidth > currentWidth + (i + 1 < menu.length ? menuItem.width : 0)) {
                         filteredMenu.push(menuItem);
                         currentWidth += menuItem.width;
                     } else {
-                        currentWidth = maxWidth;
+                        currentWidth += menuItem.width;
                         dropedMenu.push(menuItem);
                     }
                 });
@@ -2908,8 +2919,16 @@ var Menu2 = /*#__PURE__*/ function(_React36_PureComponent) {
             }
         },
         {
+            key: "componentWillUnmount",
+            value: function componentWillUnmount() {
+                window.removeEventListener("resize", this.updateDimensions);
+            }
+        },
+        {
             key: "componentDidMount",
             value: function componentDidMount() {
+                window.addEventListener("resize", this.updateDimensions);
+                this.updateDimensions();
                 this.forceUpdate();
             }
         }
@@ -2992,11 +3011,18 @@ var Viewport = /*#__PURE__*/ function(_React37_PureComponent) {
                     if (isScreenshot && info.name === "(PrintArea)") {
                         return /* @__PURE__ */ React37.createElement("div", null);
                     }
+                    if (info.name === "(PrintArea)" && editor.props.printAreaSize) {
+                        info.innerHTML = '<div class="print-area-size"><span>'.concat(editor.props.printAreaSize, "</span></div>");
+                    }
                     var props = {
                         key: id
                     };
+                    props.className = "";
                     if (editor.props.isAdmin || !editor.props.isAdmin && info.name !== "(PrintArea)") {
                         props.className = "selectable ".concat(info.name === "(Text)" ? "Text" : "");
+                    }
+                    if (info.name === "(PrintArea)") {
+                        props.className = "PrintArea ".concat(props.className);
                     }
                     if (info.name !== "(PrintArea)" && info.el && !editor.props.previewMode) {
                         var printAreas = allInfos.filter(function(e) {
@@ -3684,7 +3710,9 @@ var MoveableManager = /*#__PURE__*/ function(_React38_PureComponent) {
                     onScaleGroupStart: moveableData.onScaleGroupStart,
                     onScaleGroup: moveableData.onScaleGroup,
                     onResizeStart: moveableData.onResizeStart,
-                    onResize: moveableData.onResize,
+                    onResize: function(e) {
+                        moveableData.onResize(e);
+                    },
                     onResizeGroupStart: moveableData.onResizeGroupStart,
                     onResizeGroup: moveableData.onResizeGroup,
                     onRotateStart: moveableData.onRotateStart,
@@ -4359,7 +4387,6 @@ function TextEditor(param) {
         fontStyle: memory.get("font-style"),
         textDecoration: memory.get("text-decoration")
     };
-    console.log(styles);
     return /* @__PURE__ */ import_react.default.createElement("div", {
         className: "text-editor",
         onClick: handleSave
@@ -4823,11 +4850,6 @@ var Editor = /*#__PURE__*/ function(_React41_PureComponent) {
                         if (jsx.name === "(PrintArea)") {
                             if (!jsx.attrs) {
                                 jsx.attrs = {};
-                            }
-                            if (_this.props.isAdmin) {
-                                jsx.attrs.class = "selectable";
-                            } else {
-                                jsx.attrs.class = void 0;
                             }
                             var newFrame = Object.entries(jsx.frame).map(function(param) {
                                 var _param = _sliced_to_array(param, 2), key = _param[0], value = _param[1];

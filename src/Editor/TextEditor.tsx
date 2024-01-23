@@ -87,7 +87,6 @@ export default function TextEditor({ element, memory, editor }: TextEditorProps)
 			fontStyle: memory.get("font-style"),
 			textDecoration: memory.get("text-decoration"),
 	}
-	console.log(styles)
 	return (
 		<div className='text-editor' onClick={handleSave}>
 			<textarea

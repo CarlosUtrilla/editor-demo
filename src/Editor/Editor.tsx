@@ -31,9 +31,7 @@ import Debugger from "./utils/Debugger";
 import { DATA_SCENA_ELEMENT_ID } from "./consts";
 import ClipboardManager from "./utils/ClipboardManager";
 import { NameType } from "scenejs";
-import html2canvas from "html2canvas";
 import domtoimage from "dom-to-image";
-import { color } from "html2canvas/dist/types/css/types/color";
 import TextEditor from "./TextEditor";
 import Icon from "./Menu/Icon";
 
@@ -96,6 +94,7 @@ export default class Editor extends React.PureComponent<
     fontFamily?: string[];
     onValidate?: (errors: boolean) => void;
     previewMode?: boolean;
+    printAreaSize?: string
   },
   Partial<ScenaEditorState>
 > {
@@ -111,7 +110,7 @@ export default class Editor extends React.PureComponent<
     height: 500,
     loadedViewer: false,
     isShift: false,
-    isScreenshot: false,
+    isScreenshot: false
   };
   public historyManager = new HistoryManager(this);
   public console = new Debugger(this.props.debug);
@@ -504,11 +503,6 @@ export default class Editor extends React.PureComponent<
           if (jsx.name === "(PrintArea)") {
             if (!jsx.attrs) {
               jsx.attrs = {}
-            }
-            if (this.props.isAdmin) {
-              jsx.attrs.class = "selectable"
-            } else {
-              jsx.attrs.class = undefined
             }
             const newFrame = Object.entries(jsx.frame as any).map(([key, value]) => {
               return [key.replace(/border/g, "outline"), value]

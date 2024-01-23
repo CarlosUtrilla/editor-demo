@@ -67,7 +67,7 @@ export default class Menu extends React.PureComponent<{
         const dropedMenu: (typeof Icon)[] = []
         menu.forEach((menuItem, i) => {
             console.log(maxWidth, currentWidth)
-            if (maxWidth > (currentWidth - (i + 1 === menu.length ? menuItem.width : - 5)))  {
+            if (maxWidth > (currentWidth + (i + 1 < menu.length ? menuItem.width : 0)))  {
                 filteredMenu.push(menuItem)
                 currentWidth += menuItem.width
             } else {

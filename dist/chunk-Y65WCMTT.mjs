@@ -173,11 +173,18 @@ var Viewport = class extends React.PureComponent {
       if (isScreenshot && info.name === "(PrintArea)") {
         return /* @__PURE__ */ React.createElement("div", null);
       }
+      if (info.name === "(PrintArea)" && editor.props.printAreaSize) {
+        info.innerHTML = `<div class="print-area-size"><span>${editor.props.printAreaSize}</span></div>`;
+      }
       const props = {
         key: id
       };
+      props.className = "";
       if (editor.props.isAdmin || !editor.props.isAdmin && info.name !== "(PrintArea)") {
         props.className = `selectable ${info.name === "(Text)" ? "Text" : ""}`;
+      }
+      if (info.name === "(PrintArea)") {
+        props.className = `PrintArea ${props.className}`;
       }
       if (info.name !== "(PrintArea)" && info.el && !editor.props.previewMode) {
         const printAreas = allInfos.filter((e) => e.name === "(PrintArea)");
