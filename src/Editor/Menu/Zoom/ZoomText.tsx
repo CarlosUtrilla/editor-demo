@@ -2,7 +2,7 @@ import * as React from "react";
 import Icon from "../Icon";
 
 export default class ZoomTextIcon extends Icon {
-    public static id = "ZoomText";
+		public static id = "ZoomText";
     public renderIcon() {
         return (
 					<span style={{

@@ -2855,7 +2855,7 @@ var Menu2 = /*#__PURE__*/ function(_React36_PureComponent) {
                 var filteredMenu = [];
                 var dropedMenu = [];
                 menu.forEach(function(menuItem, i) {
-                    if (maxWidth > currentWidth + (i + 1 < menu.length ? menuItem.width : 0)) {
+                    if (maxWidth > currentWidth + (i + 1 < menu.length ? menuItem.width + 40 : 40)) {
                         filteredMenu.push(menuItem);
                         currentWidth += menuItem.width;
                     } else {
