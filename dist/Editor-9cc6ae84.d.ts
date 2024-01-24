@@ -85,6 +85,7 @@ declare class HistoryManager {
     addAction(type: string, props: IObject<any>): void;
     undo(): void;
     redo(): void;
+    private propageChanges;
 }
 
 declare class Debugger {
@@ -348,8 +349,8 @@ declare class Editor extends React.PureComponent<{
     promiseState(state: Partial<ScenaEditorState>): Promise<unknown>;
     getSelectedTargets(): (HTMLElement | SVGElement)[];
     setSelectedTargets(targets: Array<HTMLElement | SVGElement>, isRestore?: boolean): Promise<(HTMLElement | SVGElement)[]>;
-    appendJSX(info: ElementInfo): Promise<HTMLElement | SVGElement>;
-    appendJSXs(jsxs: ElementInfo[], isRestore?: boolean): Promise<Array<HTMLElement | SVGElement>>;
+    appendJSX(info: ElementInfo, isRestore?: boolean): Promise<HTMLElement | SVGElement>;
+    appendJSXs(jsxs: ElementInfo[], isRestore?: boolean, isNewText?: boolean): Promise<Array<HTMLElement | SVGElement>>;
     appendComplete(infos: ElementInfo[], isRestore?: boolean): Promise<HTMLElement[]>;
     removeByIds(ids: string[], isRestore?: boolean): Promise<(HTMLElement | SVGElement)[]>;
     getMoveable(): Moveable.default<{}>;
@@ -366,7 +367,7 @@ declare class Editor extends React.PureComponent<{
     appendBlob(blob: Blob): Promise<HTMLElement | SVGElement>;
     moves(movedInfos: MovedInfo[], isRestore?: boolean): Promise<MovedResult>;
     onMenuChange: (id: string) => void;
-    selectEndMaker(rect: Rect, extraProps?: any, icon?: typeof Icon): boolean;
+    selectEndMaker(rect: Rect, extraProps?: any, icon?: typeof Icon, isNewText?: boolean): boolean;
     private move;
     private checkBlur;
     onResize: () => void;

@@ -22,9 +22,7 @@ export default class HistoryManager {
             props,
         });
         this.redoStack = [];
-        if (this.editor.props.onChange && this.editor.viewport.current) {
-            this.editor.props.onChange(this.editor.saveEditor())
-        }
+        this.propageChanges()
     }
     public undo() {
         const undoAction = this.undoStack.pop();
@@ -34,6 +32,7 @@ export default class HistoryManager {
         this.editor.console.log(`Undo History: ${undoAction.type}`, undoAction.props);
         this.types[undoAction.type]?.undo(undoAction.props, this.editor);
         this.redoStack.push(undoAction);
+        this.propageChanges()
     }
     public redo() {
         const redoAction = this.redoStack.pop();
@@ -44,5 +43,11 @@ export default class HistoryManager {
         this.editor.console.log(`Redo History: ${redoAction.type}`, redoAction.props);
         this.types[redoAction.type]?.redo(redoAction.props, this.editor);
         this.undoStack.push(redoAction);
+        this.propageChanges()
+    }
+    private propageChanges() {
+        if (this.editor.props.onChange && this.editor.viewport.current) {
+            this.editor.props.onChange(this.editor.saveEditor())
+        }
     }
 }

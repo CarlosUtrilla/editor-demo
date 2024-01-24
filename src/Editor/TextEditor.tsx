@@ -51,9 +51,10 @@ export default function TextEditor({ element, memory, editor }: TextEditorProps)
 	}
 	const handleSave = () => {
 		const el = element
+		const isNew = el.innerText === "" || !el.innerText
 		if (text.trim().length > 0) {
-
-			el.innerText = text
+			const oldText = el.innerText
+			el.innerText = text.trim()
 			const newFrame = Object.fromEntries(Object.entries(styles).map(style => {
 					const [key, value] = style
 					return [convertToSnakeCase(key), value]
@@ -69,9 +70,16 @@ export default function TextEditor({ element, memory, editor }: TextEditorProps)
 					el.el!.style[key as any] = value
 				})
 			}
-			editor.appendJSXs([el], true)
+			editor.appendJSXs([el], true, isNew)
+			if (!isNew) {
+				editor.historyManager.addAction("changeText", {
+					id: el.id,
+					prev: oldText,
+					next: el.innerText
+				});
+			}
 		} else {
-			editor.removeByIds([el.id!])
+			editor.removeByIds([el.id!],isNew)
 		}
 		editor.menu.current?.select("MoveTool")
 		editor.setSelectedTargets([])

@@ -13,7 +13,7 @@ import {
   getScenaAttrs,
   makeScenaFunctionComponent,
   prefix
-} from "./chunk-TG5OCE4W.mjs";
+} from "./chunk-2MZNJJQJ.mjs";
 
 // src/Editor/Editor.tsx
 import * as React40 from "react";
@@ -344,7 +344,7 @@ var _TextIcon = class _TextIcon extends Icon {
           right: 0,
           width: "auto",
           height: "auto"
-        }, {}, _TextIcon);
+        }, {}, _TextIcon, true);
       });
     };
   }
@@ -356,7 +356,7 @@ _TextIcon.id = "Text";
 _TextIcon.maker = (memory) => ({
   tag: "div",
   attrs: {
-    contenteditable: true
+    isText: true
   },
   style: {
     color: memory.get("color"),
@@ -369,7 +369,6 @@ _TextIcon.maker = (memory) => ({
   }
 });
 _TextIcon.makeThen = (target, id, menu) => {
-  target.focus();
   menu.select("Text");
 };
 var TextIcon = _TextIcon;
@@ -1694,7 +1693,6 @@ var MoveableManager = class extends React37.PureComponent {
         throttleResize: 1,
         clippable: selectedMenu === "Crop",
         dragArea: selectedTargets.length > 1 || selectedMenu !== "Text",
-        checkInput: selectedMenu === "Text",
         throttleDragRotate: isShift ? 45 : 0,
         keepRatio,
         rotatable: true,
@@ -1752,7 +1750,7 @@ var MoveableManager = class extends React37.PureComponent {
         onRound: moveableData.onRound,
         onClick: (e) => {
           const target = e.inputTarget;
-          if (e.isDouble && target.isContentEditable) {
+          if (e.isDouble && target.getAttribute("istext")) {
             editor.selectMenu("Text");
             const info = this.editor.viewport.current?.getInfoByElement(target);
             if (info && info.frame) {
@@ -1940,9 +1938,7 @@ var HistoryManager = class {
       props
     });
     this.redoStack = [];
-    if (this.editor.props.onChange && this.editor.viewport.current) {
-      this.editor.props.onChange(this.editor.saveEditor());
-    }
+    this.propageChanges();
   }
   undo() {
     const undoAction = this.undoStack.pop();
@@ -1952,6 +1948,7 @@ var HistoryManager = class {
     this.editor.console.log(`Undo History: ${undoAction.type}`, undoAction.props);
     this.types[undoAction.type]?.undo(undoAction.props, this.editor);
     this.redoStack.push(undoAction);
+    this.propageChanges();
   }
   redo() {
     const redoAction = this.redoStack.pop();
@@ -1961,6 +1958,12 @@ var HistoryManager = class {
     this.editor.console.log(`Redo History: ${redoAction.type}`, redoAction.props);
     this.types[redoAction.type]?.redo(redoAction.props, this.editor);
     this.undoStack.push(redoAction);
+    this.propageChanges();
+  }
+  propageChanges() {
+    if (this.editor.props.onChange && this.editor.viewport.current) {
+      this.editor.props.onChange(this.editor.saveEditor());
+    }
   }
 };
 
@@ -2147,8 +2150,10 @@ function TextEditor({ element, memory, editor }) {
   };
   const handleSave = () => {
     const el = element;
+    const isNew = el.innerText === "" || !el.innerText;
     if (text.trim().length > 0) {
-      el.innerText = text;
+      const oldText = el.innerText;
+      el.innerText = text.trim();
       const newFrame = Object.fromEntries(Object.entries(styles).map((style) => {
         const [key, value] = style;
         return [convertToSnakeCase(key), value];
@@ -2164,9 +2169,16 @@ function TextEditor({ element, memory, editor }) {
           el.el.style[key] = value;
         });
       }
-      editor.appendJSXs([el], true);
+      editor.appendJSXs([el], true, isNew);
+      if (!isNew) {
+        editor.historyManager.addAction("changeText", {
+          id: el.id,
+          prev: oldText,
+          next: el.innerText
+        });
+      }
     } else {
-      editor.removeByIds([el.id]);
+      editor.removeByIds([el.id], isNew);
     }
     editor.menu.current?.select("MoveTool");
     editor.setSelectedTargets([]);
@@ -2700,10 +2712,10 @@ var Editor = class extends React40.PureComponent {
       return targets;
     });
   }
-  appendJSX(info) {
-    return this.appendJSXs([info]).then((targets) => targets[0]);
+  appendJSX(info, isRestore) {
+    return this.appendJSXs([info], isRestore).then((targets) => targets[0]);
   }
-  appendJSXs(jsxs, isRestore) {
+  appendJSXs(jsxs, isRestore, isNewText) {
     const viewport = this.getViewport();
     const indexesList = viewport.getSortedIndexesList(
       this.getSelectedTargets()
@@ -2718,7 +2730,7 @@ var Editor = class extends React40.PureComponent {
       appendIndex = indexes[indexes.length - 1] + 1;
     }
     return this.getViewport().appendJSXs(jsxs, appendIndex, scopeId).then(({ added }) => {
-      return this.appendComplete(added, isRestore);
+      return this.appendComplete(added, isNewText ? false : isRestore);
     });
   }
   appendComplete(infos, isRestore) {
@@ -2866,14 +2878,14 @@ var Editor = class extends React40.PureComponent {
     this.console.log("save targets", targets);
     return targets.map((target) => viewport.getInfoByElement(target)).map(function saveTarget(info) {
       const target = info.el;
-      const isContentEditable = info.attrs.contenteditable;
+      const isText = info.attrs.isText;
       return {
         name: info.name,
         attrs: getScenaAttrs(target),
         jsxId: info.jsxId || "",
         componentId: info.componentId,
-        innerHTML: isContentEditable ? "" : target.innerHTML,
-        innerText: isContentEditable ? target.innerText : "",
+        innerHTML: isText ? "" : target.innerHTML,
+        innerText: isText ? target.innerText : "",
         tagName: target.tagName.toLowerCase(),
         frame: moveableData.getFrame(target).get(),
         children: info.children.map(saveTarget)
@@ -2897,7 +2909,7 @@ var Editor = class extends React40.PureComponent {
     const frameMap = this.removeFrames(movedInfos.map(({ info }) => info.el));
     return this.getViewport().moves(movedInfos).then((result) => this.moveComplete(result, frameMap, isRestore));
   }
-  selectEndMaker(rect, extraProps, icon) {
+  selectEndMaker(rect, extraProps, icon, isNewText) {
     const infiniteViewer = this.infiniteViewer.current;
     const selectIcon = icon || this.menu.current.getSelected();
     const width = rect.width;
@@ -2927,7 +2939,7 @@ var Editor = class extends React40.PureComponent {
       frame: style,
       ..."Text" === selectIcon.id && { colors: [style.color] },
       ...extraProps && { ...extraProps }
-    }).then((el) => {
+    }, isNewText).then((el) => {
       selectIcon.makeThen(el, selectIcon.id, this.menu.current);
       this.menu.current?.forceUpdate();
       if (selectIcon.id === "Text") {

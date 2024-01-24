@@ -52,7 +52,7 @@ function getIds(els) {
 }
 function checkInput(target) {
   const tagName = target.tagName.toLowerCase();
-  return target.isContentEditable || tagName === "input" || tagName === "textarea";
+  return target.isText || tagName === "input" || tagName === "textarea";
 }
 function checkImageLoaded(el) {
   if (el.tagName.toLowerCase() !== "img") {
@@ -203,9 +203,6 @@ var Viewport = class extends React.PureComponent {
       }
       if (!info.attrs) {
         info.attrs = {};
-      }
-      if (info.name === "(Text)" && !info.attrs?.contenteditable) {
-        info.attrs.contenteditable = "true";
       }
       if (isString(jsx)) {
         props[DATA_SCENA_ELEMENT_ID] = id;
@@ -359,7 +356,7 @@ var Viewport = class extends React.PureComponent {
           const children = info.children || [];
           if (children.length) {
             children.forEach(registerElement);
-          } else if (info.attrs.contenteditable) {
+          } else if (info.attrs.istext) {
             if ("innerText" in info) {
               target.innerText = info.innerText || "";
             } else {
@@ -394,7 +391,7 @@ var Viewport = class extends React.PureComponent {
       const target = info.el;
       let innerText = "";
       let innerHTML = "";
-      if (info.attrs.contenteditable) {
+      if (info.attrs.isText) {
         innerText = target.innerText;
       } else {
         innerHTML = target.innerHTML;

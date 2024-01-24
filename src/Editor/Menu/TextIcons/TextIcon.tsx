@@ -9,7 +9,7 @@ export default class TextIcon extends Icon {
     public static maker = (memory: Memory) => ({
         tag: "div",
         attrs: {
-            contenteditable: true,
+            isText: true,
         },
         style: {
             color: memory.get("color"),
@@ -22,7 +22,6 @@ export default class TextIcon extends Icon {
         },
     });
     public static makeThen = (target: HTMLElement | SVGElement, id: string, menu: Menu) => {
-        target.focus();
         menu.select("Text");
     };
     public renderIcon() {
@@ -44,7 +43,7 @@ export default class TextIcon extends Icon {
                 right: 0,
                 width: "auto",
                 height: "auto",
-            },{}, TextIcon)
+            },{}, TextIcon, true)
         })
     }
 }

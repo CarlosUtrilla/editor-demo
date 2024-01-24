@@ -9,10 +9,10 @@ export function prefix(...classNames: string[]) {
     return prefixNames(PREFIX, ...classNames);
 }
 export function getContentElement(el: HTMLElement): HTMLElement | null {
-    if (el.contentEditable === "inherit") {
+    if (!(el as any).isText) {
         return getContentElement(el.parentElement!);
     }
-    if (el.contentEditable === "true") {
+    if ((el as any).isText === "true") {
         return el;
     }
     return null;
@@ -47,7 +47,7 @@ export function getIds(els: Array<HTMLElement | SVGElement>): string[] {
 export function checkInput(target: HTMLElement | SVGElement) {
     const tagName = target.tagName.toLowerCase();
 
-    return (target as HTMLElement).isContentEditable || tagName === "input" || tagName === "textarea";
+    return (target as any).isText || tagName === "input" || tagName === "textarea";
 }
 export function checkImageLoaded(el: HTMLElement | SVGElement): Promise<any> {
     if (el.tagName.toLowerCase() !== "img") {

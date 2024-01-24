@@ -458,7 +458,7 @@ function getIds(els) {
 }
 function checkInput(target) {
     var tagName = target.tagName.toLowerCase();
-    return target.isContentEditable || tagName === "input" || tagName === "textarea";
+    return target.isText || tagName === "input" || tagName === "textarea";
 }
 function checkImageLoaded(el) {
     if (el.tagName.toLowerCase() !== "img") {
@@ -1028,7 +1028,7 @@ var _TextIcon = /*#__PURE__*/ function(Icon) {
                     right: 0,
                     width: "auto",
                     height: "auto"
-                }, {}, _TextIcon);
+                }, {}, _TextIcon, true);
             });
         };
         return _this;
@@ -1050,7 +1050,7 @@ _TextIcon.maker = function(memory) {
     return {
         tag: "div",
         attrs: {
-            contenteditable: true
+            isText: true
         },
         style: {
             color: memory.get("color"),
@@ -1064,7 +1064,6 @@ _TextIcon.maker = function(memory) {
     };
 };
 _TextIcon.makeThen = function(target, id, menu) {
-    target.focus();
     menu.select("Text");
 };
 var TextIcon = _TextIcon;
@@ -2999,7 +2998,7 @@ var Viewport = /*#__PURE__*/ function(_React37_PureComponent) {
                 var areErrors = false;
                 var renders = children.map(function(info, _, allInfos) {
                     var _React37;
-                    var _info_attrs, _jsx_props;
+                    var _jsx_props;
                     var editor = _this.props.editor;
                     var jsx = info.jsx;
                     var nextChildren = info.children;
@@ -3041,9 +3040,6 @@ var Viewport = /*#__PURE__*/ function(_React37_PureComponent) {
                     }
                     if (!info.attrs) {
                         info.attrs = {};
-                    }
-                    if (info.name === "(Text)" && !((_info_attrs = info.attrs) === null || _info_attrs === void 0 ? void 0 : _info_attrs.contenteditable)) {
-                        info.attrs.contenteditable = "true";
                     }
                     if ((0, import_utils9.isString)(jsx)) {
                         var _React371;
@@ -3250,7 +3246,7 @@ var Viewport = /*#__PURE__*/ function(_React37_PureComponent) {
                             var children = info.children || [];
                             if (children.length) {
                                 children.forEach(registerElement);
-                            } else if (info.attrs.contenteditable) {
+                            } else if (info.attrs.istext) {
                                 if ("innerText" in info) {
                                     target.innerText = info.innerText || "";
                                 } else {
@@ -3300,7 +3296,7 @@ var Viewport = /*#__PURE__*/ function(_React37_PureComponent) {
                     var target = info.el;
                     var innerText = "";
                     var innerHTML = "";
-                    if (info.attrs.contenteditable) {
+                    if (info.attrs.isText) {
                         innerText = target.innerText;
                     } else {
                         innerHTML = target.innerHTML;
@@ -3668,7 +3664,6 @@ var MoveableManager = /*#__PURE__*/ function(_React38_PureComponent) {
                     throttleResize: 1,
                     clippable: selectedMenu === "Crop",
                     dragArea: selectedTargets.length > 1 || selectedMenu !== "Text",
-                    checkInput: selectedMenu === "Text",
                     throttleDragRotate: isShift ? 45 : 0,
                     keepRatio: keepRatio,
                     rotatable: true,
@@ -3732,7 +3727,7 @@ var MoveableManager = /*#__PURE__*/ function(_React38_PureComponent) {
                     onRound: moveableData.onRound,
                     onClick: function(e) {
                         var target = e.inputTarget;
-                        if (e.isDouble && target.isContentEditable) {
+                        if (e.isDouble && target.getAttribute("istext")) {
                             var _this_editor_viewport_current;
                             editor.selectMenu("Text");
                             var info = (_this_editor_viewport_current = _this.editor.viewport.current) === null || _this_editor_viewport_current === void 0 ? void 0 : _this_editor_viewport_current.getInfoByElement(target);
@@ -4045,9 +4040,7 @@ var HistoryManager = /*#__PURE__*/ function() {
                     props: props
                 });
                 this.redoStack = [];
-                if (this.editor.props.onChange && this.editor.viewport.current) {
-                    this.editor.props.onChange(this.editor.saveEditor());
-                }
+                this.propageChanges();
             }
         },
         {
@@ -4061,6 +4054,7 @@ var HistoryManager = /*#__PURE__*/ function() {
                 this.editor.console.log("Undo History: ".concat(undoAction.type), undoAction.props);
                 (_this_types_undoAction_type = this.types[undoAction.type]) === null || _this_types_undoAction_type === void 0 ? void 0 : _this_types_undoAction_type.undo(undoAction.props, this.editor);
                 this.redoStack.push(undoAction);
+                this.propageChanges();
             }
         },
         {
@@ -4074,6 +4068,15 @@ var HistoryManager = /*#__PURE__*/ function() {
                 this.editor.console.log("Redo History: ".concat(redoAction.type), redoAction.props);
                 (_this_types_redoAction_type = this.types[redoAction.type]) === null || _this_types_redoAction_type === void 0 ? void 0 : _this_types_redoAction_type.redo(redoAction.props, this.editor);
                 this.undoStack.push(redoAction);
+                this.propageChanges();
+            }
+        },
+        {
+            key: "propageChanges",
+            value: function propageChanges() {
+                if (this.editor.props.onChange && this.editor.viewport.current) {
+                    this.editor.props.onChange(this.editor.saveEditor());
+                }
             }
         }
     ]);
@@ -4353,8 +4356,10 @@ function TextEditor(param) {
     var handleSave = function() {
         var _editor_menu_current;
         var el = element;
+        var isNew = el.innerText === "" || !el.innerText;
         if (text.trim().length > 0) {
-            el.innerText = text;
+            var oldText = el.innerText;
+            el.innerText = text.trim();
             var newFrame = Object.fromEntries(Object.entries(styles).map(function(style) {
                 var _style = _sliced_to_array(style, 2), key = _style[0], value = _style[1];
                 return [
@@ -4372,11 +4377,18 @@ function TextEditor(param) {
             }
             editor.appendJSXs([
                 el
-            ], true);
+            ], true, isNew);
+            if (!isNew) {
+                editor.historyManager.addAction("changeText", {
+                    id: el.id,
+                    prev: oldText,
+                    next: el.innerText
+                });
+            }
         } else {
             editor.removeByIds([
                 el.id
-            ]);
+            ], isNew);
         }
         (_editor_menu_current = editor.menu.current) === null || _editor_menu_current === void 0 ? void 0 : _editor_menu_current.select("MoveTool");
         editor.setSelectedTargets([]);
@@ -4942,17 +4954,17 @@ var Editor = /*#__PURE__*/ function(_React41_PureComponent) {
         },
         {
             key: "appendJSX",
-            value: function appendJSX(info) {
+            value: function appendJSX(info, isRestore) {
                 return this.appendJSXs([
                     info
-                ]).then(function(targets) {
+                ], isRestore).then(function(targets) {
                     return targets[0];
                 });
             }
         },
         {
             key: "appendJSXs",
-            value: function appendJSXs(jsxs, isRestore) {
+            value: function appendJSXs(jsxs, isRestore, isNewText) {
                 var _this = this;
                 var viewport = this.getViewport();
                 var indexesList = viewport.getSortedIndexesList(this.getSelectedTargets());
@@ -4967,7 +4979,7 @@ var Editor = /*#__PURE__*/ function(_React41_PureComponent) {
                 }
                 return this.getViewport().appendJSXs(jsxs, appendIndex, scopeId).then(function(param) {
                     var added = param.added;
-                    return _this.appendComplete(added, isRestore);
+                    return _this.appendComplete(added, isNewText ? false : isRestore);
                 });
             }
         },
@@ -5157,14 +5169,14 @@ var Editor = /*#__PURE__*/ function(_React41_PureComponent) {
                     return viewport.getInfoByElement(target);
                 }).map(function saveTarget(info) {
                     var target = info.el;
-                    var isContentEditable = info.attrs.contenteditable;
+                    var isText = info.attrs.isText;
                     return {
                         name: info.name,
                         attrs: getScenaAttrs(target),
                         jsxId: info.jsxId || "",
                         componentId: info.componentId,
-                        innerHTML: isContentEditable ? "" : target.innerHTML,
-                        innerText: isContentEditable ? target.innerText : "",
+                        innerHTML: isText ? "" : target.innerHTML,
+                        innerText: isText ? target.innerText : "",
                         tagName: target.tagName.toLowerCase(),
                         frame: moveableData.getFrame(target).get(),
                         children: info.children.map(saveTarget)
@@ -5212,7 +5224,7 @@ var Editor = /*#__PURE__*/ function(_React41_PureComponent) {
         },
         {
             key: "selectEndMaker",
-            value: function selectEndMaker(rect, extraProps, icon) {
+            value: function selectEndMaker(rect, extraProps, icon, isNewText) {
                 var _this = this;
                 var infiniteViewer = this.infiniteViewer.current;
                 var selectIcon = icon || this.menu.current.getSelected();
@@ -5244,7 +5256,7 @@ var Editor = /*#__PURE__*/ function(_React41_PureComponent) {
                     colors: [
                         style.color
                     ]
-                }, extraProps && _object_spread({}, extraProps))).then(function(el) {
+                }, extraProps && _object_spread({}, extraProps)), isNewText).then(function(el) {
                     var _this_menu_current;
                     selectIcon.makeThen(el, selectIcon.id, _this.menu.current);
                     (_this_menu_current = _this.menu.current) === null || _this_menu_current === void 0 ? void 0 : _this_menu_current.forceUpdate();

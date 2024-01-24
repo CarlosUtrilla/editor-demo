@@ -124,9 +124,7 @@ export default class Viewport extends React.PureComponent<{
             if (!info.attrs) {
                 info.attrs = {}
             }
-            if (info.name === "(Text)" && !info.attrs?.contenteditable) {
-                info.attrs.contenteditable = "true"
-            }
+
             if (isString(jsx)) {
                 props[DATA_SCENA_ELEMENT_ID] = id;
                 return React.createElement(jsx, props, ...renderedChildren) as ScenaJSXElement;
@@ -296,10 +294,9 @@ export default class Viewport extends React.PureComponent<{
                     }
                     info.attrs = getScenaAttrs(target);
                     const children = info.children || [];
-
                     if (children.length) {
                         children.forEach(registerElement);
-                    } else if (info.attrs!.contenteditable) {
+                    } else if (info.attrs!.istext) {
                         if ("innerText" in info) {
                             (target as HTMLElement).innerText = info.innerText || "";
                         } else {
@@ -336,7 +333,7 @@ export default class Viewport extends React.PureComponent<{
             let innerText = "";
             let innerHTML = "";
 
-            if (info.attrs!.contenteditable) {
+            if (info.attrs!.isText) {
                 innerText = (target as HTMLElement).innerText;
             } else {
                 innerHTML = target.innerHTML;

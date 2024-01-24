@@ -131,7 +131,6 @@ export default class MoveableManager extends React.PureComponent<{
             throttleResize={1}
             clippable={selectedMenu === "Crop"}
             dragArea={selectedTargets.length > 1 || selectedMenu !== "Text"}
-            checkInput={selectedMenu === "Text"}
             throttleDragRotate={isShift ? 45 : 0}
             keepRatio={keepRatio}
             rotatable={true}
@@ -204,7 +203,7 @@ export default class MoveableManager extends React.PureComponent<{
 
             onClick={e => {
                 const target = e.inputTarget as any;
-                if (e.isDouble && target.isContentEditable) {
+                if (e.isDouble && target.getAttribute("istext")) {
                     editor.selectMenu("Text");
                     const info = this.editor.viewport.current?.getInfoByElement(target)
                     if (info && info.frame) {

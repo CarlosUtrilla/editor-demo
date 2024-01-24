@@ -577,13 +577,14 @@ export default class Editor extends React.PureComponent<
       return targets;
     });
   }
-  public appendJSX(info: ElementInfo) {
-    return this.appendJSXs([info]).then((targets) => targets[0]);
+  public appendJSX(info: ElementInfo, isRestore?: boolean) {
+    return this.appendJSXs([info], isRestore).then((targets) => targets[0]);
   }
 
   public appendJSXs(
     jsxs: ElementInfo[],
-    isRestore?: boolean
+    isRestore?: boolean,
+    isNewText?: boolean
   ): Promise<Array<HTMLElement | SVGElement>> {
     const viewport = this.getViewport();
     const indexesList = viewport.getSortedIndexesList(
@@ -605,7 +606,7 @@ export default class Editor extends React.PureComponent<
     return this.getViewport()
       .appendJSXs(jsxs, appendIndex, scopeId)
       .then(({ added }) => {
-        return this.appendComplete(added, isRestore);
+        return this.appendComplete(added, isNewText?false:isRestore);
       });
   }
   public appendComplete(infos: ElementInfo[], isRestore?: boolean) {
@@ -787,14 +788,15 @@ export default class Editor extends React.PureComponent<
       .map((target) => viewport.getInfoByElement(target))
       .map(function saveTarget(info): SavedScenaData {
         const target = info.el!;
-        const isContentEditable = info.attrs!.contenteditable;
+        const isText= info.attrs!.isText;
+
         return {
           name: info.name,
           attrs: getScenaAttrs(target),
           jsxId: info.jsxId || "",
           componentId: info.componentId!,
-          innerHTML: isContentEditable ? "" : target.innerHTML,
-          innerText: isContentEditable ? (target as HTMLElement).innerText : "",
+          innerHTML: isText ? "" : target.innerHTML,
+          innerText: isText ? (target as HTMLElement).innerText : "",
           tagName: target.tagName.toLowerCase(),
           frame: moveableData.getFrame(target).get(),
           children: info.children!.map(saveTarget)
@@ -828,7 +830,7 @@ export default class Editor extends React.PureComponent<
       selectedMenu: id
     });
   };
-  public selectEndMaker(rect: Rect, extraProps?: any, icon?:typeof Icon) {
+  public selectEndMaker(rect: Rect, extraProps?: any, icon?:typeof Icon, isNewText?: boolean) {
     const infiniteViewer = this.infiniteViewer.current!;
     const selectIcon = icon || this.menu.current!.getSelected();
     const width = rect.width;
@@ -858,7 +860,7 @@ export default class Editor extends React.PureComponent<
       frame: style,
       ...("Text" === selectIcon.id &&{ colors: [style.color]}),
       ...(extraProps && {...extraProps})
-    }).then((el) => {
+    }, isNewText).then((el) => {
       selectIcon.makeThen(el, selectIcon.id as string, this.menu.current!)
       this.menu.current?.forceUpdate()
       if (selectIcon.id === "Text") {
