@@ -16,20 +16,19 @@ import {
 } from "./chunk-2MZNJJQJ.mjs";
 
 // src/Editor/Editor.tsx
-import * as React40 from "react";
+import * as React42 from "react";
 import InfiniteViewer from "react-infinite-viewer";
 import Guides from "@scena/react-guides";
 import Selecto from "react-selecto";
 
 // src/Editor/Menu/Menu.tsx
-import * as React36 from "react";
+import * as React38 from "react";
 
 // src/Editor/Menu/Divider.tsx
 import * as React2 from "react";
 
 // src/Editor/Menu/Icon.tsx
 import * as React from "react";
-import { camelize } from "@daybrush/utils";
 var Icon = class extends React.PureComponent {
   constructor() {
     super(...arguments);
@@ -67,7 +66,7 @@ var Icon = class extends React.PureComponent {
   }
   render() {
     const iconId = this.constructor.id;
-    const selected = this.props.selected || this.state.selected;
+    const selected = !this.props.hideSelected && (this.props.selected || this.state.selected);
     return /* @__PURE__ */ React.createElement(
       "div",
       {
@@ -83,19 +82,22 @@ var Icon = class extends React.PureComponent {
     if (!subIcons.length) {
       return;
     }
-    return [
-      /* @__PURE__ */ React.createElement("div", { key: "extends-icon", className: prefix("extends-icon") }),
-      this.props.selected && /* @__PURE__ */ React.createElement(
-        "div",
-        {
-          key: "extends-container",
-          className: prefix("extends-container"),
-          ref: this.subContainer,
-          onClick: this.onSubClick
-        },
-        subIcons
-      )
-    ];
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        key: "extends-icon",
+        className: prefix("extends-icon")
+      }
+    ), /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        key: "extends-container",
+        className: prefix("extends-container"),
+        ref: this.subContainer,
+        onClick: this.onSubClick
+      },
+      subIcons
+    ));
   }
   renderSubIcons() {
     return [];
@@ -111,8 +113,7 @@ var Icon = class extends React.PureComponent {
           this.onSubSelect(id);
         }
       },
-      /* @__PURE__ */ React.createElement(IconClass, { editor: this.props.editor, selected: false }),
-      /* @__PURE__ */ React.createElement("div", { className: prefix("sub-icon-label") }, camelize(` ${id}`))
+      /* @__PURE__ */ React.createElement(IconClass, { editor: this.props.editor, selected: false })
     );
   }
   focusSub() {
@@ -1008,8 +1009,204 @@ var FontSize = class extends Icon {
 FontSize.id = "FontSize";
 FontSize.width = 98;
 
-// src/Editor/Menu/TextIcons/Aligns/AlignLeftIcon.tsx
+// src/Editor/Menu/ShapeIcons/FillIcon.tsx
 import * as React26 from "react";
+var FillIcon = class extends Icon {
+  constructor() {
+    super(...arguments);
+    this.colorInput = React26.createRef();
+    this.propertyName = "background-color";
+    this.propertyValue = "#4af";
+    this.onChangeTextColor = (v) => {
+      this.memory.set(this.propertyName, v);
+      this.editor.setProperty([this.propertyName], v, true);
+      this.forceUpdate();
+    };
+    this.onClick = () => {
+      this.colorInput.current?.onClick();
+    };
+    this.setTargets = () => {
+      this.forceUpdate();
+    };
+  }
+  renderIcon() {
+    const color = this.getOldValue() || "#4af";
+    return /* @__PURE__ */ React26.createElement(
+      ColorIconPicker,
+      {
+        icon: /* @__PURE__ */ React26.createElement("i", { className: "fa-solid fa-fill-drip" }),
+        onChange: this.onChangeTextColor,
+        value: color,
+        ref: this.colorInput
+      }
+    );
+  }
+  getOldValue() {
+    const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["#4af"]);
+    return oldValue;
+  }
+  componentDidMount() {
+    this.onChangeTextColor(this.getOldValue());
+    this.editor.eventBus.on("setSelectedTargets", this.setTargets);
+  }
+  componentWillUnmount() {
+    this.editor.eventBus.off("setSelectedTargets", this.setTargets);
+  }
+};
+FillIcon.id = "FillIcon";
+
+// src/Editor/Menu/ShapeIcons/BorderColorIcon.tsx
+import * as React27 from "react";
+var BorderColorIcon = class extends Icon {
+  constructor() {
+    super(...arguments);
+    this.colorInput = React27.createRef();
+    this.propertyName = "outline-color";
+    this.propertyValue = "transparent";
+    this.onChangeTextColor = (v) => {
+      this.memory.set(this.propertyName, v);
+      this.editor.setProperty([this.propertyName], v, true);
+      this.forceUpdate();
+    };
+    this.onClick = () => {
+      this.colorInput.current?.onClick();
+    };
+    this.setTargets = () => {
+      this.forceUpdate();
+    };
+  }
+  renderIcon() {
+    const color = this.getOldValue() || "transparent";
+    return /* @__PURE__ */ React27.createElement(
+      ColorIconPicker,
+      {
+        icon: /* @__PURE__ */ React27.createElement("i", { className: "fa-solid fa-pen" }),
+        onChange: this.onChangeTextColor,
+        value: color,
+        ref: this.colorInput
+      }
+    );
+  }
+  getOldValue() {
+    const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["transparent"]);
+    return oldValue;
+  }
+  componentDidMount() {
+    this.onChangeTextColor(this.getOldValue());
+    this.editor.eventBus.on("setSelectedTargets", this.setTargets);
+  }
+  componentWillUnmount() {
+    this.editor.eventBus.off("setSelectedTargets", this.setTargets);
+  }
+};
+BorderColorIcon.id = "BorderColorIcon";
+
+// src/Editor/Menu/Zoom/MoreZoom.tsx
+import * as React28 from "react";
+var MoreZoomIcon = class extends Icon {
+  constructor() {
+    super(...arguments);
+    this.onClick = () => {
+      const newZoom = this.editor.state.zoom + 0.1;
+      this.editor.setState({ zoom: newZoom });
+    };
+  }
+  renderIcon() {
+    return /* @__PURE__ */ React28.createElement("i", { className: "fa-solid fa-plus" });
+  }
+};
+MoreZoomIcon.id = "MoreZoom";
+
+// src/Editor/Menu/Zoom/LessZoom.tsx
+import * as React29 from "react";
+var LessZoomIcon = class extends Icon {
+  constructor() {
+    super(...arguments);
+    this.onClick = () => {
+      const newZoom = this.editor.state.zoom - 0.1;
+      this.editor.setState({ zoom: newZoom <= 1 ? 1 : newZoom });
+    };
+  }
+  renderIcon() {
+    return /* @__PURE__ */ React29.createElement("i", { className: "fa-solid fa-minus" });
+  }
+};
+LessZoomIcon.id = "LessZoom";
+
+// src/Editor/Menu/Zoom/ZoomText.tsx
+import * as React30 from "react";
+var ZoomTextIcon = class extends Icon {
+  constructor() {
+    super(...arguments);
+    this.onClick = () => {
+    };
+  }
+  renderIcon() {
+    return /* @__PURE__ */ React30.createElement(
+      "span",
+      {
+        style: {
+          fontSize: "0.8rem"
+        }
+      },
+      "Zoom"
+    );
+  }
+};
+ZoomTextIcon.id = "ZoomText";
+
+// src/Editor/Menu/TextIcons/Aligns/AlignIcon.tsx
+import * as React35 from "react";
+
+// src/Editor/Menu/TextIcons/Aligns/AlignCenter.tsx
+import * as React31 from "react";
+var AlignCenterIcon = class extends Icon {
+  constructor() {
+    super(...arguments);
+    this.propertyName = "text-align";
+    this.propertyValue = "center";
+    this.onClick = () => {
+      let v = this.propertyValue;
+      this.memory.set(this.propertyName, v);
+      this.editor.setProperty([this.propertyName], v, true);
+      this.eventBus.trigger("setSelectedTargets");
+    };
+    this.setTargets = () => {
+      this.forceUpdate();
+      this.editor.forceUpdate();
+    };
+  }
+  renderIcon() {
+    return /* @__PURE__ */ React31.createElement("i", { className: "fa-solid fa-align-center fa-rotate-180" });
+  }
+  getOldValue() {
+    const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["left"]);
+    return oldValue;
+  }
+  loadFirtData() {
+    if (this.getOldValue() === this.propertyValue) {
+      this.setState({ selected: true });
+    } else {
+      this.setState({ selected: false });
+    }
+  }
+  componentDidUpdate() {
+    this.loadFirtData();
+  }
+  componentDidMount() {
+    this.loadFirtData();
+    this.editor.eventBus.on("setSelectedTargets", this.setTargets);
+    this.editor.eventBus.on("alignUpdate", this.setTargets);
+  }
+  componentWillUnmount() {
+    this.editor.eventBus.off("setSelectedTargets", this.setTargets);
+    this.editor.eventBus.off("alignUpdate", this.setTargets);
+  }
+};
+AlignCenterIcon.id = "AlignCenterIcon";
+
+// src/Editor/Menu/TextIcons/Aligns/AlignLeftIcon.tsx
+import * as React32 from "react";
 var AlignLeftIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1026,7 +1223,7 @@ var AlignLeftIcon = class extends Icon {
     };
   }
   renderIcon() {
-    return /* @__PURE__ */ React26.createElement("i", { className: "fa-solid fa-align-right fa-rotate-180" });
+    return /* @__PURE__ */ React32.createElement("i", { className: "fa-solid fa-align-right fa-rotate-180" });
   }
   getOldValue() {
     const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["left"]);
@@ -1055,7 +1252,7 @@ var AlignLeftIcon = class extends Icon {
 AlignLeftIcon.id = "AlignLeftIcon";
 
 // src/Editor/Menu/TextIcons/Aligns/AlignRightIcon.tsx
-import * as React27 from "react";
+import * as React33 from "react";
 var AlignRightIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1072,7 +1269,7 @@ var AlignRightIcon = class extends Icon {
     };
   }
   renderIcon() {
-    return /* @__PURE__ */ React27.createElement("i", { className: "fa-solid fa-align-left fa-rotate-180" });
+    return /* @__PURE__ */ React33.createElement("i", { className: "fa-solid fa-align-left fa-rotate-180" });
   }
   getOldValue() {
     const [oldValue] = this.moveableData.getProperties([[this.propertyName]], [""]);
@@ -1100,55 +1297,8 @@ var AlignRightIcon = class extends Icon {
 };
 AlignRightIcon.id = "AlignRightIcon";
 
-// src/Editor/Menu/TextIcons/Aligns/AlignCenter.tsx
-import * as React28 from "react";
-var AlignCenterIcon = class extends Icon {
-  constructor() {
-    super(...arguments);
-    this.propertyName = "text-align";
-    this.propertyValue = "center";
-    this.onClick = () => {
-      let v = this.propertyValue;
-      this.memory.set(this.propertyName, v);
-      this.editor.setProperty([this.propertyName], v, true);
-      this.eventBus.trigger("setSelectedTargets");
-    };
-    this.setTargets = () => {
-      this.forceUpdate();
-      this.editor.forceUpdate();
-    };
-  }
-  renderIcon() {
-    return /* @__PURE__ */ React28.createElement("i", { className: "fa-solid fa-align-center fa-rotate-180" });
-  }
-  getOldValue() {
-    const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["left"]);
-    return oldValue;
-  }
-  loadFirtData() {
-    if (this.getOldValue() === this.propertyValue) {
-      this.setState({ selected: true });
-    } else {
-      this.setState({ selected: false });
-    }
-  }
-  componentDidUpdate() {
-    this.loadFirtData();
-  }
-  componentDidMount() {
-    this.loadFirtData();
-    this.editor.eventBus.on("setSelectedTargets", this.setTargets);
-    this.editor.eventBus.on("alignUpdate", this.setTargets);
-  }
-  componentWillUnmount() {
-    this.editor.eventBus.off("setSelectedTargets", this.setTargets);
-    this.editor.eventBus.off("alignUpdate", this.setTargets);
-  }
-};
-AlignCenterIcon.id = "AlignCenterIcon";
-
 // src/Editor/Menu/TextIcons/Aligns/AlignJustify.tsx
-import * as React29 from "react";
+import * as React34 from "react";
 var AlignJustifyIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1165,7 +1315,7 @@ var AlignJustifyIcon = class extends Icon {
     };
   }
   renderIcon() {
-    return /* @__PURE__ */ React29.createElement("i", { className: "fa-solid fa-align-justify fa-rotate-180" });
+    return /* @__PURE__ */ React34.createElement("i", { className: "fa-solid fa-align-justify fa-rotate-180" });
   }
   getOldValue() {
     const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["left"]);
@@ -1193,151 +1343,69 @@ var AlignJustifyIcon = class extends Icon {
 };
 AlignJustifyIcon.id = "AlignJustifyIcon";
 
-// src/Editor/Menu/ShapeIcons/FillIcon.tsx
-import * as React30 from "react";
-var FillIcon = class extends Icon {
+// src/Editor/Menu/TextIcons/Aligns/AlignIcon.tsx
+var subMenu2 = [
+  { children: AlignLeftIcon, id: "AlignLeftIcon", value: "left" },
+  { children: AlignCenterIcon, id: "AlignCenterIcon", value: "center" },
+  { children: AlignRightIcon, id: "AlignRightIcon", value: "right" },
+  { children: AlignJustifyIcon, id: "AlignJustifyIcon", value: "justify" }
+];
+var AlignIcon = class extends Icon {
   constructor() {
     super(...arguments);
-    this.colorInput = React30.createRef();
-    this.propertyName = "background-color";
-    this.propertyValue = "#4af";
-    this.onChangeTextColor = (v) => {
-      this.memory.set(this.propertyName, v);
-      this.editor.setProperty([this.propertyName], v, true);
-      this.forceUpdate();
-    };
     this.onClick = () => {
-      this.colorInput.current?.onClick();
-    };
-    this.setTargets = () => {
-      this.forceUpdate();
+      this.focusSub();
     };
   }
   renderIcon() {
-    const color = this.getOldValue() || "#4af";
-    return /* @__PURE__ */ React30.createElement(
-      ColorIconPicker,
+    const value = this.memory.get("text-align");
+    const selected = subMenu2.find((s) => value === s.value);
+    if (selected) {
+      const { children: IconSelected } = selected;
+      return /* @__PURE__ */ React35.createElement(IconSelected, { editor: this.editor, hideSelected: true });
+    }
+    return /* @__PURE__ */ React35.createElement("i", { className: "fa-solid fa-align-right fa-rotate-180" });
+  }
+  renderSubIcons() {
+    return subMenu2.map((s) => {
+      return this.renderSubIcon(s.children, s.id, false);
+    });
+  }
+  onSubSelect(id) {
+    this.forceUpdate();
+  }
+  renderSubIcon(IconClass, id, isSelect) {
+    return /* @__PURE__ */ React35.createElement(
+      "div",
       {
-        icon: /* @__PURE__ */ React30.createElement("i", { className: "fa-solid fa-fill-drip" }),
-        onChange: this.onChangeTextColor,
-        value: color,
-        ref: this.colorInput
-      }
-    );
-  }
-  getOldValue() {
-    const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["#4af"]);
-    return oldValue;
-  }
-  componentDidMount() {
-    this.onChangeTextColor(this.getOldValue());
-    this.editor.eventBus.on("setSelectedTargets", this.setTargets);
-  }
-  componentWillUnmount() {
-    this.editor.eventBus.off("setSelectedTargets", this.setTargets);
-  }
-};
-FillIcon.id = "FillIcon";
-
-// src/Editor/Menu/ShapeIcons/BorderColorIcon.tsx
-import * as React31 from "react";
-var BorderColorIcon = class extends Icon {
-  constructor() {
-    super(...arguments);
-    this.colorInput = React31.createRef();
-    this.propertyName = "outline-color";
-    this.propertyValue = "transparent";
-    this.onChangeTextColor = (v) => {
-      this.memory.set(this.propertyName, v);
-      this.editor.setProperty([this.propertyName], v, true);
-      this.forceUpdate();
-    };
-    this.onClick = () => {
-      this.colorInput.current?.onClick();
-    };
-    this.setTargets = () => {
-      this.forceUpdate();
-    };
-  }
-  renderIcon() {
-    const color = this.getOldValue() || "transparent";
-    return /* @__PURE__ */ React31.createElement(
-      ColorIconPicker,
-      {
-        icon: /* @__PURE__ */ React31.createElement("i", { className: "fa-solid fa-pen" }),
-        onChange: this.onChangeTextColor,
-        value: color,
-        ref: this.colorInput
-      }
-    );
-  }
-  getOldValue() {
-    const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["transparent"]);
-    return oldValue;
-  }
-  componentDidMount() {
-    this.onChangeTextColor(this.getOldValue());
-    this.editor.eventBus.on("setSelectedTargets", this.setTargets);
-  }
-  componentWillUnmount() {
-    this.editor.eventBus.off("setSelectedTargets", this.setTargets);
-  }
-};
-BorderColorIcon.id = "BorderColorIcon";
-
-// src/Editor/Menu/Zoom/MoreZoom.tsx
-import * as React32 from "react";
-var MoreZoomIcon = class extends Icon {
-  constructor() {
-    super(...arguments);
-    this.onClick = () => {
-      const newZoom = this.editor.state.zoom + 0.1;
-      this.editor.setState({ zoom: newZoom });
-    };
-  }
-  renderIcon() {
-    return /* @__PURE__ */ React32.createElement("i", { className: "fa-solid fa-plus" });
-  }
-};
-MoreZoomIcon.id = "MoreZoom";
-
-// src/Editor/Menu/Zoom/LessZoom.tsx
-import * as React33 from "react";
-var LessZoomIcon = class extends Icon {
-  constructor() {
-    super(...arguments);
-    this.onClick = () => {
-      const newZoom = this.editor.state.zoom - 0.1;
-      this.editor.setState({ zoom: newZoom <= 1 ? 1 : newZoom });
-    };
-  }
-  renderIcon() {
-    return /* @__PURE__ */ React33.createElement("i", { className: "fa-solid fa-minus" });
-  }
-};
-LessZoomIcon.id = "LessZoom";
-
-// src/Editor/Menu/Zoom/ZoomText.tsx
-import * as React34 from "react";
-var ZoomTextIcon = class extends Icon {
-  constructor() {
-    super(...arguments);
-    this.onClick = () => {
-    };
-  }
-  renderIcon() {
-    return /* @__PURE__ */ React34.createElement(
-      "span",
-      {
-        style: {
-          fontSize: "0.8rem"
+        key: id,
+        className: prefix("icon", "sub-icon", isSelect ? "selected" : ""),
+        onClick: () => {
+          this.focusSub();
+          this.forceUpdate();
         }
       },
-      "Zoom"
+      /* @__PURE__ */ React35.createElement(IconClass, { editor: this.props.editor })
     );
   }
 };
-ZoomTextIcon.id = "ZoomText";
+AlignIcon.id = "AlignIcon";
+
+// src/Editor/Menu/DeleteIcon.tsx
+import * as React36 from "react";
+var DeleteIcon = class extends Icon {
+  constructor() {
+    super(...arguments);
+    this.onClick = () => {
+      const targets = this.editor.getSelectedTargets();
+      this.editor.removeElements(targets);
+    };
+  }
+  renderIcon() {
+    return /* @__PURE__ */ React36.createElement("i", { className: "fa-regular fa-trash red-icon" });
+  }
+};
+DeleteIcon.id = "DeleteTool";
 
 // src/Editor/Menu/MenusList.ts
 var HomeMenu = [
@@ -1352,7 +1420,9 @@ var HomeMenu = [
   MoreZoomIcon,
   Divider,
   UndoIcon,
-  RedoIcon
+  RedoIcon,
+  Divider,
+  DeleteIcon
 ];
 var TextMenu = [
   MoveToolIcon,
@@ -1368,17 +1438,18 @@ var TextMenu = [
   UnderlineIcon,
   TextColorIcon,
   Divider,
-  AlignLeftIcon,
-  AlignCenterIcon,
-  AlignRightIcon,
-  AlignJustifyIcon
+  AlignIcon,
+  Divider,
+  DeleteIcon
 ];
 var PrintAreaMenu = [
   MoveToolIcon,
   Divider,
   PrintAreaIcon,
   Divider,
-  BorderColorIcon
+  BorderColorIcon,
+  Divider,
+  DeleteIcon
 ];
 var CompleteMenu = [
   MoveToolIcon,
@@ -1395,14 +1466,16 @@ var CompleteMenu = [
   BoldIcon,
   ItalicIcon,
   UnderlineIcon,
-  FontFamily
+  FontFamily,
+  Divider,
+  DeleteIcon
 ];
 
 // src/Editor/Menu/DropdownIcon.tsx
-import * as React35 from "react";
+import * as React37 from "react";
 import Menu from "@mui/material/Menu";
 function DropdownIcon({ children }) {
-  const [anchorEl, setAnchorEl] = React35.useState(null);
+  const [anchorEl, setAnchorEl] = React37.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -1410,14 +1483,14 @@ function DropdownIcon({ children }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  return /* @__PURE__ */ React35.createElement(React35.Fragment, null, /* @__PURE__ */ React35.createElement(
+  return /* @__PURE__ */ React37.createElement(React37.Fragment, null, /* @__PURE__ */ React37.createElement(
     "div",
     {
       className: "scena-icon",
       onClick: handleClick
     },
-    /* @__PURE__ */ React35.createElement("i", { className: "fa-solid fa-ellipsis-vertical" })
-  ), /* @__PURE__ */ React35.createElement(
+    /* @__PURE__ */ React37.createElement("i", { className: "fa-solid fa-ellipsis-vertical" })
+  ), /* @__PURE__ */ React37.createElement(
     Menu,
     {
       anchorEl,
@@ -1430,7 +1503,7 @@ function DropdownIcon({ children }) {
 }
 
 // src/Editor/Menu/Menu.tsx
-var Menu2 = class extends React36.PureComponent {
+var Menu2 = class extends React38.PureComponent {
   constructor() {
     super(...arguments);
     this.state = {
@@ -1438,7 +1511,7 @@ var Menu2 = class extends React36.PureComponent {
       width: 0
     };
     this.menuRefs = [];
-    this.menuContainerRef = React36.createRef();
+    this.menuContainerRef = React38.createRef();
     this.select = (id) => {
       this.setState({
         selected: id
@@ -1453,7 +1526,7 @@ var Menu2 = class extends React36.PureComponent {
     };
   }
   render() {
-    return /* @__PURE__ */ React36.createElement("div", { className: prefix("menu"), ref: this.menuContainerRef }, this.renderMenus());
+    return /* @__PURE__ */ React38.createElement("div", { className: prefix("menu"), ref: this.menuContainerRef }, this.renderMenus());
   }
   renderMenus() {
     let selected = this.state.selected;
@@ -1499,9 +1572,9 @@ var Menu2 = class extends React36.PureComponent {
         dropedMenu.push(menuItem);
       }
     });
-    return /* @__PURE__ */ React36.createElement(React36.Fragment, null, filteredMenu.map((MenuClass, i) => {
+    return /* @__PURE__ */ React38.createElement(React38.Fragment, null, filteredMenu.map((MenuClass, i) => {
       return this.renderIcon(MenuClass, i, selected);
-    }), dropedMenu.length > 0 && /* @__PURE__ */ React36.createElement(DropdownIcon, null, dropedMenu.map((MenuClass, i) => {
+    }), dropedMenu.length > 0 && /* @__PURE__ */ React38.createElement(DropdownIcon, null, dropedMenu.map((MenuClass, i) => {
       return this.renderIcon(MenuClass, i, selected);
     })));
   }
@@ -1510,12 +1583,12 @@ var Menu2 = class extends React36.PureComponent {
     const editor = this.props.editor;
     const id = MenuClass.id;
     if (!menuRefs[i]) {
-      menuRefs[i] = React36.createRef();
+      menuRefs[i] = React38.createRef();
     }
     if (id === "Divider") {
-      return /* @__PURE__ */ React36.createElement(MenuClass, { key: i, editor });
+      return /* @__PURE__ */ React38.createElement(MenuClass, { key: i, editor });
     }
-    return /* @__PURE__ */ React36.createElement(
+    return /* @__PURE__ */ React38.createElement(
       MenuClass,
       {
         ref: menuRefs[i],
@@ -1583,7 +1656,7 @@ var Memory = class {
 };
 
 // src/Editor/Viewport/MoveableMananger.tsx
-import * as React37 from "react";
+import * as React39 from "react";
 import Moveable from "react-moveable";
 import { diff } from "@egjs/list-differ";
 function restoreRender(id, state, prevState, orders, editor) {
@@ -1642,16 +1715,16 @@ var DimensionViewable = {
   render(moveable) {
     const { left, top } = moveable.state;
     const rect = moveable.getRect();
-    return /* @__PURE__ */ React37.createElement("div", { key: "dimension-viewer", className: "moveable-dimension", style: {
+    return /* @__PURE__ */ React39.createElement("div", { key: "dimension-viewer", className: "moveable-dimension", style: {
       left: `${rect.left + rect.width / 2 - left}px`,
       top: `${rect.top + rect.height + 20 - top}px`
     } }, Math.round(rect.offsetWidth), " x ", Math.round(rect.offsetHeight));
   }
 };
-var MoveableManager = class extends React37.PureComponent {
+var MoveableManager = class extends React39.PureComponent {
   constructor() {
     super(...arguments);
-    this.moveable = React37.createRef();
+    this.moveable = React39.createRef();
   }
   getMoveable() {
     return this.moveable.current;
@@ -1681,7 +1754,7 @@ var MoveableManager = class extends React37.PureComponent {
     const targetIsImage = selectedTargets.every((el) => el.tagName === "IMG");
     const targetIsText = selectedTargets.some((el) => el.className.includes("Text"));
     const keepRatio = targetIsText || targetIsImage && !isShift || !targetIsImage && isShift || selectedTargets.length > 1;
-    return /* @__PURE__ */ React37.createElement(
+    return /* @__PURE__ */ React39.createElement(
       Moveable,
       {
         ables: [DimensionViewable],
@@ -1811,7 +1884,7 @@ var MoveableManager = class extends React37.PureComponent {
   renderViewportMoveable() {
     const viewport = this.editor.getViewport();
     const target = viewport ? viewport.viewportRef.current : null;
-    return /* @__PURE__ */ React37.createElement(
+    return /* @__PURE__ */ React39.createElement(
       Moveable,
       {
         ref: this.moveable,
@@ -1981,7 +2054,7 @@ var Debugger = class {
 };
 
 // src/Editor/utils/ClipboardManager.tsx
-import * as React38 from "react";
+import * as React40 from "react";
 import html2canvas from "html2canvas";
 var ClipboardManager = class {
   constructor(editor) {
@@ -2098,7 +2171,7 @@ var ClipboardManager = class {
     if (!isPaste && hasText) {
       const text = await navigator.clipboard.readText();
       this.editor.appendJSXs([{
-        jsx: /* @__PURE__ */ React38.createElement("div", { contentEditable: "true" }),
+        jsx: /* @__PURE__ */ React40.createElement("div", { contentEditable: "true" }),
         name: "(Text)",
         innerText: text
       }]);
@@ -2110,7 +2183,7 @@ var ClipboardManager = class {
 import domtoimage from "dom-to-image";
 
 // src/Editor/TextEditor.tsx
-import React39, { useEffect, useLayoutEffect, useRef, useState as useState2 } from "react";
+import React41, { useEffect, useLayoutEffect, useRef, useState as useState2 } from "react";
 function TextEditor({ element, memory, editor }) {
   const textareaRef = useRef(null);
   const [text, setText] = useState2(element.innerText || "");
@@ -2183,7 +2256,7 @@ function TextEditor({ element, memory, editor }) {
     editor.menu.current?.select("MoveTool");
     editor.setSelectedTargets([]);
   };
-  return /* @__PURE__ */ React39.createElement("div", { className: "text-editor", onClick: handleSave }, /* @__PURE__ */ React39.createElement(
+  return /* @__PURE__ */ React41.createElement("div", { className: "text-editor", onClick: handleSave }, /* @__PURE__ */ React41.createElement(
     "textarea",
     {
       ref: textareaRef,
@@ -2242,7 +2315,7 @@ function undoMove({ prevInfos }, editor) {
 function redoMove({ nextInfos }, editor) {
   editor.moves(nextInfos, true);
 }
-var Editor = class extends React40.PureComponent {
+var Editor = class extends React42.PureComponent {
   constructor() {
     super(...arguments);
     this.state = {
@@ -2257,7 +2330,8 @@ var Editor = class extends React40.PureComponent {
       height: 500,
       loadedViewer: false,
       isShift: false,
-      isScreenshot: false
+      isScreenshot: false,
+      isMobile: false
     };
     this.historyManager = new HistoryManager(this);
     this.console = new Debugger(this.props.debug);
@@ -2272,30 +2346,36 @@ var Editor = class extends React40.PureComponent {
       }
     });
     this.clipboardManager = new ClipboardManager(this);
-    this.horizontalGuides = React40.createRef();
-    this.verticalGuides = React40.createRef();
-    this.infiniteViewer = React40.createRef();
-    this.selecto = React40.createRef();
-    this.menu = React40.createRef();
-    this.moveableManager = React40.createRef();
-    this.viewport = React40.createRef();
-    this.tabs = React40.createRef();
-    this.editorElement = React40.createRef();
+    this.horizontalGuides = React42.createRef();
+    this.verticalGuides = React42.createRef();
+    this.infiniteViewer = React42.createRef();
+    this.selecto = React42.createRef();
+    this.menu = React42.createRef();
+    this.moveableManager = React42.createRef();
+    this.viewport = React42.createRef();
+    this.tabs = React42.createRef();
+    this.editorElement = React42.createRef();
     this.onMenuChange = (id) => {
       this.setState({
         selectedMenu: id
       });
     };
     this.onResize = () => {
+      const width = window.innerWidth;
+      if (width > 768) {
+        this.setState({ isMobile: false });
+      } else {
+        this.setState({ isMobile: true });
+      }
       if (this.horizontalGuides.current && this.verticalGuides.current) {
         this.horizontalGuides.current.resize();
         this.verticalGuides.current.resize();
       }
       if (this.editorElement.current && this.infiniteViewer.current) {
-        const width = this.editorElement.current.clientWidth;
+        const width2 = this.editorElement.current.clientWidth;
         const viewer = this.infiniteViewer.current.getElement();
-        if (width < 500) {
-          const newZoom = width / 500;
+        if (width2 < 500) {
+          const newZoom = width2 / 500;
           viewer.style.width = `${500 * newZoom}px`;
           viewer.style.height = `${500 * newZoom}px`;
           this.setState({ minZoom: newZoom, zoom: newZoom });
@@ -2338,17 +2418,14 @@ var Editor = class extends React40.PureComponent {
     ];
     const verticalSnapGuides = [0, width, width / 2, ...state.verticalGuides];
     let unit = 50;
-    return /* @__PURE__ */ React40.createElement(
+    return /* @__PURE__ */ React42.createElement(
       "div",
       {
         className: prefix("editor"),
-        ref: this.editorElement,
-        style: {
-          maxWidth: `${width}px`
-        }
+        ref: this.editorElement
       },
-      !previewMode && /* @__PURE__ */ React40.createElement(Menu2, { ref: menu, editor: this, onSelect: this.onMenuChange }),
-      showGuides && !previewMode && /* @__PURE__ */ React40.createElement(React40.Fragment, null, /* @__PURE__ */ React40.createElement(
+      !previewMode && /* @__PURE__ */ React42.createElement(Menu2, { ref: menu, editor: this, onSelect: this.onMenuChange }),
+      showGuides && !previewMode && /* @__PURE__ */ React42.createElement(React42.Fragment, null, /* @__PURE__ */ React42.createElement(
         "div",
         {
           className: prefix("reset"),
@@ -2356,7 +2433,7 @@ var Editor = class extends React40.PureComponent {
             infiniteViewer.current.scrollCenter();
           }
         }
-      ), /* @__PURE__ */ React40.createElement(
+      ), /* @__PURE__ */ React42.createElement(
         Guides,
         {
           ref: horizontalGuides,
@@ -2374,7 +2451,7 @@ var Editor = class extends React40.PureComponent {
             });
           }
         }
-      ), /* @__PURE__ */ React40.createElement(
+      ), /* @__PURE__ */ React42.createElement(
         Guides,
         {
           ref: verticalGuides,
@@ -2393,14 +2470,14 @@ var Editor = class extends React40.PureComponent {
           }
         }
       )),
-      /* @__PURE__ */ React40.createElement("div", { className: "scena-editor-container" }, selectedMenu === "Text" && selectedTargets.length === 1 && /* @__PURE__ */ React40.createElement(
+      /* @__PURE__ */ React42.createElement("div", { className: "scena-editor-container" }, selectedMenu === "Text" && selectedTargets.length === 1 && /* @__PURE__ */ React42.createElement(
         TextEditor,
         {
           element: this.viewport.current?.getInfoByElement(selectedTargets[0]),
           memory: this.memory,
           editor: this
         }
-      ), /* @__PURE__ */ React40.createElement(
+      ), /* @__PURE__ */ React42.createElement(
         InfiniteViewer,
         {
           ref: infiniteViewer,
@@ -2434,7 +2511,7 @@ var Editor = class extends React40.PureComponent {
             });
           }
         },
-        /* @__PURE__ */ React40.createElement(
+        /* @__PURE__ */ React42.createElement(
           Viewport,
           {
             ref: viewport,
@@ -2446,7 +2523,7 @@ var Editor = class extends React40.PureComponent {
             editor: this,
             background: this.props.backgroundImg
           },
-          !previewMode && /* @__PURE__ */ React40.createElement(
+          !previewMode && /* @__PURE__ */ React42.createElement(
             MoveableManager,
             {
               ref: moveableManager,
@@ -2458,7 +2535,7 @@ var Editor = class extends React40.PureComponent {
             }
           )
         )
-      ), !previewMode && /* @__PURE__ */ React40.createElement(
+      ), !previewMode && /* @__PURE__ */ React42.createElement(
         Selecto,
         {
           ref: selecto,
@@ -2859,10 +2936,10 @@ var Editor = class extends React40.PureComponent {
         }
         if (!jsx && componentId) {
           const Component2 = viewport.getComponent(componentId);
-          jsx = /* @__PURE__ */ React40.createElement(Component2, null);
+          jsx = /* @__PURE__ */ React42.createElement(Component2, null);
         }
         if (!jsx) {
-          jsx = React40.createElement(data.tagName);
+          jsx = React42.createElement(data.tagName);
         }
         return {
           ...data,
@@ -2901,7 +2978,7 @@ var Editor = class extends React40.PureComponent {
   appendBlob(blob) {
     const url = URL.createObjectURL(blob);
     return this.appendJSX({
-      jsx: /* @__PURE__ */ React40.createElement("img", { src: url, alt: "appended blob" }),
+      jsx: /* @__PURE__ */ React42.createElement("img", { src: url, alt: "appended blob" }),
       name: "(Image)"
     });
   }
@@ -3014,7 +3091,7 @@ var Editor = class extends React40.PureComponent {
     return parsedElements.map((e) => {
       delete e.el;
       if (e.name === "(PrintArea)" && e.attrs && e.attrs.class) {
-        e.attrs.class = void 0;
+        delete e.attrs.class;
       }
       return e;
     });

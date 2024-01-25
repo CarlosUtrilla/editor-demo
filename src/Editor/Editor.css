@@ -41,6 +41,8 @@
 }
 .scena-editor-container{
     position: relative;
+    max-width: 500px;
+    margin: auto;
 }
 .scena-editor .text-editor{
     position: absolute;

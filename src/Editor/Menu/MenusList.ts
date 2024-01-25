@@ -27,6 +27,8 @@ import BorderColorIcon from "./ShapeIcons/BorderColorIcon";
 import MoreZoomIcon from "./Zoom/MoreZoom";
 import LessZoomIcon from "./Zoom/LessZoom";
 import ZoomTextIcon from "./Zoom/ZoomText";
+import AlignIcon from "./TextIcons/Aligns/AlignIcon";
+import DeleteIcon from "./DeleteIcon";
 
 export const HomeMenu: Array<typeof Icon> = [
 	MoveToolIcon,
@@ -40,7 +42,9 @@ export const HomeMenu: Array<typeof Icon> = [
 	MoreZoomIcon,
 	Divider,
 	UndoIcon,
-	RedoIcon
+	RedoIcon,
+	Divider,
+	DeleteIcon
 ];
 
 export const TextMenu: Array<typeof Icon> = [
@@ -57,10 +61,9 @@ export const TextMenu: Array<typeof Icon> = [
 	UnderlineIcon,
 	TextColorIcon,
 	Divider,
-	AlignLeftIcon,
-	AlignCenterIcon,
-	AlignRightIcon,
-	AlignJustifyIcon
+	AlignIcon,
+	Divider,
+	DeleteIcon
 ]
 
 export const ShapesMenu: Array<typeof Icon> = [
@@ -78,6 +81,8 @@ export const PrintAreaMenu: Array<typeof Icon> = [
 	PrintAreaIcon,
 	Divider,
 	BorderColorIcon,
+	Divider,
+	DeleteIcon
 ]
 export const CompleteMenu: Array<typeof Icon> = [
 	MoveToolIcon,
@@ -94,5 +99,7 @@ export const CompleteMenu: Array<typeof Icon> = [
 	BoldIcon,
 	ItalicIcon,
 	UnderlineIcon,
-	FontFamily
+	FontFamily,
+	Divider,
+	DeleteIcon
 ]

@@ -18,7 +18,8 @@ export default abstract class Icon extends React.PureComponent<{
     editor: Editor,
     selected?: boolean,
     onSelect?: (id: string) => any;
-    selectedId?: string
+    selectedId?: string,
+    hideSelected?: boolean
 }> {
     public static id: string | string[];
     public static maker?: (memory: Memory) => Maker;
@@ -32,7 +33,7 @@ export default abstract class Icon extends React.PureComponent<{
     }
     public render() {
         const iconId = (this.constructor as any).id
-        const selected = this.props.selected || this.state.selected
+        const selected = !this.props.hideSelected && (this.props.selected || this.state.selected)
         return (
             <div className={prefix("icon", selected ? "selected" : "", iconId === "Divider" ? "divider": "")}
                 onClick={this.onClick}>
@@ -43,19 +44,23 @@ export default abstract class Icon extends React.PureComponent<{
     }
     public renderSubContainer() {
         const subIcons = this.renderSubIcons();
-
         if (!subIcons.length) {
             return;
         }
-        return [
-            <div key={"extends-icon"} className={prefix("extends-icon")}></div>,
-            this.props.selected && <div key={"extends-container"}
-                className={prefix("extends-container")} ref={this.subContainer}
-                onClick={this.onSubClick}
-            >
-                {subIcons}
-            </div>,
-        ];
+        return(<React.Fragment>
+                <div
+                    key={"extends-icon"}
+                    className={prefix("extends-icon")}
+                />
+                <div
+                    key={"extends-container"}
+                    className={prefix("extends-container")}
+                    ref={this.subContainer}
+                    onClick={this.onSubClick}
+                >
+                    {subIcons}
+                </div>
+            </React.Fragment>)
     }
     public renderSubIcons(): any[] {
         return [];
@@ -71,9 +76,6 @@ export default abstract class Icon extends React.PureComponent<{
                 }}
             >
                 <IconClass editor={this.props.editor} selected={false} />
-                <div className={prefix("sub-icon-label")}>
-                    {camelize(` ${id}`)}
-                </div>
             </div>
         );
     }

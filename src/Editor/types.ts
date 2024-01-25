@@ -22,6 +22,7 @@ export interface ScenaEditorState {
     loadedViewer: boolean;
     isShift: boolean;
     isScreenshot: boolean;
+    isMobile: boolean;
 }
 
 export interface TagAppendInfo {

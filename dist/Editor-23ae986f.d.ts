@@ -107,6 +107,7 @@ interface ScenaEditorState {
     loadedViewer: boolean;
     isShift: boolean;
     isScreenshot: boolean;
+    isMobile: boolean;
 }
 interface EditorInterface {
     editor: Editor;
@@ -155,6 +156,7 @@ declare abstract class Icon extends React.PureComponent<{
     selected?: boolean;
     onSelect?: (id: string) => any;
     selectedId?: string;
+    hideSelected?: boolean;
 }> {
     static id: string | string[];
     static maker?: (memory: Memory) => Maker;
@@ -167,7 +169,7 @@ declare abstract class Icon extends React.PureComponent<{
         selected: boolean;
     };
     render(): React.JSX.Element;
-    renderSubContainer(): (false | React.JSX.Element | undefined)[] | undefined;
+    renderSubContainer(): React.JSX.Element | undefined;
     renderSubIcons(): any[];
     renderSubIcon(IconClass: typeof Icon, id: string, isSelect: boolean): React.JSX.Element;
     onClick: () => void;

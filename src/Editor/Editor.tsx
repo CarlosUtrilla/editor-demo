@@ -10,7 +10,6 @@ import Viewport, {
   MovedResult
 } from "./Viewport/Viewport";
 import {
-  getContentElement,
   prefix,
   getIds,
   checkImageLoaded,
@@ -110,7 +109,8 @@ export default class Editor extends React.PureComponent<
     height: 500,
     loadedViewer: false,
     isShift: false,
-    isScreenshot: false
+    isScreenshot: false,
+    isMobile: false
   };
   public historyManager = new HistoryManager(this);
   public console = new Debugger(this.props.debug);
@@ -163,9 +163,6 @@ export default class Editor extends React.PureComponent<
       <div
         className={prefix("editor")}
         ref={this.editorElement}
-        style={{
-          maxWidth: `${width}px`,
-        }}
       >
         {
           !previewMode &&
@@ -886,6 +883,13 @@ export default class Editor extends React.PureComponent<
     this.eventBus.trigger("blur");
   }
   public onResize = () => {
+    const width = window.innerWidth
+    if (width > 768) {
+      this.setState({ isMobile: false });
+    } else {
+      this.setState({ isMobile: true });
+    }
+
     if (this.horizontalGuides.current && this.verticalGuides.current) {
       this.horizontalGuides.current!.resize();
       this.verticalGuides.current!.resize();
@@ -987,7 +991,7 @@ export default class Editor extends React.PureComponent<
     return parsedElements.map(e => {
         delete e.el
         if (e.name === "(PrintArea)" && e.attrs && e.attrs.class) {
-            e.attrs.class = undefined
+            delete e.attrs.class
         }
         return e
     })

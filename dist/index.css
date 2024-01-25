@@ -40,6 +40,8 @@
 }
 .scena-editor-container {
   position: relative;
+  max-width: 500px;
+  margin: auto;
 }
 .scena-editor .text-editor {
   position: absolute;
@@ -190,8 +192,8 @@
   min-width: max-content;
   height: 30px;
   padding: 5px;
-  background: #000;
-  color: #fff;
+  background: transparent;
+  color: #000;
   font-weight: bold;
   border: 0;
   box-sizing: border-box;
@@ -234,7 +236,7 @@
   align-items: center;
   width: 100%;
   height: var(--menu);
-  background: #000;
+  background: #F2F2F2;
   box-sizing: border-box;
   padding: 0 1.4rem;
   margin: 1rem 0;
@@ -243,6 +245,9 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.scena-menu .red-icon {
+  color: #EF2B2B !important;
 }
 .scena-menu-bottom {
   box-sizing: border-box;
@@ -253,7 +258,7 @@
   justify-content: center;
   position: relative;
   padding: 0.5rem;
-  color: #fff;
+  color: #000;
   box-sizing: border-box;
   cursor: pointer;
   transition: all ease 0.2s;
@@ -308,7 +313,7 @@
   border-radius: 50%;
   width: 1rem;
   height: 1rem;
-  border: 2px solid #fff;
+  border: 1px solid #000;
   box-sizing: border-box;
 }
 .scena-icon .color-picker .picker {
@@ -327,18 +332,14 @@
 .scena-menu-dropdown .scena-selected {
   background: #3D52D9;
 }
-.scena-icon.scena-selected > svg path,
-.scena-icon.scena-selected > svg ellipse,
-.scena-sub-icon.scena-selected path,
-.scena-sub-icon.scena-selected ellipse {
-  fill: #fff;
-  stroke: #fff;
+.scena-icon.scena-selected > i {
+  color: #fff;
 }
 .scena-icon .scena-extends-icon {
   position: absolute;
   right: 8px;
   bottom: 8px;
-  border-bottom: 5px solid #eee;
+  border-bottom: 5px solid #000;
   border-right: 0;
   border-left: 5px solid transparent;
 }
@@ -346,9 +347,9 @@
   position: absolute;
   left: -10px;
   top: calc(var(--menu) - 1px);
-  background: var(--back2);
+  background: #F2F2F2;
   border-radius: 5px;
-  z-index: 1;
+  z-index: 9999;
   transform: translate(10px) translateZ(2px);
   box-shadow: 1px 1px 2px var(--back1);
   display: none;
@@ -360,8 +361,6 @@
   gap: 0.5rem;
   white-space: nowrap;
   padding: 0px;
-  padding: 0.3rem 0.4rem;
-  margin: 0.5rem 0.4rem;
 }
 .scena-sub-icon .scena-icon {
   width: auto !important;
@@ -410,7 +409,7 @@
 }
 .scene-font-size button {
   border: none;
-  color: #fff;
+  color: #000;
   background: transparent;
   cursor: pointer;
   padding: 0 0.2rem;
@@ -425,7 +424,7 @@
   font-size: 0.85rem;
 }
 .scena-menu-dropdown ul {
-  background: #000;
+  background: #f2f2f2;
 }
 .scena-menu-dropdown .MuiPaper-root {
   overflow: visible !important;
