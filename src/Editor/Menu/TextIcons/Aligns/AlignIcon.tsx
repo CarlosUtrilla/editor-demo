@@ -25,9 +25,10 @@ export default class AlignIcon extends Icon {
 					<i className="fa-solid fa-align-right fa-rotate-180"></i>
 			);
 		}
-		public renderSubIcons() {
+	public renderSubIcons() {
+			const value = this.memory.get("text-align");
 			return subMenu.map((s) => {
-				return this.renderSubIcon(s.children, s.id, false)
+				return this.renderSubIcon(s.children, s.id, value === s.value)
 			})
     }
 		public onSubSelect(id: string) {
@@ -46,7 +47,7 @@ export default class AlignIcon extends Icon {
 									this.forceUpdate()
                 }}
             >
-                <IconClass editor={this.props.editor}/>
+                <IconClass editor={this.props.editor} selected={isSelect}/>
             </div>
         );
     }

@@ -11,31 +11,18 @@ export default class AlignLeftIcon extends Icon {
 			);
 	}
 
-	public getOldValue(){
-		const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["left"])
-		return oldValue as string
-	}
 	public onClick = () => {
 		let v = this.propertyValue
 		this.memory.set(this.propertyName, v);
 		this.editor.setProperty([this.propertyName], v, true);
 		this.eventBus.trigger("setSelectedTargets");
 	};
-	public loadFirtData() {
-		if (this.getOldValue()  === this.propertyValue) {
-			this.setState({selected: true})
-		} else {
-			this.setState({selected: false})
-		}
-	}
+
 	private setTargets = () => {
     this.forceUpdate();
   }
-	componentDidUpdate(): void {
-		this.loadFirtData()
-	}
+
 	componentDidMount(): void {
-		this.loadFirtData()
 		this.editor.eventBus.on("setSelectedTargets", this.setTargets);
 		this.editor.eventBus.on("alignUpdate", this.setTargets);
 	}

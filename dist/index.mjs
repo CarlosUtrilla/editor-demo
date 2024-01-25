@@ -1179,22 +1179,7 @@ var AlignCenterIcon = class extends Icon {
   renderIcon() {
     return /* @__PURE__ */ React31.createElement("i", { className: "fa-solid fa-align-center fa-rotate-180" });
   }
-  getOldValue() {
-    const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["left"]);
-    return oldValue;
-  }
-  loadFirtData() {
-    if (this.getOldValue() === this.propertyValue) {
-      this.setState({ selected: true });
-    } else {
-      this.setState({ selected: false });
-    }
-  }
-  componentDidUpdate() {
-    this.loadFirtData();
-  }
   componentDidMount() {
-    this.loadFirtData();
     this.editor.eventBus.on("setSelectedTargets", this.setTargets);
     this.editor.eventBus.on("alignUpdate", this.setTargets);
   }
@@ -1225,22 +1210,7 @@ var AlignLeftIcon = class extends Icon {
   renderIcon() {
     return /* @__PURE__ */ React32.createElement("i", { className: "fa-solid fa-align-right fa-rotate-180" });
   }
-  getOldValue() {
-    const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["left"]);
-    return oldValue;
-  }
-  loadFirtData() {
-    if (this.getOldValue() === this.propertyValue) {
-      this.setState({ selected: true });
-    } else {
-      this.setState({ selected: false });
-    }
-  }
-  componentDidUpdate() {
-    this.loadFirtData();
-  }
   componentDidMount() {
-    this.loadFirtData();
     this.editor.eventBus.on("setSelectedTargets", this.setTargets);
     this.editor.eventBus.on("alignUpdate", this.setTargets);
   }
@@ -1271,22 +1241,7 @@ var AlignRightIcon = class extends Icon {
   renderIcon() {
     return /* @__PURE__ */ React33.createElement("i", { className: "fa-solid fa-align-left fa-rotate-180" });
   }
-  getOldValue() {
-    const [oldValue] = this.moveableData.getProperties([[this.propertyName]], [""]);
-    return oldValue;
-  }
-  loadFirtData() {
-    if (this.getOldValue() === this.propertyValue) {
-      this.setState({ selected: true });
-    } else {
-      this.setState({ selected: false });
-    }
-  }
-  componentDidUpdate() {
-    this.loadFirtData();
-  }
   componentDidMount() {
-    this.loadFirtData();
     this.editor.eventBus.on("setSelectedTargets", this.setTargets);
     this.editor.eventBus.on("alignUpdate", this.setTargets);
   }
@@ -1317,22 +1272,7 @@ var AlignJustifyIcon = class extends Icon {
   renderIcon() {
     return /* @__PURE__ */ React34.createElement("i", { className: "fa-solid fa-align-justify fa-rotate-180" });
   }
-  getOldValue() {
-    const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["left"]);
-    return oldValue;
-  }
-  loadFirtData() {
-    if (this.getOldValue() === this.propertyValue) {
-      this.setState({ selected: true });
-    } else {
-      this.setState({ selected: false });
-    }
-  }
-  componentDidUpdate() {
-    this.loadFirtData();
-  }
   componentDidMount() {
-    this.loadFirtData();
     this.editor.eventBus.on("setSelectedTargets", this.setTargets);
     this.editor.eventBus.on("alignUpdate", this.setTargets);
   }
@@ -1367,8 +1307,9 @@ var AlignIcon = class extends Icon {
     return /* @__PURE__ */ React35.createElement("i", { className: "fa-solid fa-align-right fa-rotate-180" });
   }
   renderSubIcons() {
+    const value = this.memory.get("text-align");
     return subMenu2.map((s) => {
-      return this.renderSubIcon(s.children, s.id, false);
+      return this.renderSubIcon(s.children, s.id, value === s.value);
     });
   }
   onSubSelect(id) {
@@ -1385,7 +1326,7 @@ var AlignIcon = class extends Icon {
           this.forceUpdate();
         }
       },
-      /* @__PURE__ */ React35.createElement(IconClass, { editor: this.props.editor })
+      /* @__PURE__ */ React35.createElement(IconClass, { editor: this.props.editor, selected: isSelect })
     );
   }
 };

@@ -2347,42 +2347,8 @@ var AlignCenterIcon = /*#__PURE__*/ function(Icon) {
             }
         },
         {
-            key: "getOldValue",
-            value: function getOldValue() {
-                var _this_moveableData_getProperties = _sliced_to_array(this.moveableData.getProperties([
-                    [
-                        this.propertyName
-                    ]
-                ], [
-                    "left"
-                ]), 1), oldValue = _this_moveableData_getProperties[0];
-                return oldValue;
-            }
-        },
-        {
-            key: "loadFirtData",
-            value: function loadFirtData() {
-                if (this.getOldValue() === this.propertyValue) {
-                    this.setState({
-                        selected: true
-                    });
-                } else {
-                    this.setState({
-                        selected: false
-                    });
-                }
-            }
-        },
-        {
-            key: "componentDidUpdate",
-            value: function componentDidUpdate() {
-                this.loadFirtData();
-            }
-        },
-        {
             key: "componentDidMount",
             value: function componentDidMount() {
-                this.loadFirtData();
                 this.editor.eventBus.on("setSelectedTargets", this.setTargets);
                 this.editor.eventBus.on("alignUpdate", this.setTargets);
             }
@@ -2434,42 +2400,8 @@ var AlignLeftIcon = /*#__PURE__*/ function(Icon) {
             }
         },
         {
-            key: "getOldValue",
-            value: function getOldValue() {
-                var _this_moveableData_getProperties = _sliced_to_array(this.moveableData.getProperties([
-                    [
-                        this.propertyName
-                    ]
-                ], [
-                    "left"
-                ]), 1), oldValue = _this_moveableData_getProperties[0];
-                return oldValue;
-            }
-        },
-        {
-            key: "loadFirtData",
-            value: function loadFirtData() {
-                if (this.getOldValue() === this.propertyValue) {
-                    this.setState({
-                        selected: true
-                    });
-                } else {
-                    this.setState({
-                        selected: false
-                    });
-                }
-            }
-        },
-        {
-            key: "componentDidUpdate",
-            value: function componentDidUpdate() {
-                this.loadFirtData();
-            }
-        },
-        {
             key: "componentDidMount",
             value: function componentDidMount() {
-                this.loadFirtData();
                 this.editor.eventBus.on("setSelectedTargets", this.setTargets);
                 this.editor.eventBus.on("alignUpdate", this.setTargets);
             }
@@ -2521,42 +2453,8 @@ var AlignRightIcon = /*#__PURE__*/ function(Icon) {
             }
         },
         {
-            key: "getOldValue",
-            value: function getOldValue() {
-                var _this_moveableData_getProperties = _sliced_to_array(this.moveableData.getProperties([
-                    [
-                        this.propertyName
-                    ]
-                ], [
-                    ""
-                ]), 1), oldValue = _this_moveableData_getProperties[0];
-                return oldValue;
-            }
-        },
-        {
-            key: "loadFirtData",
-            value: function loadFirtData() {
-                if (this.getOldValue() === this.propertyValue) {
-                    this.setState({
-                        selected: true
-                    });
-                } else {
-                    this.setState({
-                        selected: false
-                    });
-                }
-            }
-        },
-        {
-            key: "componentDidUpdate",
-            value: function componentDidUpdate() {
-                this.loadFirtData();
-            }
-        },
-        {
             key: "componentDidMount",
             value: function componentDidMount() {
-                this.loadFirtData();
                 this.editor.eventBus.on("setSelectedTargets", this.setTargets);
                 this.editor.eventBus.on("alignUpdate", this.setTargets);
             }
@@ -2608,42 +2506,8 @@ var AlignJustifyIcon = /*#__PURE__*/ function(Icon) {
             }
         },
         {
-            key: "getOldValue",
-            value: function getOldValue() {
-                var _this_moveableData_getProperties = _sliced_to_array(this.moveableData.getProperties([
-                    [
-                        this.propertyName
-                    ]
-                ], [
-                    "left"
-                ]), 1), oldValue = _this_moveableData_getProperties[0];
-                return oldValue;
-            }
-        },
-        {
-            key: "loadFirtData",
-            value: function loadFirtData() {
-                if (this.getOldValue() === this.propertyValue) {
-                    this.setState({
-                        selected: true
-                    });
-                } else {
-                    this.setState({
-                        selected: false
-                    });
-                }
-            }
-        },
-        {
-            key: "componentDidUpdate",
-            value: function componentDidUpdate() {
-                this.loadFirtData();
-            }
-        },
-        {
             key: "componentDidMount",
             value: function componentDidMount() {
-                this.loadFirtData();
                 this.editor.eventBus.on("setSelectedTargets", this.setTargets);
                 this.editor.eventBus.on("alignUpdate", this.setTargets);
             }
@@ -2720,8 +2584,9 @@ var AlignIcon = /*#__PURE__*/ function(Icon) {
             key: "renderSubIcons",
             value: function renderSubIcons() {
                 var _this = this;
+                var value = this.memory.get("text-align");
                 return subMenu2.map(function(s) {
-                    return _this.renderSubIcon(s.children, s.id, false);
+                    return _this.renderSubIcon(s.children, s.id, value === s.value);
                 });
             }
         },
@@ -2743,7 +2608,8 @@ var AlignIcon = /*#__PURE__*/ function(Icon) {
                         _this.forceUpdate();
                     }
                 }, /* @__PURE__ */ React35.createElement(IconClass, {
-                    editor: this.props.editor
+                    editor: this.props.editor,
+                    selected: isSelect
                 }));
             }
         }
