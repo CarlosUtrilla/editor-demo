@@ -13,42 +13,49 @@ const subMenu = [
 	{ children: AlignJustifyIcon, id: "AlignJustifyIcon", value: "justify"},
 ]
 export default class AlignIcon extends Icon {
-  	public static id = "AlignIcon";
-		public renderIcon() {
-			const value = this.memory.get("text-align");
-			const selected = subMenu.find(s => value === s.value);
-			if (selected) {
-				const { children: IconSelected } = selected
-				return <IconSelected editor={this.editor} hideSelected/>
-			}
-			return (
-					<i className="fa-solid fa-align-right fa-rotate-180"></i>
-			);
+	public static id = "AlignIcon";
+	public propertyName = "text-align"
+	public renderIcon() {
+		const value = this.memory.get("text-align");
+		const selected = subMenu.find(s => value === s.value);
+		if (selected) {
+			const { children: IconSelected } = selected
+			return <IconSelected editor={this.editor} hideSelected/>
 		}
+		return (
+				<i className="fa-solid fa-align-right fa-rotate-180"></i>
+		);
+	}
 	public renderSubIcons() {
-			const value = this.memory.get("text-align");
-			return subMenu.map((s) => {
-				return this.renderSubIcon(s.children, s.id, value === s.value)
-			})
-    }
-		public onSubSelect(id: string) {
-			this.forceUpdate()
-		}
-		public onClick = () => {
-			this.focusSub()
-		}
+		const value = this.memory.get("text-align");
+		return subMenu.map((s) => {
+			return this.renderSubIcon(s.children, s.id, value === s.value)
+		})
+	}
+	public onSubSelect(id: string) {
+		this.forceUpdate()
+	}
+	public onClick = () => {
+		this.focusSub()
+	}
 	 public renderSubIcon(IconClass: typeof Icon, id: string, isSelect: boolean) {
-        return (
-            <div
-                key={id}
-                className={prefix("icon", "sub-icon", isSelect ? "selected" : "")}
-                onClick={() => {
-									this.focusSub()
-									this.forceUpdate()
-                }}
-            >
-                <IconClass editor={this.props.editor} selected={isSelect}/>
-            </div>
-        );
-    }
+			return (
+					<div
+							key={id}
+							className={prefix("icon", "sub-icon", isSelect ? "selected" : "")}
+							onClick={() => {
+								this.focusSub()
+								this.forceUpdate()
+							}}
+					>
+							<IconClass editor={this.props.editor} selected={isSelect}/>
+					</div>
+			);
+	 }
+
+	 public componentDidMount() {
+		 const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["left"])
+		 this.editor.memory.set(this.propertyName, oldValue)
+		 this.forceUpdate()
+	 }
 }

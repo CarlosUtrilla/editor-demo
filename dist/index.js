@@ -2555,6 +2555,7 @@ var AlignIcon = /*#__PURE__*/ function(Icon) {
         _this = _super.call.apply(_super, [
             this
         ].concat(Array.prototype.slice.call(arguments)));
+        _this.propertyName = "text-align";
         _this.onClick = function() {
             _this.focusSub();
         };
@@ -2611,6 +2612,20 @@ var AlignIcon = /*#__PURE__*/ function(Icon) {
                     editor: this.props.editor,
                     selected: isSelect
                 }));
+            }
+        },
+        {
+            key: "componentDidMount",
+            value: function componentDidMount() {
+                var _this_moveableData_getProperties = _sliced_to_array(this.moveableData.getProperties([
+                    [
+                        this.propertyName
+                    ]
+                ], [
+                    "left"
+                ]), 1), oldValue = _this_moveableData_getProperties[0];
+                this.editor.memory.set(this.propertyName, oldValue);
+                this.forceUpdate();
             }
         }
     ]);
@@ -2736,6 +2751,7 @@ function DropdownIcon(param) {
     }, children));
 }
 // src/Editor/Menu/Menu.tsx
+var import_lodash = require("lodash");
 var Menu2 = /*#__PURE__*/ function(_React38_PureComponent) {
     _inherits(Menu2, _React38_PureComponent);
     var _super = _create_super(Menu2);
@@ -2783,8 +2799,10 @@ var Menu2 = /*#__PURE__*/ function(_React38_PureComponent) {
                 var _this = this;
                 var selected = this.state.selected;
                 var editor = this.props.editor;
+                var isMobile = editor.state.isMobile;
                 var viewport = editor.getViewport();
                 var menu = HomeMenu;
+                var floatingMenu = [];
                 var targets = editor.getSelectedTargets().map(function(target) {
                     return viewport.getInfoByElement(target);
                 });
@@ -2825,15 +2843,18 @@ var Menu2 = /*#__PURE__*/ function(_React38_PureComponent) {
                 if (isTargetsSame && targets.length > 0 || selected !== "MoveTool") {
                     var target = selected !== "MoveTool" ? selected : targets[0].name.replaceAll(/\(|\)/g, "");
                     selected = target;
-                    if ([
-                        "Text"
-                    ].includes(target)) {
-                        menu = TextMenu;
-                    }
-                    if ([
-                        "PrintArea"
-                    ].includes(target)) {
-                        menu = PrintAreaMenu;
+                    var menuList = {
+                        "Text": TextMenu,
+                        "PrintArea": PrintAreaMenu
+                    };
+                    var currentMenu = menuList[target];
+                    if (!isMobile) {
+                        menu = currentMenu;
+                    } else {
+                        floatingMenu = (0, import_lodash.cloneDeep)(currentMenu).filter(function(m) {
+                            return m.id !== "Divider";
+                        });
+                        floatingMenu.splice(0, 2);
                     }
                 }
                 menu = menu.filter(function(m) {
@@ -2856,7 +2877,13 @@ var Menu2 = /*#__PURE__*/ function(_React38_PureComponent) {
                     return _this.renderIcon(MenuClass, i, selected);
                 }), dropedMenu.length > 0 && /* @__PURE__ */ React38.createElement(DropdownIcon, null, dropedMenu.map(function(MenuClass, i) {
                     return _this.renderIcon(MenuClass, i, selected);
-                })));
+                })), floatingMenu.length > 0 && /* @__PURE__ */ React38.createElement("div", {
+                    className: "floating-menu"
+                }, /* @__PURE__ */ React38.createElement("div", {
+                    className: "container-floating-menu"
+                }, floatingMenu.map(function(MenuClass, i) {
+                    return _this.renderIcon(MenuClass, i, selected);
+                }))));
             }
         },
         {

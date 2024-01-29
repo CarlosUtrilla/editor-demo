@@ -3,8 +3,9 @@ import { prefix } from "../utils/utils";
 import Icon from "./Icon";
 import Editor from "../Editor";
 import { CompleteMenu, HomeMenu, PrintAreaMenu, TextMenu } from "./MenusList";
-import "./Menu.css";
 import DropdownIcon from "./DropdownIcon";
+import {cloneDeep} from "lodash"
+import "./Menu.css";
 
 
 export default class Menu extends React.PureComponent<{
@@ -30,8 +31,10 @@ export default class Menu extends React.PureComponent<{
     public renderMenus() {
         let selected = this.state.selected;
         const editor = this.props.editor;
+        const isMobile = editor.state.isMobile;
         const viewport = editor.getViewport()
         let menu = HomeMenu
+        let floatingMenu: (typeof Icon)[]  = []
         const targets = editor.getSelectedTargets().map(target => viewport.getInfoByElement(target))
         if (targets.length <= 0) {
             const resetProperties = [
@@ -47,14 +50,19 @@ export default class Menu extends React.PureComponent<{
             })
         }
         const isTargetsSame = targets.every(t => t.name === targets[0].name)
-        if ((isTargetsSame && targets.length > 0 )|| selected !== "MoveTool") {
+        if ((isTargetsSame && targets.length > 0 ) || selected !== "MoveTool") {
             const target = selected !== "MoveTool" ? selected: targets[0].name.replaceAll(/\(|\)/g, '')
             selected = target
-            if (["Text"].includes(target)) {
-                menu = TextMenu
+            const menuList = {
+                "Text": TextMenu,
+                "PrintArea": PrintAreaMenu
             }
-            if (["PrintArea"].includes(target)) {
-                menu = PrintAreaMenu
+            let currentMenu = (menuList as any)[target]
+            if (!isMobile) {
+                menu = currentMenu
+            }else{
+                floatingMenu = cloneDeep(currentMenu as (typeof Icon)[]).filter(m=> m.id !== "Divider")
+                floatingMenu.splice(0,2)
             }
         }
 
@@ -86,6 +94,16 @@ export default class Menu extends React.PureComponent<{
                         return this.renderIcon(MenuClass, i, selected)
                     })}
                 </DropdownIcon>
+            }
+            {
+                floatingMenu.length > 0 &&
+                <div className="floating-menu">
+                    <div className="container-floating-menu">
+                        {floatingMenu.map((MenuClass, i) => {
+                            return this.renderIcon(MenuClass, i, selected)
+                        })}
+                    </div>
+                </div>
             }
         </>
     }

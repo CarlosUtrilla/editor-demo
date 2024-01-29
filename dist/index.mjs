@@ -1293,6 +1293,7 @@ var subMenu2 = [
 var AlignIcon = class extends Icon {
   constructor() {
     super(...arguments);
+    this.propertyName = "text-align";
     this.onClick = () => {
       this.focusSub();
     };
@@ -1328,6 +1329,11 @@ var AlignIcon = class extends Icon {
       },
       /* @__PURE__ */ React35.createElement(IconClass, { editor: this.props.editor, selected: isSelect })
     );
+  }
+  componentDidMount() {
+    const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["left"]);
+    this.editor.memory.set(this.propertyName, oldValue);
+    this.forceUpdate();
   }
 };
 AlignIcon.id = "AlignIcon";
@@ -1444,6 +1450,7 @@ function DropdownIcon({ children }) {
 }
 
 // src/Editor/Menu/Menu.tsx
+import { cloneDeep } from "lodash";
 var Menu2 = class extends React38.PureComponent {
   constructor() {
     super(...arguments);
@@ -1472,8 +1479,10 @@ var Menu2 = class extends React38.PureComponent {
   renderMenus() {
     let selected = this.state.selected;
     const editor = this.props.editor;
+    const isMobile = editor.state.isMobile;
     const viewport = editor.getViewport();
     let menu = HomeMenu;
+    let floatingMenu = [];
     const targets = editor.getSelectedTargets().map((target) => viewport.getInfoByElement(target));
     if (targets.length <= 0) {
       const resetProperties = [
@@ -1492,11 +1501,16 @@ var Menu2 = class extends React38.PureComponent {
     if (isTargetsSame && targets.length > 0 || selected !== "MoveTool") {
       const target = selected !== "MoveTool" ? selected : targets[0].name.replaceAll(/\(|\)/g, "");
       selected = target;
-      if (["Text"].includes(target)) {
-        menu = TextMenu;
-      }
-      if (["PrintArea"].includes(target)) {
-        menu = PrintAreaMenu;
+      const menuList = {
+        "Text": TextMenu,
+        "PrintArea": PrintAreaMenu
+      };
+      let currentMenu = menuList[target];
+      if (!isMobile) {
+        menu = currentMenu;
+      } else {
+        floatingMenu = cloneDeep(currentMenu).filter((m) => m.id !== "Divider");
+        floatingMenu.splice(0, 2);
       }
     }
     menu = menu.filter((m) => !editor.props.isAdmin ? m.id !== "PrintArea" : true);
@@ -1517,7 +1531,9 @@ var Menu2 = class extends React38.PureComponent {
       return this.renderIcon(MenuClass, i, selected);
     }), dropedMenu.length > 0 && /* @__PURE__ */ React38.createElement(DropdownIcon, null, dropedMenu.map((MenuClass, i) => {
       return this.renderIcon(MenuClass, i, selected);
-    })));
+    })), floatingMenu.length > 0 && /* @__PURE__ */ React38.createElement("div", { className: "floating-menu" }, /* @__PURE__ */ React38.createElement("div", { className: "container-floating-menu" }, floatingMenu.map((MenuClass, i) => {
+      return this.renderIcon(MenuClass, i, selected);
+    }))));
   }
   renderIcon(MenuClass, i, selected) {
     const menuRefs = this.menuRefs;
