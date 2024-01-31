@@ -4,13 +4,15 @@ import Icon from "./Icon";
 import Editor from "../Editor";
 import { CompleteMenu, HomeMenu, PrintAreaMenu, TextMenu } from "./MenusList";
 import DropdownIcon from "./DropdownIcon";
-import {cloneDeep} from "lodash"
+import { cloneDeep, isObject } from "lodash"
 import "./Menu.css";
 
 
 export default class Menu extends React.PureComponent<{
     editor: Editor,
-    onSelect: (id: string) => any
+    onSelect: (id: string) => any,
+    children: React.ReactNode,
+    isPreviewMode: boolean
 }> {
     public state = {
         selected: "MoveTool",
@@ -19,26 +21,17 @@ export default class Menu extends React.PureComponent<{
     public menuRefs: Array<React.RefObject<Icon>> = [];
     public menuContainerRef = React.createRef<HTMLDivElement>();
     public render() {
-        return (
-            <div className={prefix("menu")} ref={this.menuContainerRef}>
-                {this.renderMenus()}
-                {/* <div className={prefix("menu-bottom")}>
-                    <KeyboardIcon editor={this.props.editor} />
-                </div> */}
-            </div>
-        );
-    }
-    public renderMenus() {
         let selected = this.state.selected;
         const editor = this.props.editor;
         const isMobile = editor.state.isMobile;
+        const isPreview = this.props.isPreviewMode;
         const viewport = editor.getViewport()
         let menu = HomeMenu
-        let floatingMenu: (typeof Icon)[]  = []
+        let floatingMenu: (typeof Icon)[] = []
         const targets = editor.getSelectedTargets().map(target => viewport.getInfoByElement(target))
         if (targets.length <= 0) {
             const resetProperties = [
-                ["font-weight","normal"],
+                ["font-weight", "normal"],
                 ["font-size", "16px"],
                 ["font-style", "normal"],
                 ["text-decoration", "none"],
@@ -50,31 +43,30 @@ export default class Menu extends React.PureComponent<{
             })
         }
         const isTargetsSame = targets.every(t => t.name === targets[0].name)
-        if ((isTargetsSame && targets.length > 0 ) || selected !== "MoveTool") {
-            const target = selected !== "MoveTool" ? selected: targets[0].name.replaceAll(/\(|\)/g, '')
+        if ((isTargetsSame && targets.length > 0) || selected !== "MoveTool") {
+            const target = selected !== "MoveTool" ? selected : targets[0].name.replaceAll(/\(|\)/g, '')
             selected = target
             const menuList = {
                 "Text": TextMenu,
                 "PrintArea": PrintAreaMenu
             }
-            let currentMenu = (menuList as any)[target]
+            let currentMenu = (menuList as any)[target] || HomeMenu
             if (!isMobile) {
                 menu = currentMenu
-            }else{
-                floatingMenu = cloneDeep(currentMenu as (typeof Icon)[]).filter(m=> m.id !== "Divider")
-                floatingMenu.splice(0,2)
+            } else if(currentMenu){
+                floatingMenu = cloneDeep(currentMenu as (typeof Icon)[]).filter(m => m.id !== "Divider")
+                floatingMenu.splice(0, 2)
             }
         }
 
-        menu = menu
-            .filter(m => !editor.props.isAdmin ? m.id !== "PrintArea" : true)
+        menu = menu.filter(m => !editor.props.isAdmin ? m.id !== "PrintArea" : true)
         const maxWidth = this.state.width
         let currentWidth = 0;
 
         const filteredMenu: (typeof Icon)[] = []
         const dropedMenu: (typeof Icon)[] = []
         menu.forEach((menuItem, i) => {
-            if (maxWidth > (currentWidth + (i + 1 < menu.length ? menuItem.width + 40: 40)))  {
+            if (maxWidth > (currentWidth + (i + 1 < menu.length ? menuItem.width + 40 : 40))) {
                 filteredMenu.push(menuItem)
                 currentWidth += menuItem.width
             } else {
@@ -82,30 +74,38 @@ export default class Menu extends React.PureComponent<{
                 dropedMenu.push(menuItem)
             }
         })
+        if (dropedMenu && dropedMenu.length > 0 && dropedMenu[0].id === "Divider") {
+            dropedMenu.splice(0, 1)
+        }
 
-        return <>
-            {filteredMenu.map((MenuClass, i) => {
-                return this.renderIcon(MenuClass, i, selected)
-            })}
-            {
-                dropedMenu.length > 0 &&
-                <DropdownIcon>
-                    {dropedMenu.map((MenuClass, i) => {
-                        return this.renderIcon(MenuClass, i, selected)
-                    })}
-                </DropdownIcon>
-            }
-            {
-                floatingMenu.length > 0 &&
-                <div className="floating-menu">
-                    <div className="container-floating-menu">
+        return (
+            <>
+                { !isPreview &&
+                    <div className={prefix("menu")} ref={this.menuContainerRef}>
+                        {filteredMenu.map((MenuClass, i) => {
+                            return this.renderIcon(MenuClass, i, selected)
+                        })}
+                        {
+                            dropedMenu.length > 0 &&
+                            <DropdownIcon>
+                                {dropedMenu.map((MenuClass, i) => {
+                                    return this.renderIcon(MenuClass, i, selected)
+                                })}
+                            </DropdownIcon>
+                        }
+                    </div>
+                }
+                {this.props.children}
+                {
+                    !isPreview && floatingMenu.length > 0 &&
+                    <div className={prefix("floating-menu")}>
                         {floatingMenu.map((MenuClass, i) => {
                             return this.renderIcon(MenuClass, i, selected)
                         })}
                     </div>
-                </div>
-            }
-        </>
+                }
+            </>
+        );
     }
 
     public renderIcon(MenuClass: typeof Icon, i: number, selected: string) {
@@ -117,7 +117,7 @@ export default class Menu extends React.PureComponent<{
         }
         if (id === "Divider") {
             return (
-                <MenuClass key={i} editor={editor}/>
+                <MenuClass key={i} editor={editor} />
             )
         }
         return (
@@ -125,7 +125,7 @@ export default class Menu extends React.PureComponent<{
                 ref={menuRefs[i]}
                 key={i}
                 editor={editor}
-                selected={Array.isArray(id) ? id.includes(selected): selected === id}
+                selected={Array.isArray(id) ? id.includes(selected) : selected === id}
                 selectedId={selected}
                 onSelect={this.select}
             />

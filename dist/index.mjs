@@ -1474,12 +1474,10 @@ var Menu2 = class extends React38.PureComponent {
     };
   }
   render() {
-    return /* @__PURE__ */ React38.createElement("div", { className: prefix("menu"), ref: this.menuContainerRef }, this.renderMenus());
-  }
-  renderMenus() {
     let selected = this.state.selected;
     const editor = this.props.editor;
     const isMobile = editor.state.isMobile;
+    const isPreview = this.props.isPreviewMode;
     const viewport = editor.getViewport();
     let menu = HomeMenu;
     let floatingMenu = [];
@@ -1505,10 +1503,10 @@ var Menu2 = class extends React38.PureComponent {
         "Text": TextMenu,
         "PrintArea": PrintAreaMenu
       };
-      let currentMenu = menuList[target];
+      let currentMenu = menuList[target] || HomeMenu;
       if (!isMobile) {
         menu = currentMenu;
-      } else {
+      } else if (currentMenu) {
         floatingMenu = cloneDeep(currentMenu).filter((m) => m.id !== "Divider");
         floatingMenu.splice(0, 2);
       }
@@ -1527,13 +1525,16 @@ var Menu2 = class extends React38.PureComponent {
         dropedMenu.push(menuItem);
       }
     });
-    return /* @__PURE__ */ React38.createElement(React38.Fragment, null, filteredMenu.map((MenuClass, i) => {
+    if (dropedMenu && dropedMenu.length > 0 && dropedMenu[0].id === "Divider") {
+      dropedMenu.splice(0, 1);
+    }
+    return /* @__PURE__ */ React38.createElement(React38.Fragment, null, !isPreview && /* @__PURE__ */ React38.createElement("div", { className: prefix("menu"), ref: this.menuContainerRef }, filteredMenu.map((MenuClass, i) => {
       return this.renderIcon(MenuClass, i, selected);
     }), dropedMenu.length > 0 && /* @__PURE__ */ React38.createElement(DropdownIcon, null, dropedMenu.map((MenuClass, i) => {
       return this.renderIcon(MenuClass, i, selected);
-    })), floatingMenu.length > 0 && /* @__PURE__ */ React38.createElement("div", { className: "floating-menu" }, /* @__PURE__ */ React38.createElement("div", { className: "container-floating-menu" }, floatingMenu.map((MenuClass, i) => {
+    }))), this.props.children, !isPreview && floatingMenu.length > 0 && /* @__PURE__ */ React38.createElement("div", { className: prefix("floating-menu") }, floatingMenu.map((MenuClass, i) => {
       return this.renderIcon(MenuClass, i, selected);
-    }))));
+    })));
   }
   renderIcon(MenuClass, i, selected) {
     const menuRefs = this.menuRefs;
@@ -2381,8 +2382,7 @@ var Editor = class extends React42.PureComponent {
         className: prefix("editor"),
         ref: this.editorElement
       },
-      !previewMode && /* @__PURE__ */ React42.createElement(Menu2, { ref: menu, editor: this, onSelect: this.onMenuChange }),
-      showGuides && !previewMode && /* @__PURE__ */ React42.createElement(React42.Fragment, null, /* @__PURE__ */ React42.createElement(
+      /* @__PURE__ */ React42.createElement(Menu2, { ref: menu, editor: this, onSelect: this.onMenuChange, isPreviewMode: !!previewMode }, showGuides && !previewMode && /* @__PURE__ */ React42.createElement(React42.Fragment, null, /* @__PURE__ */ React42.createElement(
         "div",
         {
           className: prefix("reset"),
@@ -2426,8 +2426,7 @@ var Editor = class extends React42.PureComponent {
             });
           }
         }
-      )),
-      /* @__PURE__ */ React42.createElement("div", { className: "scena-editor-container" }, selectedMenu === "Text" && selectedTargets.length === 1 && /* @__PURE__ */ React42.createElement(
+      )), /* @__PURE__ */ React42.createElement("div", { className: "scena-editor-container" }, selectedMenu === "Text" && selectedTargets.length === 1 && /* @__PURE__ */ React42.createElement(
         TextEditor,
         {
           element: this.viewport.current?.getInfoByElement(selectedTargets[0]),
@@ -2548,7 +2547,7 @@ var Editor = class extends React42.PureComponent {
             });
           }
         }
-      ))
+      )))
     );
   }
   componentDidMount() {

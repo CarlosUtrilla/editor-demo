@@ -2787,19 +2787,11 @@ var Menu2 = /*#__PURE__*/ function(_React38_PureComponent) {
         {
             key: "render",
             value: function render() {
-                return /* @__PURE__ */ React38.createElement("div", {
-                    className: prefix("menu"),
-                    ref: this.menuContainerRef
-                }, this.renderMenus());
-            }
-        },
-        {
-            key: "renderMenus",
-            value: function renderMenus() {
                 var _this = this;
                 var selected = this.state.selected;
                 var editor = this.props.editor;
                 var isMobile = editor.state.isMobile;
+                var isPreview = this.props.isPreviewMode;
                 var viewport = editor.getViewport();
                 var menu = HomeMenu;
                 var floatingMenu = [];
@@ -2847,10 +2839,10 @@ var Menu2 = /*#__PURE__*/ function(_React38_PureComponent) {
                         "Text": TextMenu,
                         "PrintArea": PrintAreaMenu
                     };
-                    var currentMenu = menuList[target];
+                    var currentMenu = menuList[target] || HomeMenu;
                     if (!isMobile) {
                         menu = currentMenu;
-                    } else {
+                    } else if (currentMenu) {
                         floatingMenu = (0, import_lodash.cloneDeep)(currentMenu).filter(function(m) {
                             return m.id !== "Divider";
                         });
@@ -2873,17 +2865,21 @@ var Menu2 = /*#__PURE__*/ function(_React38_PureComponent) {
                         dropedMenu.push(menuItem);
                     }
                 });
-                return /* @__PURE__ */ React38.createElement(React38.Fragment, null, filteredMenu.map(function(MenuClass, i) {
+                if (dropedMenu && dropedMenu.length > 0 && dropedMenu[0].id === "Divider") {
+                    dropedMenu.splice(0, 1);
+                }
+                return /* @__PURE__ */ React38.createElement(React38.Fragment, null, !isPreview && /* @__PURE__ */ React38.createElement("div", {
+                    className: prefix("menu"),
+                    ref: this.menuContainerRef
+                }, filteredMenu.map(function(MenuClass, i) {
                     return _this.renderIcon(MenuClass, i, selected);
                 }), dropedMenu.length > 0 && /* @__PURE__ */ React38.createElement(DropdownIcon, null, dropedMenu.map(function(MenuClass, i) {
                     return _this.renderIcon(MenuClass, i, selected);
-                })), floatingMenu.length > 0 && /* @__PURE__ */ React38.createElement("div", {
-                    className: "floating-menu"
-                }, /* @__PURE__ */ React38.createElement("div", {
-                    className: "container-floating-menu"
+                }))), this.props.children, !isPreview && floatingMenu.length > 0 && /* @__PURE__ */ React38.createElement("div", {
+                    className: prefix("floating-menu")
                 }, floatingMenu.map(function(MenuClass, i) {
                     return _this.renderIcon(MenuClass, i, selected);
-                }))));
+                })));
             }
         },
         {
@@ -4590,11 +4586,12 @@ var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
                 return /* @__PURE__ */ React43.createElement("div", {
                     className: prefix("editor"),
                     ref: this.editorElement
-                }, !previewMode && /* @__PURE__ */ React43.createElement(Menu2, {
+                }, /* @__PURE__ */ React43.createElement(Menu2, {
                     ref: menu,
                     editor: this,
-                    onSelect: this.onMenuChange
-                }), showGuides && !previewMode && /* @__PURE__ */ React43.createElement(React43.Fragment, null, /* @__PURE__ */ React43.createElement("div", {
+                    onSelect: this.onMenuChange,
+                    isPreviewMode: !!previewMode
+                }, showGuides && !previewMode && /* @__PURE__ */ React43.createElement(React43.Fragment, null, /* @__PURE__ */ React43.createElement("div", {
                     className: prefix("reset"),
                     onClick: function(e) {
                         infiniteViewer.current.scrollCenter();
@@ -4756,7 +4753,7 @@ var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
                             moveableManager.current.getMoveable().dragStart(inputEvent);
                         });
                     }
-                })));
+                }))));
             }
         },
         {

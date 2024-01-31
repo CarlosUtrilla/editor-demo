@@ -88,7 +88,7 @@ export default class Editor extends React.PureComponent<
     initialJSX?: ElementInfo[];
     backgroundImg?: string;
     onChange?: (evt: ElementInfo[]) => void;
-    onUploadImage?: (img: File) => Promise<{ url:string, options?: any }>,
+    onUploadImage?: (img: File) => Promise<{ url: string, options?: any }>,
     isAdmin?: boolean;
     fontFamily?: string[];
     onValidate?: (errors: boolean) => void;
@@ -120,7 +120,7 @@ export default class Editor extends React.PureComponent<
   public keyManager = new Shortcuts({
     capture: true,
     target: window,
-    shouldHandleEvent ( event ) {
+    shouldHandleEvent(event) {
       return true; // Handle all possible events
     }
   })
@@ -164,13 +164,10 @@ export default class Editor extends React.PureComponent<
         className={prefix("editor")}
         ref={this.editorElement}
       >
-        {
-          !previewMode &&
-          <Menu ref={menu} editor={this} onSelect={this.onMenuChange} />
-        }
-        {
-          showGuides && !previewMode && 
-          <React.Fragment>
+        <Menu ref={menu} editor={this} onSelect={this.onMenuChange} isPreviewMode={!!previewMode}>
+          {
+            showGuides && !previewMode &&
+            <React.Fragment>
               <div
                 className={prefix("reset")}
                 onClick={(e) => {
@@ -209,56 +206,51 @@ export default class Editor extends React.PureComponent<
                   });
                 }}
               ></Guides>
-          </React.Fragment>
-        }
-        <div className="scena-editor-container">
-          {
-            selectedMenu === "Text" && selectedTargets.length === 1
-            &&
-            <TextEditor
-              element={this.viewport.current?.getInfoByElement(selectedTargets[0])!}
-              memory={this.memory}
-              editor={this}
-            />
+            </React.Fragment>
           }
-          <InfiniteViewer
-            ref={infiniteViewer}
-            className={prefix("viewer")}
-            pinchThreshold={5}
-            wheelScale={0.001}
-            zoom={zoom}
-            zoomRange={[0, 4]}
-            threshold={0}
-            rangeX={[0, 0]}
-            rangeY={[0, 0]}
-            onDragStart={(e) => {
-              const target = e.inputEvent.target;
-              this.checkBlur();
-              if (
-                target.nodeName === "A" ||
-                moveableManager
-                  .current!.getMoveable()
-                  .isMoveableElement(target) ||
-                selectedTargets.some((t) => t === target || t.contains(target))
-              ) {
-                e.stop();
-              }
-            }}
-            onDragEnd={(e) => {
-              if (!e.isDrag) {
-                selecto.current!.clickTarget(e.inputEvent);
-              }
-            }}
-            onAbortPinch={(e) => {
-              selecto.current!.triggerDragStart(e.inputEvent);
-            }}
-            onPinch={(e) => {
-              const zoom = e.zoom >= minZoom ? e.zoom : minZoom
-              this.setState({
-                zoom
-              });
-            }}
-          >
+          <div className="scena-editor-container">
+            {
+              selectedMenu === "Text" && selectedTargets.length === 1
+              &&
+              <TextEditor
+                element={this.viewport.current?.getInfoByElement(selectedTargets[0])!}
+                memory={this.memory}
+                editor={this}
+              />
+            }
+            <InfiniteViewer
+              ref={infiniteViewer}
+              className={prefix("viewer")}
+              pinchThreshold={5}
+              wheelScale={0.001}
+              zoom={zoom}
+              zoomRange={[0, 4]}
+              threshold={0}
+              rangeX={[0, 0]}
+              rangeY={[0, 0]}
+              onDragStart={(e) => {
+                const target = e.inputEvent.target;
+                this.checkBlur();
+                if (
+                  target.nodeName === "A" ||
+                  moveableManager
+                    .current!.getMoveable()
+                    .isMoveableElement(target) ||
+                  selectedTargets.some((t) => t === target || t.contains(target))
+                ) {
+                  e.stop();
+                }
+              }}
+              onDragEnd={(e) => {
+                if (!e.isDrag) {
+                  selecto.current!.clickTarget(e.inputEvent);
+                }
+              }}
+              onAbortPinch={(e) => {
+                selecto.current!.triggerDragStart(e.inputEvent);
+              }}
+              onPinch={this.setZoom}
+            >
               <Viewport
                 ref={viewport}
                 onBlur={this.onBlur}
@@ -268,35 +260,35 @@ export default class Editor extends React.PureComponent<
                 }}
                 editor={this}
                 background={this.props.backgroundImg}
-            >
-              {
-                !previewMode &&
+              >
+                {
+                  !previewMode &&
                   <MoveableManager
-                  ref={moveableManager}
-                  selectedTargets={selectedTargets}
-                  selectedMenu={selectedMenu}
-                  verticalGuidelines={verticalSnapGuides}
-                  horizontalGuidelines={horizontalSnapGuides}
-                  editor={this}
+                    ref={moveableManager}
+                    selectedTargets={selectedTargets}
+                    selectedMenu={selectedMenu}
+                    verticalGuidelines={verticalSnapGuides}
+                    horizontalGuidelines={horizontalSnapGuides}
+                    editor={this}
                   ></MoveableManager>
-              }
+                }
               </Viewport>
-          </InfiniteViewer>
-          {!previewMode &&
-            <Selecto
-              ref={selecto}
-              hitRate={0}
-              dragContainer={".scena-viewer"}
-              rootContainer={infiniteViewer.current && infiniteViewer.current.getContainer()}
-              container={infiniteViewer.current && infiniteViewer.current.getContainer()}
-              selectableTargets={selectedMenu === "MoveTool" ?[`.scena-viewport [${DATA_SCENA_ELEMENT_ID}].selectable`]:[]}
-              selectByClick={true}
-              selectFromInside={false}
-              toggleContinueSelect={["shift"]}
-              preventDefault={true}
-              scrollOptions={
-                infiniteViewer.current
-                  ? {
+            </InfiniteViewer>
+            {!previewMode &&
+              <Selecto
+                ref={selecto}
+                hitRate={0}
+                dragContainer={".scena-viewer"}
+                rootContainer={infiniteViewer.current && infiniteViewer.current.getContainer()}
+                container={infiniteViewer.current && infiniteViewer.current.getContainer()}
+                selectableTargets={selectedMenu === "MoveTool" ? [`.scena-viewport [${DATA_SCENA_ELEMENT_ID}].selectable`] : []}
+                selectByClick={true}
+                selectFromInside={false}
+                toggleContinueSelect={["shift"]}
+                preventDefault={true}
+                scrollOptions={
+                  infiniteViewer.current
+                    ? {
                       container: infiniteViewer.current.getContainer(),
                       threshold: 30,
                       throttleTime: 30,
@@ -305,49 +297,50 @@ export default class Editor extends React.PureComponent<
                         return [current.getScrollLeft(), current.getScrollTop()];
                       }
                     }
-                  : undefined
-              }
-              onDragStart={(e) => {
-                const inputEvent = e.inputEvent;
-                const target = inputEvent.target;
-                this.checkBlur();
-                if (selectedMenu === "Text") {
+                    : undefined
+                }
+                onDragStart={(e) => {
+                  const inputEvent = e.inputEvent;
+                  const target = inputEvent.target;
+                  this.checkBlur();
+                  if (selectedMenu === "Text") {
                     e.stop()
-                }
-                if (
-                  moveableManager
-                    .current!.getMoveable()
-                    .isMoveableElement(target) ||
-                  state.selectedTargets.some(
-                    (t) => t === target || t.contains(target)
-                  )
-                ) {
-                  e.stop();
-                }
-              }}
-              onScroll={({ direction }) => {
-                infiniteViewer.current!.scrollBy(
-                  direction[0] * 10,
-                  direction[1] * 10
-                );
-              }}
-              onSelectEnd={({ isDragStart, selected, inputEvent, rect }) => {
-                if (isDragStart) {
-                  inputEvent.preventDefault();
-                }
-                if (this.selectEndMaker(rect)) {
-                  return;
-                }
-                this.setSelectedTargets(selected).then(() => {
-                  if (!isDragStart) {
+                  }
+                  if (
+                    moveableManager
+                      .current!.getMoveable()
+                      .isMoveableElement(target) ||
+                    state.selectedTargets.some(
+                      (t) => t === target || t.contains(target)
+                    )
+                  ) {
+                    e.stop();
+                  }
+                }}
+                onScroll={({ direction }) => {
+                  infiniteViewer.current!.scrollBy(
+                    direction[0] * 10,
+                    direction[1] * 10
+                  );
+                }}
+                onSelectEnd={({ isDragStart, selected, inputEvent, rect }) => {
+                  if (isDragStart) {
+                    inputEvent.preventDefault();
+                  }
+                  if (this.selectEndMaker(rect)) {
                     return;
                   }
-                  moveableManager.current!.getMoveable().dragStart(inputEvent);
-                });
-              }}
-            ></Selecto>
-          }
-        </div>
+                  this.setSelectedTargets(selected).then(() => {
+                    if (!isDragStart) {
+                      return;
+                    }
+                    moveableManager.current!.getMoveable().dragStart(inputEvent);
+                  });
+                }}
+              ></Selecto>
+            }
+          </div>
+        </Menu>
       </div>
     );
   }
@@ -383,28 +376,28 @@ export default class Editor extends React.PureComponent<
     this.keyManager.add([
       {
         shortcut: "Left",
-        handler: (e) => { 
+        handler: (e) => {
           this.move(-1, 0);
           e && e.preventDefault();
         }
       },
       {
         shortcut: "Up",
-        handler: (e) => { 
-          this.move(0,-1);
+        handler: (e) => {
+          this.move(0, -1);
           e && e.preventDefault();
         }
       },
       {
         shortcut: "Right",
-        handler: (e) => { 
+        handler: (e) => {
           this.move(1, 0);
           e && e.preventDefault();
         }
       },
       {
         shortcut: "Down",
-        handler: (e) => { 
+        handler: (e) => {
           this.move(0, 1);
           e && e.preventDefault();
         }
@@ -453,12 +446,12 @@ export default class Editor extends React.PureComponent<
 
     document.addEventListener("keydown", (e: KeyboardEvent) => {
       if (e.key === "Shift") {
-          this.setState({ isShift: true})
+        this.setState({ isShift: true })
       }
     })
     document.addEventListener("keyup", (e: KeyboardEvent) => {
       if (e.key === "Shift") {
-          this.setState({ isShift: false})
+        this.setState({ isShift: false })
       }
     })
     // this.keyManager.keydown(
@@ -508,7 +501,7 @@ export default class Editor extends React.PureComponent<
           }
           return jsx
         })
-      this.appendJSXs(initialJSX,true)
+      this.appendJSXs(initialJSX, true)
     }
 
     if (!this.state.loadedViewer) {
@@ -533,12 +526,12 @@ export default class Editor extends React.PureComponent<
     window.removeEventListener("resize", this.onResize);
     document.removeEventListener("keydown", (e: KeyboardEvent) => {
       if (e.key === "Shift") {
-          this.setState({ isShift: true})
+        this.setState({ isShift: true })
       }
     })
     document.removeEventListener("keyup", (e: KeyboardEvent) => {
       if (e.key === "Shift") {
-          this.setState({ isShift: false})
+        this.setState({ isShift: false })
       }
     })
 
@@ -603,7 +596,7 @@ export default class Editor extends React.PureComponent<
     return this.getViewport()
       .appendJSXs(jsxs, appendIndex, scopeId)
       .then(({ added }) => {
-        return this.appendComplete(added, isNewText?false:isRestore);
+        return this.appendComplete(added, isNewText ? false : isRestore);
       });
   }
   public appendComplete(infos: ElementInfo[], isRestore?: boolean) {
@@ -630,6 +623,14 @@ export default class Editor extends React.PureComponent<
         return targets;
       }
     );
+  }
+  public setZoom(e: { zoom: number }) {
+    const { minZoom } = this.state
+    const zoom = e.zoom >= minZoom ? e.zoom : minZoom
+    this.setState({
+      zoom
+    });
+
   }
   public removeByIds(ids: string[], isRestore?: boolean) {
     return this.removeElements(this.getViewport().getElements(ids), isRestore);
@@ -731,7 +732,7 @@ export default class Editor extends React.PureComponent<
     if (targets.length && this.moveableManager.current) {
       targets.forEach(target => this.moveableManager.current!.updateRender(target))
     }
-     this.historyManager.addAction("renders", { infos });
+    this.historyManager.addAction("renders", { infos });
   }
   public setOrders(scope: string[], orders: NameType[], isUpdate?: boolean) {
     const infos = this.moveableData.setOrders(scope, orders);
@@ -785,7 +786,7 @@ export default class Editor extends React.PureComponent<
       .map((target) => viewport.getInfoByElement(target))
       .map(function saveTarget(info): SavedScenaData {
         const target = info.el!;
-        const isText= info.attrs!.isText;
+        const isText = info.attrs!.isText;
 
         return {
           name: info.name,
@@ -827,7 +828,7 @@ export default class Editor extends React.PureComponent<
       selectedMenu: id
     });
   };
-  public selectEndMaker(rect: Rect, extraProps?: any, icon?:typeof Icon, isNewText?: boolean) {
+  public selectEndMaker(rect: Rect, extraProps?: any, icon?: typeof Icon, isNewText?: boolean) {
     const infiniteViewer = this.infiniteViewer.current!;
     const selectIcon = icon || this.menu.current!.getSelected();
     const width = rect.width;
@@ -841,7 +842,7 @@ export default class Editor extends React.PureComponent<
     const scrollLeft = viwerPosition.x
     const top = rect.top - scrollTop;
     const left = rect.left - scrollLeft;
-    this.console.log(top,left, viwerPosition)
+    this.console.log(top, left, viwerPosition)
     const style = {
       top: `${top}px`,
       left: `${left}px`,
@@ -855,8 +856,8 @@ export default class Editor extends React.PureComponent<
       attrs: maker.attrs,
       name: `(${selectIcon.id})`,
       frame: style,
-      ...("Text" === selectIcon.id &&{ colors: [style.color]}),
-      ...(extraProps && {...extraProps})
+      ...("Text" === selectIcon.id && { colors: [style.color] }),
+      ...(extraProps && { ...extraProps })
     }, isNewText).then((el) => {
       selectIcon.makeThen(el, selectIcon.id as string, this.menu.current!)
       this.menu.current?.forceUpdate()
@@ -901,7 +902,7 @@ export default class Editor extends React.PureComponent<
         const newZoom = width / 500;
         viewer.style.width = `${500 * newZoom}px`;
         viewer.style.height = `${500 * newZoom}px`;
-        this.setState({minZoom: newZoom, zoom: newZoom});
+        this.setState({ minZoom: newZoom, zoom: newZoom });
       } else {
         viewer.style.width = `${500}px`;
         viewer.style.height = `${500}px`;
@@ -982,18 +983,18 @@ export default class Editor extends React.PureComponent<
   public saveEditor() {
     const elements = this.getViewport().getViewportInfos()
     let stringElements = JSON.stringify(elements, (key, value) => {
-        if (key.includes('__reactInternalInstance') || key.includes('__reactFiber')|| value instanceof HTMLDivElement) {
-            return undefined;
-        }
-        return value;
+      if (key.includes('__reactInternalInstance') || key.includes('__reactFiber') || value instanceof HTMLDivElement) {
+        return undefined;
+      }
+      return value;
     });
     const parsedElements = JSON.parse(stringElements) as ElementInfo[]
     return parsedElements.map(e => {
-        delete e.el
-        if (e.name === "(PrintArea)" && e.attrs && e.attrs.class) {
-            delete e.attrs.class
-        }
-        return e
+      delete e.el
+      if (e.name === "(PrintArea)" && e.attrs && e.attrs.class) {
+        delete e.attrs.class
+      }
+      return e
     })
   }
   public async addImage(file: File | undefined) {
@@ -1002,37 +1003,37 @@ export default class Editor extends React.PureComponent<
       this.menu.current?.select("Image")
     }
     if (upload && file) {
-					const image = await upload(file)
-					const imageLoad = new Image();
-					this.memory.set("imageUrl", image.url)
+      const image = await upload(file)
+      const imageLoad = new Image();
+      this.memory.set("imageUrl", image.url)
 
-					imageLoad.onload = () => {
-						let width = imageLoad.width;
-						let height = imageLoad.height
-						const MAX_SIZE = 150;
-						if (width >= height) {
-							height = (MAX_SIZE / width) * height;
-							width = MAX_SIZE;
-						} else {
-							width = (MAX_SIZE / height) * width;
-							height = MAX_SIZE;
-						}
-            const bounds = this.infiniteViewer.current!.getContainer().getBoundingClientRect();
-						this.selectEndMaker({
-							top: bounds.y + 250 - (height / 2),
-							left: bounds.x + 250 - (width / 2),
-							bottom: 0,
-							right: 0,
-							width,
-							height
-            }, {
-              url: image.url,
-              ...(image.options)
-            })
-					};
-
-					imageLoad.src = image.url;
+      imageLoad.onload = () => {
+        let width = imageLoad.width;
+        let height = imageLoad.height
+        const MAX_SIZE = 150;
+        if (width >= height) {
+          height = (MAX_SIZE / width) * height;
+          width = MAX_SIZE;
+        } else {
+          width = (MAX_SIZE / height) * width;
+          height = MAX_SIZE;
         }
+        const bounds = this.infiniteViewer.current!.getContainer().getBoundingClientRect();
+        this.selectEndMaker({
+          top: bounds.y + 250 - (height / 2),
+          left: bounds.x + 250 - (width / 2),
+          bottom: 0,
+          right: 0,
+          width,
+          height
+        }, {
+          url: image.url,
+          ...(image.options)
+        })
+      };
+
+      imageLoad.src = image.url;
+    }
   }
 
   public async getScreenshot(fileName: string) {
@@ -1041,8 +1042,8 @@ export default class Editor extends React.PureComponent<
       this.setState({ isScreenshot: true, zoom: 1 }, async () => {
         const viewer = document.getElementById("scene-viewport")!;
 
-        resolve(await domtoimage.toBlob(viewer, {cacheBust: true,quality: 100}));
-        this.setState({ isScreenshot: false, zoom})
+        resolve(await domtoimage.toBlob(viewer, { cacheBust: true, quality: 100 }));
+        this.setState({ isScreenshot: false, zoom })
       })
     })
   }
@@ -1050,7 +1051,7 @@ export default class Editor extends React.PureComponent<
     // Se selecciona todo el diseño del usuario para posteriormente sacar la medida en pixeles
     const viewport = this.getViewport()
     const elements = viewport.getViewportInfos()
-    const elementsId = elements.filter(e => e.name !== "(PrintArea)").map(e=> e.id!)
+    const elementsId = elements.filter(e => e.name !== "(PrintArea)").map(e => e.id!)
     const elementsNodes = viewport.getElements(elementsId);
     await this.setSelectedTargets(elementsNodes)
 

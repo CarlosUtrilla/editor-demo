@@ -185,6 +185,8 @@ interface Icon extends EditorInterface {
 declare class Menu extends React.PureComponent<{
     editor: Editor;
     onSelect: (id: string) => any;
+    children: React.ReactNode;
+    isPreviewMode: boolean;
 }> {
     state: {
         selected: string;
@@ -193,7 +195,6 @@ declare class Menu extends React.PureComponent<{
     menuRefs: Array<React.RefObject<Icon>>;
     menuContainerRef: React.RefObject<HTMLDivElement>;
     render(): React.JSX.Element;
-    renderMenus(): React.JSX.Element;
     renderIcon(MenuClass: typeof Icon, i: number, selected: string): React.JSX.Element;
     select: (id: string) => void;
     getSelected(): typeof Icon | undefined;

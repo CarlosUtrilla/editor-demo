@@ -8,8 +8,8 @@ export default class LessZoomIcon extends Icon {
             <i className="fa-solid fa-minus"></i>
         );
 		}
-		public onClick = () => {
-			const newZoom = this.editor.state.zoom - 0.1;
-			this.editor.setState({ zoom: newZoom <= 1 ? 1 : newZoom})
-		};
+	public onClick = () => {
+			const editor = this.editor
+			editor.setZoom({zoom: editor.state.zoom - 0.1});
+	};
 }

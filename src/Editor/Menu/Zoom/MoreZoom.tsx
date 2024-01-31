@@ -9,7 +9,7 @@ export default class MoreZoomIcon extends Icon {
         );
 		}
 		public onClick = () => {
-			const newZoom = this.editor.state.zoom + 0.1;
-			this.editor.setState({ zoom: newZoom })
-		};
+			const editor = this.editor
+			editor.setZoom({zoom: editor.state.zoom + 0.1});
+	};
 }

@@ -6,7 +6,13 @@
     top: calc(var(--menu) - 0.75rem);
     left: 0.5rem;
     transform: translateY(10px) translateZ(1px);
-    z-index: 10;
+    z-index: 999999;
+}
+@media (max-width: 768px) {
+    .scena-color-picker {
+        top: inherit;
+        bottom: calc(var(--menu) - 0.75rem);
+    }
 }
 
 .scena-color-background {
