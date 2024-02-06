@@ -35,14 +35,14 @@ export default class Menu extends React.PureComponent<{
                 ["font-size", "16px"],
                 ["font-style", "normal"],
                 ["text-decoration", "none"],
-                ["font-family", "Avenir"],
+                ["font-family", "Roboto"],
                 ["text-align", "left"]
             ]
             resetProperties.forEach(p => {
                 editor.memory.set(p[0], p[1])
             })
         }
-        const isTargetsSame = targets.every(t => t.name === targets[0].name)
+        const isTargetsSame = targets.every(t => t && t.name && t.name === targets[0].name)
         if ((isTargetsSame && targets.length > 0) || selected !== "MoveTool") {
             const target = selected !== "MoveTool" ? selected : targets[0].name.replaceAll(/\(|\)/g, '')
             selected = target

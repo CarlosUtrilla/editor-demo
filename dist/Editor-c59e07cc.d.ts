@@ -70,6 +70,7 @@ declare class MoveableManager extends React.PureComponent<{
     updateRect(): void;
     updateRender(e: HTMLElement | SVGElement): Promise<void>;
     loadTextStylesOnMemory(styles: IObject<any>): void;
+    rescaleHandleResizers(): void;
 }
 interface MoveableManager extends EditorInterface {
 }
@@ -145,6 +146,48 @@ type ScenaComponent = React.JSXElementConstructor<ScenaProps> & {
 type ScenaJSXElement = React.ReactElement<any, string> | ScenaFunctionJSXElement;
 type ScenaFunctionJSXElement = React.ReactElement<any, ScenaComponent>;
 type ScenaJSXType = ScenaJSXElement | string | ScenaComponent;
+interface FontsList {
+    family: string;
+    variants: string[];
+    subsets: string[];
+    version: string;
+    lastModified: Date;
+    files: Files;
+    category: Category;
+    kind: Kind;
+    menu: string;
+}
+declare enum Category {
+    Display = "display",
+    Handwriting = "handwriting",
+    SansSerif = "sans-serif",
+    Serif = "serif"
+}
+interface Files {
+    regular: string;
+    italic?: string;
+    "100"?: string;
+    "200"?: string;
+    "300"?: string;
+    "400"?: string;
+    "500"?: string;
+    "600"?: string;
+    "700"?: string;
+    "800"?: string;
+    "900"?: string;
+    "100italic"?: string;
+    "200italic"?: string;
+    "300italic"?: string;
+    "400italic"?: string;
+    "500italic"?: string;
+    "600italic"?: string;
+    "700italic"?: string;
+    "800italic"?: string;
+    "900italic"?: string;
+}
+declare enum Kind {
+    WebfontsWebfont = "webfonts#webfont"
+}
 
 interface Maker {
     tag: string;
@@ -313,6 +356,14 @@ declare class ClipboardManager {
     private read;
 }
 
+declare class FontsManager {
+    fonts: FontsList[];
+    private editor;
+    constructor(editor: Editor);
+    private requestFonts;
+    loadFonts(fonts: string[]): void;
+}
+
 declare class Editor extends React.PureComponent<{
     debug?: boolean;
     initialJSX?: ElementInfo[];
@@ -336,6 +387,7 @@ declare class Editor extends React.PureComponent<{
     moveableData: MoveableData;
     keyManager: Shortcuts;
     clipboardManager: ClipboardManager;
+    fontsManager: FontsManager;
     horizontalGuides: React.RefObject<Guides>;
     verticalGuides: React.RefObject<Guides>;
     infiniteViewer: React.RefObject<InfiniteViewer>;
@@ -355,6 +407,9 @@ declare class Editor extends React.PureComponent<{
     appendJSX(info: ElementInfo, isRestore?: boolean): Promise<HTMLElement | SVGElement>;
     appendJSXs(jsxs: ElementInfo[], isRestore?: boolean, isNewText?: boolean): Promise<Array<HTMLElement | SVGElement>>;
     appendComplete(infos: ElementInfo[], isRestore?: boolean): Promise<HTMLElement[]>;
+    setZoom(e: {
+        zoom: number;
+    }): void;
     removeByIds(ids: string[], isRestore?: boolean): Promise<(HTMLElement | SVGElement)[]>;
     getMoveable(): Moveable.default<{}>;
     removeFrames(targets: Array<HTMLElement | SVGElement>): IObject<any>;

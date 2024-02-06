@@ -82,6 +82,10 @@ export const PrintAreaMenu: Array<typeof Icon> = [
 	Divider,
 	BorderColorIcon,
 	Divider,
+	LessZoomIcon,
+	ZoomTextIcon,
+	MoreZoomIcon,
+	Divider,
 	DeleteIcon
 ]
 export const CompleteMenu: Array<typeof Icon> = [

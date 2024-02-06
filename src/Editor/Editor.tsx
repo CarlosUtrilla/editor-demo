@@ -33,6 +33,8 @@ import { NameType } from "scenejs";
 import domtoimage from "dom-to-image";
 import TextEditor from "./TextEditor";
 import Icon from "./Menu/Icon";
+import FontsManager from "./utils/FontsManager";
+import { unionBy } from "lodash";
 
 function undoCreateElements(
   { infos, prevSelected }: IObject<any>,
@@ -125,6 +127,7 @@ export default class Editor extends React.PureComponent<
     }
   })
   public clipboardManager = new ClipboardManager(this);
+  public fontsManager = new FontsManager(this)
 
   public horizontalGuides = React.createRef<Guides>();
   public verticalGuides = React.createRef<Guides>();
@@ -150,7 +153,7 @@ export default class Editor extends React.PureComponent<
 
     const previewMode = this.props.previewMode;
 
-    const { selectedMenu, selectedTargets, zoom, showGuides, minZoom, width, height } = state;
+    const { selectedMenu, selectedTargets, zoom, showGuides, width, height } = state;
     const horizontalSnapGuides = [
       0,
       height,
@@ -249,7 +252,7 @@ export default class Editor extends React.PureComponent<
               onAbortPinch={(e) => {
                 selecto.current!.triggerDragStart(e.inputEvent);
               }}
-              onPinch={this.setZoom}
+              onPinch={(e)=>this.setZoom(e)}
             >
               <Viewport
                 ref={viewport}
@@ -596,6 +599,16 @@ export default class Editor extends React.PureComponent<
     return this.getViewport()
       .appendJSXs(jsxs, appendIndex, scopeId)
       .then(({ added }) => {
+        const areTexts = added.filter(e => e.name === "(Text)")
+        if (areTexts.length) {
+          const fonts = unionBy(areTexts.map(e => {
+            if (e.frame && e.frame["font-family"]) {
+              return e.frame["font-family"] as string;
+            }
+            return "";
+          })).filter(e => e)
+          this.fontsManager.loadFonts(fonts)
+        }
         return this.appendComplete(added, isNewText ? false : isRestore);
       });
   }
@@ -625,12 +638,11 @@ export default class Editor extends React.PureComponent<
     );
   }
   public setZoom(e: { zoom: number }) {
-    const { minZoom } = this.state
+    const minZoom = this?.state?.minZoom || 1;
     const zoom = e.zoom >= minZoom ? e.zoom : minZoom
     this.setState({
       zoom
     });
-
   }
   public removeByIds(ids: string[], isRestore?: boolean) {
     return this.removeElements(this.getViewport().getElements(ids), isRestore);

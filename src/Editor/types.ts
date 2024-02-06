@@ -78,3 +78,55 @@ export type ScenaJSXElement
     | ScenaFunctionJSXElement;
 export type ScenaFunctionJSXElement = React.ReactElement<any, ScenaComponent>;
 export type ScenaJSXType = ScenaJSXElement | string | ScenaComponent;
+
+
+export interface GoogleFontsREST {
+    kind: string;
+    items: FontsList[];
+}
+
+export interface FontsList {
+    family: string;
+    variants: string[];
+    subsets: string[];
+    version: string;
+    lastModified: Date;
+    files: Files;
+    category: Category;
+    kind: Kind;
+    menu: string;
+}
+
+export enum Category {
+    Display = "display",
+    Handwriting = "handwriting",
+    SansSerif = "sans-serif",
+    Serif = "serif",
+}
+
+export interface Files {
+    regular: string;
+    italic?: string;
+    "100"?: string;
+    "200"?: string;
+    "300"?: string;
+    "400"?: string;
+    "500"?: string;
+    "600"?: string;
+    "700"?: string;
+    "800"?: string;
+    "900"?: string;
+    "100italic"?: string;
+    "200italic"?: string;
+    "300italic"?: string;
+    "400italic"?: string;
+    "500italic"?: string;
+    "600italic"?: string;
+    "700italic"?: string;
+    "800italic"?: string;
+    "900italic"?: string;
+}
+
+export enum Kind {
+    WebfontsWebfont = "webfonts#webfont",
+}

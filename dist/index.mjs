@@ -16,13 +16,13 @@ import {
 } from "./chunk-2MZNJJQJ.mjs";
 
 // src/Editor/Editor.tsx
-import * as React42 from "react";
+import * as React41 from "react";
 import InfiniteViewer from "react-infinite-viewer";
 import Guides from "@scena/react-guides";
 import Selecto from "react-selecto";
 
 // src/Editor/Menu/Menu.tsx
-import * as React38 from "react";
+import * as React37 from "react";
 
 // src/Editor/Menu/Divider.tsx
 import * as React2 from "react";
@@ -841,57 +841,17 @@ var UnderlineIcon = class extends Icon {
 UnderlineIcon.id = "TextUnderline";
 
 // src/Editor/Menu/TextIcons/FontFamily.tsx
-import * as React24 from "react";
-
-// src/Editor/Inputs/SelectBox.tsx
 import * as React23 from "react";
-import { isUndefined } from "@daybrush/utils";
-var SelectBox = class extends Input {
-  constructor() {
-    super(...arguments);
-    this.inputAttributes = {};
-    this.onInput = (e) => {
-      const ev = e.nativeEvent || e;
-      if (!isUndefined(ev.data)) {
-        return;
-      }
-      this.props.onChange(this.input.current.value);
-    };
-  }
-  render() {
-    const options = this.props.options || [];
-    return /* @__PURE__ */ React23.createElement(
-      "select",
-      {
-        ref: this.input,
-        className: prefix("select"),
-        ...this.inputAttributes,
-        ...this.props.inputProps,
-        value: this.props.value,
-        defaultValue: this.props.value,
-        onInput: this.onInput
-      },
-      options.map((value) => /* @__PURE__ */ React23.createElement("option", { key: value, value }, value))
-    );
-  }
-  getValue() {
-    return this.input.current.value;
-  }
-  setValue(value) {
-    this.input.current.value = `${isUndefined(value) ? "" : value}`;
-  }
-};
-
-// src/Editor/Menu/TextIcons/FontFamily.tsx
-var fontFamily = [
-  "Avenir",
-  "sans-serif"
-];
+import { Autocomplete, TextField } from "@mui/material";
 var FontFamily = class extends Icon {
   constructor() {
     super(...arguments);
     this.propertyName = "font-family";
-    this.propertyValue = "Avenir";
+    this.propertyValue = "Roboto";
+    this.state = {
+      selected: false,
+      inputValue: this.propertyValue
+    };
     this.onClick = () => {
     };
     this.onChange = (v) => {
@@ -907,24 +867,43 @@ var FontFamily = class extends Icon {
   }
   render() {
     const value = this.getOldValue();
-    const fontFamilyList = this.editor.props.fontFamily || fontFamily;
-    return /* @__PURE__ */ React24.createElement("div", { className: "scene-font-family" }, /* @__PURE__ */ React24.createElement(
-      SelectBox,
+    const fonts = this.editor.fontsManager.fonts;
+    return /* @__PURE__ */ React23.createElement("div", { className: "scene-font-family" }, /* @__PURE__ */ React23.createElement(
+      Autocomplete,
       {
-        onChange: this.onChange,
-        options: fontFamilyList.sort((a, b) => a.localeCompare(b, void 0, { sensitivity: "base" })),
-        value
+        loading: fonts.length <= 0,
+        options: fonts.map((f) => ({ label: f.family, ...f })),
+        renderInput: (params) => /* @__PURE__ */ React23.createElement(
+          TextField,
+          {
+            ...params,
+            variant: "standard",
+            onFocus: () => this.editor.keyManager.stop()
+          }
+        ),
+        size: "small",
+        inputValue: this.state.inputValue,
+        onInputChange: (_, value2) => this.setState({ inputValue: value2 }),
+        value,
+        isOptionEqualToValue: (opt) => opt.family === value,
+        onChange: (event, newValue) => {
+          this.onChange(newValue?.family || this.propertyValue);
+          this.editor.fontsManager.loadFonts([newValue?.family || this.propertyValue]);
+        },
+        fullWidth: true,
+        disableClearable: true
       }
     ));
   }
   renderIcon() {
   }
   getOldValue() {
-    const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["Avenir"]);
+    const [oldValue] = this.moveableData.getProperties([[this.propertyName]], [this.propertyValue]);
     return oldValue;
   }
   componentDidMount() {
     this.editor.eventBus.on("setSelectedTargets", this.setTargets);
+    this.setState({ inputValue: this.getOldValue() });
   }
   componentWillUnmount() {
     this.editor.eventBus.off("setSelectedTargets", this.setTargets);
@@ -934,12 +913,18 @@ FontFamily.id = "FontFamily";
 FontFamily.width = 93;
 
 // src/Editor/Menu/TextIcons/FontSize.tsx
-import * as React25 from "react";
+import * as React24 from "react";
+import { Autocomplete as Autocomplete2, TextField as TextField2 } from "@mui/material";
 var sizes = [
+  "6px",
+  "7px",
+  "8px",
+  "9px",
   "10px",
   "11px",
   "12px",
   "14px",
+  "16px",
   "18px",
   "24px"
 ];
@@ -951,8 +936,10 @@ var FontSize = class extends Icon {
     this.onClick = () => {
     };
     this.onChange = (v) => {
-      this.memory.set(this.propertyName, v);
-      this.editor.setProperty([this.propertyName], v, true);
+      let parsedValue = parseInt(v);
+      parsedValue = parsedValue + "px";
+      this.memory.set(this.propertyName, parsedValue);
+      this.editor.setProperty([this.propertyName], parsedValue, true);
       this.forceUpdate();
       this.editor.forceUpdate();
     };
@@ -968,29 +955,41 @@ var FontSize = class extends Icon {
     if (!sizesList.includes(value)) {
       sizesList.push(value);
     }
-    return /* @__PURE__ */ React25.createElement("div", { className: "scene-font-size" }, /* @__PURE__ */ React25.createElement(
+    return /* @__PURE__ */ React24.createElement("div", { className: "scene-font-size" }, /* @__PURE__ */ React24.createElement(
       "button",
       {
         onClick: () => {
           this.onChange(`${parsedValue - 1}px`);
         }
       },
-      /* @__PURE__ */ React25.createElement("i", { className: "fa-solid fa-minus" })
-    ), /* @__PURE__ */ React25.createElement(
-      SelectBox,
+      /* @__PURE__ */ React24.createElement("i", { className: "fa-solid fa-minus" })
+    ), /* @__PURE__ */ React24.createElement(
+      Autocomplete2,
       {
-        onChange: this.onChange,
-        options: sizesList.sort((a, b) => parseInt(a) - parseInt(b)),
-        value
+        options: sizes,
+        value,
+        onChange: (_, v) => this.onChange(v),
+        renderInput: (params) => /* @__PURE__ */ React24.createElement(
+          TextField2,
+          {
+            ...params,
+            variant: "standard",
+            onFocus: () => this.editor.keyManager.stop()
+          }
+        ),
+        size: "small",
+        freeSolo: true,
+        disableClearable: true,
+        fullWidth: true
       }
-    ), /* @__PURE__ */ React25.createElement(
+    ), /* @__PURE__ */ React24.createElement(
       "button",
       {
         onClick: () => {
           this.onChange(`${parsedValue + 1}px`);
         }
       },
-      /* @__PURE__ */ React25.createElement("i", { className: "fa-solid fa-plus" })
+      /* @__PURE__ */ React24.createElement("i", { className: "fa-solid fa-plus" })
     ));
   }
   renderIcon() {
@@ -1010,11 +1009,11 @@ FontSize.id = "FontSize";
 FontSize.width = 98;
 
 // src/Editor/Menu/ShapeIcons/FillIcon.tsx
-import * as React26 from "react";
+import * as React25 from "react";
 var FillIcon = class extends Icon {
   constructor() {
     super(...arguments);
-    this.colorInput = React26.createRef();
+    this.colorInput = React25.createRef();
     this.propertyName = "background-color";
     this.propertyValue = "#4af";
     this.onChangeTextColor = (v) => {
@@ -1031,10 +1030,10 @@ var FillIcon = class extends Icon {
   }
   renderIcon() {
     const color = this.getOldValue() || "#4af";
-    return /* @__PURE__ */ React26.createElement(
+    return /* @__PURE__ */ React25.createElement(
       ColorIconPicker,
       {
-        icon: /* @__PURE__ */ React26.createElement("i", { className: "fa-solid fa-fill-drip" }),
+        icon: /* @__PURE__ */ React25.createElement("i", { className: "fa-solid fa-fill-drip" }),
         onChange: this.onChangeTextColor,
         value: color,
         ref: this.colorInput
@@ -1056,11 +1055,11 @@ var FillIcon = class extends Icon {
 FillIcon.id = "FillIcon";
 
 // src/Editor/Menu/ShapeIcons/BorderColorIcon.tsx
-import * as React27 from "react";
+import * as React26 from "react";
 var BorderColorIcon = class extends Icon {
   constructor() {
     super(...arguments);
-    this.colorInput = React27.createRef();
+    this.colorInput = React26.createRef();
     this.propertyName = "outline-color";
     this.propertyValue = "transparent";
     this.onChangeTextColor = (v) => {
@@ -1077,10 +1076,10 @@ var BorderColorIcon = class extends Icon {
   }
   renderIcon() {
     const color = this.getOldValue() || "transparent";
-    return /* @__PURE__ */ React27.createElement(
+    return /* @__PURE__ */ React26.createElement(
       ColorIconPicker,
       {
-        icon: /* @__PURE__ */ React27.createElement("i", { className: "fa-solid fa-pen" }),
+        icon: /* @__PURE__ */ React26.createElement("i", { className: "fa-solid fa-pen" }),
         onChange: this.onChangeTextColor,
         value: color,
         ref: this.colorInput
@@ -1102,39 +1101,39 @@ var BorderColorIcon = class extends Icon {
 BorderColorIcon.id = "BorderColorIcon";
 
 // src/Editor/Menu/Zoom/MoreZoom.tsx
-import * as React28 from "react";
+import * as React27 from "react";
 var MoreZoomIcon = class extends Icon {
   constructor() {
     super(...arguments);
     this.onClick = () => {
-      const newZoom = this.editor.state.zoom + 0.1;
-      this.editor.setState({ zoom: newZoom });
+      const editor = this.editor;
+      editor.setZoom({ zoom: editor.state.zoom + 0.1 });
     };
   }
   renderIcon() {
-    return /* @__PURE__ */ React28.createElement("i", { className: "fa-solid fa-plus" });
+    return /* @__PURE__ */ React27.createElement("i", { className: "fa-solid fa-plus" });
   }
 };
 MoreZoomIcon.id = "MoreZoom";
 
 // src/Editor/Menu/Zoom/LessZoom.tsx
-import * as React29 from "react";
+import * as React28 from "react";
 var LessZoomIcon = class extends Icon {
   constructor() {
     super(...arguments);
     this.onClick = () => {
-      const newZoom = this.editor.state.zoom - 0.1;
-      this.editor.setState({ zoom: newZoom <= 1 ? 1 : newZoom });
+      const editor = this.editor;
+      editor.setZoom({ zoom: editor.state.zoom - 0.1 });
     };
   }
   renderIcon() {
-    return /* @__PURE__ */ React29.createElement("i", { className: "fa-solid fa-minus" });
+    return /* @__PURE__ */ React28.createElement("i", { className: "fa-solid fa-minus" });
   }
 };
 LessZoomIcon.id = "LessZoom";
 
 // src/Editor/Menu/Zoom/ZoomText.tsx
-import * as React30 from "react";
+import * as React29 from "react";
 var ZoomTextIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1142,7 +1141,7 @@ var ZoomTextIcon = class extends Icon {
     };
   }
   renderIcon() {
-    return /* @__PURE__ */ React30.createElement(
+    return /* @__PURE__ */ React29.createElement(
       "span",
       {
         style: {
@@ -1156,10 +1155,10 @@ var ZoomTextIcon = class extends Icon {
 ZoomTextIcon.id = "ZoomText";
 
 // src/Editor/Menu/TextIcons/Aligns/AlignIcon.tsx
-import * as React35 from "react";
+import * as React34 from "react";
 
 // src/Editor/Menu/TextIcons/Aligns/AlignCenter.tsx
-import * as React31 from "react";
+import * as React30 from "react";
 var AlignCenterIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1177,7 +1176,7 @@ var AlignCenterIcon = class extends Icon {
     };
   }
   renderIcon() {
-    return /* @__PURE__ */ React31.createElement("i", { className: "fa-solid fa-align-center fa-rotate-180" });
+    return /* @__PURE__ */ React30.createElement("i", { className: "fa-solid fa-align-center fa-rotate-180" });
   }
   componentDidMount() {
     this.editor.eventBus.on("setSelectedTargets", this.setTargets);
@@ -1191,7 +1190,7 @@ var AlignCenterIcon = class extends Icon {
 AlignCenterIcon.id = "AlignCenterIcon";
 
 // src/Editor/Menu/TextIcons/Aligns/AlignLeftIcon.tsx
-import * as React32 from "react";
+import * as React31 from "react";
 var AlignLeftIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1208,7 +1207,7 @@ var AlignLeftIcon = class extends Icon {
     };
   }
   renderIcon() {
-    return /* @__PURE__ */ React32.createElement("i", { className: "fa-solid fa-align-right fa-rotate-180" });
+    return /* @__PURE__ */ React31.createElement("i", { className: "fa-solid fa-align-right fa-rotate-180" });
   }
   componentDidMount() {
     this.editor.eventBus.on("setSelectedTargets", this.setTargets);
@@ -1222,7 +1221,7 @@ var AlignLeftIcon = class extends Icon {
 AlignLeftIcon.id = "AlignLeftIcon";
 
 // src/Editor/Menu/TextIcons/Aligns/AlignRightIcon.tsx
-import * as React33 from "react";
+import * as React32 from "react";
 var AlignRightIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1239,7 +1238,7 @@ var AlignRightIcon = class extends Icon {
     };
   }
   renderIcon() {
-    return /* @__PURE__ */ React33.createElement("i", { className: "fa-solid fa-align-left fa-rotate-180" });
+    return /* @__PURE__ */ React32.createElement("i", { className: "fa-solid fa-align-left fa-rotate-180" });
   }
   componentDidMount() {
     this.editor.eventBus.on("setSelectedTargets", this.setTargets);
@@ -1253,7 +1252,7 @@ var AlignRightIcon = class extends Icon {
 AlignRightIcon.id = "AlignRightIcon";
 
 // src/Editor/Menu/TextIcons/Aligns/AlignJustify.tsx
-import * as React34 from "react";
+import * as React33 from "react";
 var AlignJustifyIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1270,7 +1269,7 @@ var AlignJustifyIcon = class extends Icon {
     };
   }
   renderIcon() {
-    return /* @__PURE__ */ React34.createElement("i", { className: "fa-solid fa-align-justify fa-rotate-180" });
+    return /* @__PURE__ */ React33.createElement("i", { className: "fa-solid fa-align-justify fa-rotate-180" });
   }
   componentDidMount() {
     this.editor.eventBus.on("setSelectedTargets", this.setTargets);
@@ -1303,9 +1302,9 @@ var AlignIcon = class extends Icon {
     const selected = subMenu2.find((s) => value === s.value);
     if (selected) {
       const { children: IconSelected } = selected;
-      return /* @__PURE__ */ React35.createElement(IconSelected, { editor: this.editor, hideSelected: true });
+      return /* @__PURE__ */ React34.createElement(IconSelected, { editor: this.editor, hideSelected: true });
     }
-    return /* @__PURE__ */ React35.createElement("i", { className: "fa-solid fa-align-right fa-rotate-180" });
+    return /* @__PURE__ */ React34.createElement("i", { className: "fa-solid fa-align-right fa-rotate-180" });
   }
   renderSubIcons() {
     const value = this.memory.get("text-align");
@@ -1317,7 +1316,7 @@ var AlignIcon = class extends Icon {
     this.forceUpdate();
   }
   renderSubIcon(IconClass, id, isSelect) {
-    return /* @__PURE__ */ React35.createElement(
+    return /* @__PURE__ */ React34.createElement(
       "div",
       {
         key: id,
@@ -1327,7 +1326,7 @@ var AlignIcon = class extends Icon {
           this.forceUpdate();
         }
       },
-      /* @__PURE__ */ React35.createElement(IconClass, { editor: this.props.editor, selected: isSelect })
+      /* @__PURE__ */ React34.createElement(IconClass, { editor: this.props.editor, selected: isSelect })
     );
   }
   componentDidMount() {
@@ -1339,7 +1338,7 @@ var AlignIcon = class extends Icon {
 AlignIcon.id = "AlignIcon";
 
 // src/Editor/Menu/DeleteIcon.tsx
-import * as React36 from "react";
+import * as React35 from "react";
 var DeleteIcon = class extends Icon {
   constructor() {
     super(...arguments);
@@ -1349,7 +1348,7 @@ var DeleteIcon = class extends Icon {
     };
   }
   renderIcon() {
-    return /* @__PURE__ */ React36.createElement("i", { className: "fa-regular fa-trash red-icon" });
+    return /* @__PURE__ */ React35.createElement("i", { className: "fa-regular fa-trash red-icon" });
   }
 };
 DeleteIcon.id = "DeleteTool";
@@ -1396,6 +1395,10 @@ var PrintAreaMenu = [
   Divider,
   BorderColorIcon,
   Divider,
+  LessZoomIcon,
+  ZoomTextIcon,
+  MoreZoomIcon,
+  Divider,
   DeleteIcon
 ];
 var CompleteMenu = [
@@ -1419,10 +1422,10 @@ var CompleteMenu = [
 ];
 
 // src/Editor/Menu/DropdownIcon.tsx
-import * as React37 from "react";
+import * as React36 from "react";
 import Menu from "@mui/material/Menu";
 function DropdownIcon({ children }) {
-  const [anchorEl, setAnchorEl] = React37.useState(null);
+  const [anchorEl, setAnchorEl] = React36.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -1430,14 +1433,14 @@ function DropdownIcon({ children }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  return /* @__PURE__ */ React37.createElement(React37.Fragment, null, /* @__PURE__ */ React37.createElement(
+  return /* @__PURE__ */ React36.createElement(React36.Fragment, null, /* @__PURE__ */ React36.createElement(
     "div",
     {
       className: "scena-icon",
       onClick: handleClick
     },
-    /* @__PURE__ */ React37.createElement("i", { className: "fa-solid fa-ellipsis-vertical" })
-  ), /* @__PURE__ */ React37.createElement(
+    /* @__PURE__ */ React36.createElement("i", { className: "fa-solid fa-ellipsis-vertical" })
+  ), /* @__PURE__ */ React36.createElement(
     Menu,
     {
       anchorEl,
@@ -1451,7 +1454,7 @@ function DropdownIcon({ children }) {
 
 // src/Editor/Menu/Menu.tsx
 import { cloneDeep } from "lodash";
-var Menu2 = class extends React38.PureComponent {
+var Menu2 = class extends React37.PureComponent {
   constructor() {
     super(...arguments);
     this.state = {
@@ -1459,7 +1462,7 @@ var Menu2 = class extends React38.PureComponent {
       width: 0
     };
     this.menuRefs = [];
-    this.menuContainerRef = React38.createRef();
+    this.menuContainerRef = React37.createRef();
     this.select = (id) => {
       this.setState({
         selected: id
@@ -1488,14 +1491,14 @@ var Menu2 = class extends React38.PureComponent {
         ["font-size", "16px"],
         ["font-style", "normal"],
         ["text-decoration", "none"],
-        ["font-family", "Avenir"],
+        ["font-family", "Roboto"],
         ["text-align", "left"]
       ];
       resetProperties.forEach((p) => {
         editor.memory.set(p[0], p[1]);
       });
     }
-    const isTargetsSame = targets.every((t) => t.name === targets[0].name);
+    const isTargetsSame = targets.every((t) => t && t.name && t.name === targets[0].name);
     if (isTargetsSame && targets.length > 0 || selected !== "MoveTool") {
       const target = selected !== "MoveTool" ? selected : targets[0].name.replaceAll(/\(|\)/g, "");
       selected = target;
@@ -1528,11 +1531,11 @@ var Menu2 = class extends React38.PureComponent {
     if (dropedMenu && dropedMenu.length > 0 && dropedMenu[0].id === "Divider") {
       dropedMenu.splice(0, 1);
     }
-    return /* @__PURE__ */ React38.createElement(React38.Fragment, null, !isPreview && /* @__PURE__ */ React38.createElement("div", { className: prefix("menu"), ref: this.menuContainerRef }, filteredMenu.map((MenuClass, i) => {
+    return /* @__PURE__ */ React37.createElement(React37.Fragment, null, !isPreview && /* @__PURE__ */ React37.createElement("div", { className: prefix("menu"), ref: this.menuContainerRef }, filteredMenu.map((MenuClass, i) => {
       return this.renderIcon(MenuClass, i, selected);
-    }), dropedMenu.length > 0 && /* @__PURE__ */ React38.createElement(DropdownIcon, null, dropedMenu.map((MenuClass, i) => {
+    }), dropedMenu.length > 0 && /* @__PURE__ */ React37.createElement(DropdownIcon, null, dropedMenu.map((MenuClass, i) => {
       return this.renderIcon(MenuClass, i, selected);
-    }))), this.props.children, !isPreview && floatingMenu.length > 0 && /* @__PURE__ */ React38.createElement("div", { className: prefix("floating-menu") }, floatingMenu.map((MenuClass, i) => {
+    }))), this.props.children, !isPreview && floatingMenu.length > 0 && /* @__PURE__ */ React37.createElement("div", { className: prefix("floating-menu") }, floatingMenu.map((MenuClass, i) => {
       return this.renderIcon(MenuClass, i, selected);
     })));
   }
@@ -1541,12 +1544,12 @@ var Menu2 = class extends React38.PureComponent {
     const editor = this.props.editor;
     const id = MenuClass.id;
     if (!menuRefs[i]) {
-      menuRefs[i] = React38.createRef();
+      menuRefs[i] = React37.createRef();
     }
     if (id === "Divider") {
-      return /* @__PURE__ */ React38.createElement(MenuClass, { key: i, editor });
+      return /* @__PURE__ */ React37.createElement(MenuClass, { key: i, editor });
     }
-    return /* @__PURE__ */ React38.createElement(
+    return /* @__PURE__ */ React37.createElement(
       MenuClass,
       {
         ref: menuRefs[i],
@@ -1614,7 +1617,7 @@ var Memory = class {
 };
 
 // src/Editor/Viewport/MoveableMananger.tsx
-import * as React39 from "react";
+import * as React38 from "react";
 import Moveable from "react-moveable";
 import { diff } from "@egjs/list-differ";
 function restoreRender(id, state, prevState, orders, editor) {
@@ -1665,7 +1668,7 @@ function redoRenders({ infos }, editor) {
   editor.moveableManager.current.updateRect();
   editor.eventBus.trigger("render");
 }
-var DimensionViewable = {
+var DimensionViewable = (editor) => ({
   name: "dimensionViewable",
   props: [
     "dimensionViewable"
@@ -1673,16 +1676,16 @@ var DimensionViewable = {
   render(moveable) {
     const { left, top } = moveable.state;
     const rect = moveable.getRect();
-    return /* @__PURE__ */ React39.createElement("div", { key: "dimension-viewer", className: "moveable-dimension", style: {
+    return /* @__PURE__ */ React38.createElement("div", { key: "dimension-viewer", className: "moveable-dimension", style: {
       left: `${rect.left + rect.width / 2 - left}px`,
       top: `${rect.top + rect.height + 20 - top}px`
     } }, Math.round(rect.offsetWidth), " x ", Math.round(rect.offsetHeight));
   }
-};
-var MoveableManager = class extends React39.PureComponent {
+});
+var MoveableManager = class extends React38.PureComponent {
   constructor() {
     super(...arguments);
-    this.moveable = React39.createRef();
+    this.moveable = React38.createRef();
   }
   getMoveable() {
     return this.moveable.current;
@@ -1701,9 +1704,9 @@ var MoveableManager = class extends React39.PureComponent {
     const {
       moveableData,
       eventBus,
-      selecto,
-      memory
+      selecto
     } = editor;
+    const { zoom } = editor.state;
     const elementGuidelines = [...moveableData.getTargets()].filter((el) => {
       return selectedTargets.indexOf(el) === -1;
     });
@@ -1712,10 +1715,10 @@ var MoveableManager = class extends React39.PureComponent {
     const targetIsImage = selectedTargets.every((el) => el.tagName === "IMG");
     const targetIsText = selectedTargets.some((el) => el.className.includes("Text"));
     const keepRatio = targetIsText || targetIsImage && !isShift || !targetIsImage && isShift || selectedTargets.length > 1;
-    return /* @__PURE__ */ React39.createElement(
+    return /* @__PURE__ */ React38.createElement(
       Moveable,
       {
-        ables: [DimensionViewable],
+        ables: [DimensionViewable(editor)],
         ref: this.moveable,
         targets: selectedTargets,
         dimensionViewable: true,
@@ -1729,7 +1732,7 @@ var MoveableManager = class extends React39.PureComponent {
         rotatable: true,
         snappable: true,
         snapGap: false,
-        roundable: true,
+        zoom: 1 / zoom,
         snapDirections: {
           bottom: true,
           top: true,
@@ -1746,6 +1749,7 @@ var MoveableManager = class extends React39.PureComponent {
           center: true,
           middle: true
         },
+        origin: false,
         verticalGuidelines: isAdmin ? verticalGuidelines : [],
         horizontalGuidelines: isAdmin ? horizontalGuidelines : [],
         elementGuidelines,
@@ -1765,15 +1769,17 @@ var MoveableManager = class extends React39.PureComponent {
         onResizeStart: moveableData.onResizeStart,
         onResize: (e) => {
           moveableData.onResize(e);
+          this.rescaleHandleResizers();
         },
         onResizeGroupStart: moveableData.onResizeGroupStart,
         onResizeGroup: moveableData.onResizeGroup,
         onRotateStart: moveableData.onRotateStart,
-        onRotate: moveableData.onRotate,
+        onRotate: (e) => {
+          moveableData.onRotate(e);
+          this.rescaleHandleResizers();
+        },
         onRotateGroupStart: moveableData.onRotateGroupStart,
         onRotateGroup: moveableData.onRotateGroup,
-        defaultClipPath: memory.get("crop") || "inset",
-        onClip: moveableData.onClip,
         onDragOriginStart: moveableData.onDragOriginStart,
         onDragOrigin: (e) => {
           moveableData.onDragOrigin(e);
@@ -1842,7 +1848,7 @@ var MoveableManager = class extends React39.PureComponent {
   renderViewportMoveable() {
     const viewport = this.editor.getViewport();
     const target = viewport ? viewport.viewportRef.current : null;
-    return /* @__PURE__ */ React39.createElement(
+    return /* @__PURE__ */ React38.createElement(
       Moveable,
       {
         ref: this.moveable,
@@ -1872,6 +1878,8 @@ var MoveableManager = class extends React39.PureComponent {
     Object.entries(styles).forEach(([key, value]) => {
       memory.set(key, value);
     });
+  }
+  rescaleHandleResizers() {
   }
 };
 MoveableManager = __decorateClass([
@@ -2012,7 +2020,7 @@ var Debugger = class {
 };
 
 // src/Editor/utils/ClipboardManager.tsx
-import * as React40 from "react";
+import * as React39 from "react";
 import html2canvas from "html2canvas";
 var ClipboardManager = class {
   constructor(editor) {
@@ -2129,7 +2137,7 @@ var ClipboardManager = class {
     if (!isPaste && hasText) {
       const text = await navigator.clipboard.readText();
       this.editor.appendJSXs([{
-        jsx: /* @__PURE__ */ React40.createElement("div", { contentEditable: "true" }),
+        jsx: /* @__PURE__ */ React39.createElement("div", { contentEditable: "true" }),
         name: "(Text)",
         innerText: text
       }]);
@@ -2141,7 +2149,7 @@ var ClipboardManager = class {
 import domtoimage from "dom-to-image";
 
 // src/Editor/TextEditor.tsx
-import React41, { useEffect, useLayoutEffect, useRef, useState as useState2 } from "react";
+import React40, { useEffect, useLayoutEffect, useRef, useState as useState2 } from "react";
 function TextEditor({ element, memory, editor }) {
   const textareaRef = useRef(null);
   const [text, setText] = useState2(element.innerText || "");
@@ -2214,7 +2222,7 @@ function TextEditor({ element, memory, editor }) {
     editor.menu.current?.select("MoveTool");
     editor.setSelectedTargets([]);
   };
-  return /* @__PURE__ */ React41.createElement("div", { className: "text-editor", onClick: handleSave }, /* @__PURE__ */ React41.createElement(
+  return /* @__PURE__ */ React40.createElement("div", { className: "text-editor", onClick: handleSave }, /* @__PURE__ */ React40.createElement(
     "textarea",
     {
       ref: textareaRef,
@@ -2234,7 +2242,33 @@ function TextEditor({ element, memory, editor }) {
   ));
 }
 
+// src/Editor/utils/FontsManager.ts
+import WebFont from "webfontloader";
+var FontsManager = class {
+  constructor(editor) {
+    this.fonts = [];
+    this.requestFonts();
+    this.editor = editor;
+  }
+  async requestFonts() {
+    const rest = await fetch("https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyD_U19-I04gS4WZwYvSmYHEQJxTG2DNoio&sort=popularity");
+    const fonts = await rest.json();
+    this.fonts = fonts.items;
+    this.loadFonts(["Roboto"]);
+    this.editor.menu.current?.forceUpdate();
+  }
+  loadFonts(fonts) {
+    WebFont.load({
+      google: {
+        families: fonts
+      },
+      active: () => this.editor.forceUpdate()
+    });
+  }
+};
+
 // src/Editor/Editor.tsx
+import { unionBy } from "lodash";
 function undoCreateElements({ infos, prevSelected }, editor) {
   const res = editor.removeByIds(
     infos.map((info) => info.id),
@@ -2273,7 +2307,7 @@ function undoMove({ prevInfos }, editor) {
 function redoMove({ nextInfos }, editor) {
   editor.moves(nextInfos, true);
 }
-var Editor = class extends React42.PureComponent {
+var Editor = class extends React41.PureComponent {
   constructor() {
     super(...arguments);
     this.state = {
@@ -2304,15 +2338,16 @@ var Editor = class extends React42.PureComponent {
       }
     });
     this.clipboardManager = new ClipboardManager(this);
-    this.horizontalGuides = React42.createRef();
-    this.verticalGuides = React42.createRef();
-    this.infiniteViewer = React42.createRef();
-    this.selecto = React42.createRef();
-    this.menu = React42.createRef();
-    this.moveableManager = React42.createRef();
-    this.viewport = React42.createRef();
-    this.tabs = React42.createRef();
-    this.editorElement = React42.createRef();
+    this.fontsManager = new FontsManager(this);
+    this.horizontalGuides = React41.createRef();
+    this.verticalGuides = React41.createRef();
+    this.infiniteViewer = React41.createRef();
+    this.selecto = React41.createRef();
+    this.menu = React41.createRef();
+    this.moveableManager = React41.createRef();
+    this.viewport = React41.createRef();
+    this.tabs = React41.createRef();
+    this.editorElement = React41.createRef();
     this.onMenuChange = (id) => {
       this.setState({
         selectedMenu: id
@@ -2367,7 +2402,7 @@ var Editor = class extends React42.PureComponent {
       state
     } = this;
     const previewMode = this.props.previewMode;
-    const { selectedMenu, selectedTargets, zoom, showGuides, minZoom, width, height } = state;
+    const { selectedMenu, selectedTargets, zoom, showGuides, width, height } = state;
     const horizontalSnapGuides = [
       0,
       height,
@@ -2376,13 +2411,13 @@ var Editor = class extends React42.PureComponent {
     ];
     const verticalSnapGuides = [0, width, width / 2, ...state.verticalGuides];
     let unit = 50;
-    return /* @__PURE__ */ React42.createElement(
+    return /* @__PURE__ */ React41.createElement(
       "div",
       {
         className: prefix("editor"),
         ref: this.editorElement
       },
-      /* @__PURE__ */ React42.createElement(Menu2, { ref: menu, editor: this, onSelect: this.onMenuChange, isPreviewMode: !!previewMode }, showGuides && !previewMode && /* @__PURE__ */ React42.createElement(React42.Fragment, null, /* @__PURE__ */ React42.createElement(
+      /* @__PURE__ */ React41.createElement(Menu2, { ref: menu, editor: this, onSelect: this.onMenuChange, isPreviewMode: !!previewMode }, showGuides && !previewMode && /* @__PURE__ */ React41.createElement(React41.Fragment, null, /* @__PURE__ */ React41.createElement(
         "div",
         {
           className: prefix("reset"),
@@ -2390,7 +2425,7 @@ var Editor = class extends React42.PureComponent {
             infiniteViewer.current.scrollCenter();
           }
         }
-      ), /* @__PURE__ */ React42.createElement(
+      ), /* @__PURE__ */ React41.createElement(
         Guides,
         {
           ref: horizontalGuides,
@@ -2408,7 +2443,7 @@ var Editor = class extends React42.PureComponent {
             });
           }
         }
-      ), /* @__PURE__ */ React42.createElement(
+      ), /* @__PURE__ */ React41.createElement(
         Guides,
         {
           ref: verticalGuides,
@@ -2426,14 +2461,14 @@ var Editor = class extends React42.PureComponent {
             });
           }
         }
-      )), /* @__PURE__ */ React42.createElement("div", { className: "scena-editor-container" }, selectedMenu === "Text" && selectedTargets.length === 1 && /* @__PURE__ */ React42.createElement(
+      )), /* @__PURE__ */ React41.createElement("div", { className: "scena-editor-container" }, selectedMenu === "Text" && selectedTargets.length === 1 && /* @__PURE__ */ React41.createElement(
         TextEditor,
         {
           element: this.viewport.current?.getInfoByElement(selectedTargets[0]),
           memory: this.memory,
           editor: this
         }
-      ), /* @__PURE__ */ React42.createElement(
+      ), /* @__PURE__ */ React41.createElement(
         InfiniteViewer,
         {
           ref: infiniteViewer,
@@ -2460,14 +2495,9 @@ var Editor = class extends React42.PureComponent {
           onAbortPinch: (e) => {
             selecto.current.triggerDragStart(e.inputEvent);
           },
-          onPinch: (e) => {
-            const zoom2 = e.zoom >= minZoom ? e.zoom : minZoom;
-            this.setState({
-              zoom: zoom2
-            });
-          }
+          onPinch: (e) => this.setZoom(e)
         },
-        /* @__PURE__ */ React42.createElement(
+        /* @__PURE__ */ React41.createElement(
           Viewport,
           {
             ref: viewport,
@@ -2479,7 +2509,7 @@ var Editor = class extends React42.PureComponent {
             editor: this,
             background: this.props.backgroundImg
           },
-          !previewMode && /* @__PURE__ */ React42.createElement(
+          !previewMode && /* @__PURE__ */ React41.createElement(
             MoveableManager,
             {
               ref: moveableManager,
@@ -2491,7 +2521,7 @@ var Editor = class extends React42.PureComponent {
             }
           )
         )
-      ), !previewMode && /* @__PURE__ */ React42.createElement(
+      ), !previewMode && /* @__PURE__ */ React41.createElement(
         Selecto,
         {
           ref: selecto,
@@ -2763,6 +2793,16 @@ var Editor = class extends React42.PureComponent {
       appendIndex = indexes[indexes.length - 1] + 1;
     }
     return this.getViewport().appendJSXs(jsxs, appendIndex, scopeId).then(({ added }) => {
+      const areTexts = added.filter((e) => e.name === "(Text)");
+      if (areTexts.length) {
+        const fonts = unionBy(areTexts.map((e) => {
+          if (e.frame && e.frame["font-family"]) {
+            return e.frame["font-family"];
+          }
+          return "";
+        })).filter((e) => e);
+        this.fontsManager.loadFonts(fonts);
+      }
       return this.appendComplete(added, isNewText ? false : isRestore);
     });
   }
@@ -2786,6 +2826,13 @@ var Editor = class extends React42.PureComponent {
         return targets;
       }
     );
+  }
+  setZoom(e) {
+    const minZoom = this?.state?.minZoom || 1;
+    const zoom = e.zoom >= minZoom ? e.zoom : minZoom;
+    this.setState({
+      zoom
+    });
   }
   removeByIds(ids, isRestore) {
     return this.removeElements(this.getViewport().getElements(ids), isRestore);
@@ -2892,10 +2939,10 @@ var Editor = class extends React42.PureComponent {
         }
         if (!jsx && componentId) {
           const Component2 = viewport.getComponent(componentId);
-          jsx = /* @__PURE__ */ React42.createElement(Component2, null);
+          jsx = /* @__PURE__ */ React41.createElement(Component2, null);
         }
         if (!jsx) {
-          jsx = React42.createElement(data.tagName);
+          jsx = React41.createElement(data.tagName);
         }
         return {
           ...data,
@@ -2934,7 +2981,7 @@ var Editor = class extends React42.PureComponent {
   appendBlob(blob) {
     const url = URL.createObjectURL(blob);
     return this.appendJSX({
-      jsx: /* @__PURE__ */ React42.createElement("img", { src: url, alt: "appended blob" }),
+      jsx: /* @__PURE__ */ React41.createElement("img", { src: url, alt: "appended blob" }),
       name: "(Image)"
     });
   }

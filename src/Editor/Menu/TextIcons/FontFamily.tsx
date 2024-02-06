@@ -1,28 +1,43 @@
 import * as React from "react";
 import Icon from "../Icon";
-import SelectBox from "../../Inputs/SelectBox";
+import { Autocomplete, TextField } from "@mui/material";
 
-
-const fontFamily = [
-	"Avenir",
-	"sans-serif",
-]
 
 export default class FontFamily extends Icon {
 	public static id = "FontFamily";
 	public static width = 93;
 	public propertyName = "font-family";
-	public propertyValue = "Avenir"
+	public propertyValue = "Roboto"
+	public state = {
+		selected: false,
+		inputValue: this.propertyValue
+	}
 	public render() {
 		const value = this.getOldValue()
-
-		const fontFamilyList = this.editor.props.fontFamily ||fontFamily;
+		const fonts = this.editor.fontsManager.fonts;
 			return (
 				<div className="scene-font-family">
-					<SelectBox
-						onChange={this.onChange}
-						options={fontFamilyList.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))}
-						value={value}
+					<Autocomplete
+						loading={fonts.length <= 0}
+						options={fonts.map(f => ({ label: f.family, ...f }))}
+						renderInput={(params) => (
+							<TextField
+								{...params}
+								variant="standard"
+								onFocus={()=> this.editor.keyManager.stop()}
+							/>
+						)}
+						size="small"
+						inputValue={this.state.inputValue}
+						onInputChange={(_, value) => this.setState({ inputValue: value })}
+						value={value as any}
+						isOptionEqualToValue={(opt) => opt.family === value}
+						onChange={(event: any, newValue) => {
+							this.onChange(newValue?.family || this.propertyValue);
+							this.editor.fontsManager.loadFonts([newValue?.family || this.propertyValue])
+						}}
+						fullWidth
+						disableClearable
 					/>
 				</div>
 			);
@@ -30,7 +45,7 @@ export default class FontFamily extends Icon {
 	public renderIcon() {	}
 	public onClick= () => {};
 	public getOldValue(){
-		const [oldValue] = this.moveableData.getProperties([[this.propertyName]], ["Avenir"])
+		const [oldValue] = this.moveableData.getProperties([[this.propertyName]], [this.propertyValue])
 		return oldValue as string
 	}
 	public onChange = (v: string) => {
@@ -43,8 +58,9 @@ export default class FontFamily extends Icon {
 		this.forceUpdate();
 		this.editor.forceUpdate()
   }
-	componentDidMount(): void {
+	componentDidMount() {
 		this.editor.eventBus.on("setSelectedTargets", this.setTargets);
+		this.setState({ inputValue: this.getOldValue()})
 	}
 	componentWillUnmount(): void {
 		this.editor.eventBus.off("setSelectedTargets", this.setTargets);

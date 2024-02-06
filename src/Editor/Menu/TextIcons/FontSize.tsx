@@ -1,13 +1,18 @@
 import * as React from "react";
 import Icon from "../Icon";
-import SelectBox from "../../Inputs/SelectBox";
+import { Autocomplete, TextField } from "@mui/material";
 
 
 const sizes = [
+	"6px",
+	"7px",
+	"8px",
+	"9px",
 	"10px",
 	"11px",
 	"12px",
 	"14px",
+	"16px",
 	"18px",
 	"24px"
 ]
@@ -20,7 +25,7 @@ export default class FontSize extends Icon {
 		const value = this.getOldValue()
 		const parsedValue = parseInt((value || "").replace("px", ""))
 		const sizesList:string[] = JSON.parse(JSON.stringify(sizes))
-		if (!sizesList.includes(value)) { 
+		if (!sizesList.includes(value)) {
 			sizesList.push(value)
 		}
 			return (
@@ -30,10 +35,21 @@ export default class FontSize extends Icon {
 					>
 						<i className="fa-solid fa-minus"></i>
 					</button>
-					<SelectBox
-						onChange={this.onChange}
-						options={sizesList.sort((a, b) => parseInt(a) - parseInt(b))}
+					<Autocomplete
+						options={sizes}
 						value={value}
+						onChange={(_,v)=> this.onChange(v)}
+						renderInput={(params) => (
+							<TextField
+								{...params}
+								variant="standard"
+								onFocus={()=> this.editor.keyManager.stop()}
+							/>
+						)}
+						size="small"
+						freeSolo
+						disableClearable
+						fullWidth
 					/>
 					<button
 						onClick={() => { this.onChange(`${parsedValue+1}px`)}}
@@ -50,8 +66,10 @@ export default class FontSize extends Icon {
 		return oldValue as string
 	}
 	public onChange = (v: string) => {
-		this.memory.set(this.propertyName, v);
-		this.editor.setProperty([this.propertyName], v, true);
+		let parsedValue:any = parseInt(v)
+		parsedValue = parsedValue+"px"
+		this.memory.set(this.propertyName, parsedValue);
+		this.editor.setProperty([this.propertyName], parsedValue, true);
 		this.forceUpdate()
 		this.editor.forceUpdate()
 	};

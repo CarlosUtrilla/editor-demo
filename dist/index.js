@@ -401,12 +401,12 @@ __export(Editor_exports, {
 });
 module.exports = __toCommonJS(Editor_exports);
 // src/Editor/Editor.tsx
-var React43 = __toESM(require("react"));
+var React42 = __toESM(require("react"));
 var import_react_infinite_viewer = __toESM(require("react-infinite-viewer"));
 var import_react_guides = __toESM(require("@scena/react-guides"));
 var import_react_selecto = __toESM(require("react-selecto"));
 // src/Editor/Menu/Menu.tsx
-var React38 = __toESM(require("react"));
+var React37 = __toESM(require("react"));
 // src/Editor/utils/utils.ts
 var import_framework_utils = require("framework-utils");
 // src/Editor/consts.ts
@@ -1819,69 +1819,8 @@ var UnderlineIcon = /*#__PURE__*/ function(Icon) {
 }(Icon);
 UnderlineIcon.id = "TextUnderline";
 // src/Editor/Menu/TextIcons/FontFamily.tsx
-var React24 = __toESM(require("react"));
-// src/Editor/Inputs/SelectBox.tsx
 var React23 = __toESM(require("react"));
-var import_utils5 = require("@daybrush/utils");
-var SelectBox = /*#__PURE__*/ function(Input) {
-    _inherits(SelectBox, Input);
-    var _super = _create_super(SelectBox);
-    function SelectBox() {
-        _class_call_check(this, SelectBox);
-        var _this;
-        _this = _super.call.apply(_super, [
-            this
-        ].concat(Array.prototype.slice.call(arguments)));
-        _this.inputAttributes = {};
-        _this.onInput = function(e) {
-            var ev = e.nativeEvent || e;
-            if (!(0, import_utils5.isUndefined)(ev.data)) {
-                return;
-            }
-            _this.props.onChange(_this.input.current.value);
-        };
-        return _this;
-    }
-    _create_class(SelectBox, [
-        {
-            key: "render",
-            value: function render() {
-                var options = this.props.options || [];
-                return /* @__PURE__ */ React23.createElement("select", _object_spread_props(_object_spread({
-                    ref: this.input,
-                    className: prefix("select")
-                }, this.inputAttributes, this.props.inputProps), {
-                    value: this.props.value,
-                    defaultValue: this.props.value,
-                    onInput: this.onInput
-                }), options.map(function(value) {
-                    return /* @__PURE__ */ React23.createElement("option", {
-                        key: value,
-                        value: value
-                    }, value);
-                }));
-            }
-        },
-        {
-            key: "getValue",
-            value: function getValue() {
-                return this.input.current.value;
-            }
-        },
-        {
-            key: "setValue",
-            value: function setValue(value) {
-                this.input.current.value = "".concat((0, import_utils5.isUndefined)(value) ? "" : value);
-            }
-        }
-    ]);
-    return SelectBox;
-}(Input);
-// src/Editor/Menu/TextIcons/FontFamily.tsx
-var fontFamily = [
-    "Avenir",
-    "sans-serif"
-];
+var import_material = require("@mui/material");
 var FontFamily = /*#__PURE__*/ function(Icon) {
     _inherits(FontFamily, Icon);
     var _super = _create_super(FontFamily);
@@ -1892,7 +1831,11 @@ var FontFamily = /*#__PURE__*/ function(Icon) {
             this
         ].concat(Array.prototype.slice.call(arguments)));
         _this.propertyName = "font-family";
-        _this.propertyValue = "Avenir";
+        _this.propertyValue = "Roboto";
+        _this.state = {
+            selected: false,
+            inputValue: _this.propertyValue
+        };
         _this.onClick = function() {};
         _this.onChange = function(v) {
             _this.memory.set(_this.propertyName, v);
@@ -1912,18 +1855,45 @@ var FontFamily = /*#__PURE__*/ function(Icon) {
         {
             key: "render",
             value: function render() {
+                var _this = this;
                 var value = this.getOldValue();
-                var fontFamilyList = this.editor.props.fontFamily || fontFamily;
-                return /* @__PURE__ */ React24.createElement("div", {
+                var fonts = this.editor.fontsManager.fonts;
+                return /* @__PURE__ */ React23.createElement("div", {
                     className: "scene-font-family"
-                }, /* @__PURE__ */ React24.createElement(SelectBox, {
-                    onChange: this.onChange,
-                    options: fontFamilyList.sort(function(a, b) {
-                        return a.localeCompare(b, void 0, {
-                            sensitivity: "base"
-                        });
+                }, /* @__PURE__ */ React23.createElement(import_material.Autocomplete, {
+                    loading: fonts.length <= 0,
+                    options: fonts.map(function(f) {
+                        return _object_spread({
+                            label: f.family
+                        }, f);
                     }),
-                    value: value
+                    renderInput: function(params) {
+                        return /* @__PURE__ */ React23.createElement(import_material.TextField, _object_spread_props(_object_spread({}, params), {
+                            variant: "standard",
+                            onFocus: function() {
+                                return _this.editor.keyManager.stop();
+                            }
+                        }));
+                    },
+                    size: "small",
+                    inputValue: this.state.inputValue,
+                    onInputChange: function(_, value2) {
+                        return _this.setState({
+                            inputValue: value2
+                        });
+                    },
+                    value: value,
+                    isOptionEqualToValue: function(opt) {
+                        return opt.family === value;
+                    },
+                    onChange: function(event, newValue) {
+                        _this.onChange((newValue === null || newValue === void 0 ? void 0 : newValue.family) || _this.propertyValue);
+                        _this.editor.fontsManager.loadFonts([
+                            (newValue === null || newValue === void 0 ? void 0 : newValue.family) || _this.propertyValue
+                        ]);
+                    },
+                    fullWidth: true,
+                    disableClearable: true
                 }));
             }
         },
@@ -1939,7 +1909,7 @@ var FontFamily = /*#__PURE__*/ function(Icon) {
                         this.propertyName
                     ]
                 ], [
-                    "Avenir"
+                    this.propertyValue
                 ]), 1), oldValue = _this_moveableData_getProperties[0];
                 return oldValue;
             }
@@ -1948,6 +1918,9 @@ var FontFamily = /*#__PURE__*/ function(Icon) {
             key: "componentDidMount",
             value: function componentDidMount() {
                 this.editor.eventBus.on("setSelectedTargets", this.setTargets);
+                this.setState({
+                    inputValue: this.getOldValue()
+                });
             }
         },
         {
@@ -1962,12 +1935,18 @@ var FontFamily = /*#__PURE__*/ function(Icon) {
 FontFamily.id = "FontFamily";
 FontFamily.width = 93;
 // src/Editor/Menu/TextIcons/FontSize.tsx
-var React25 = __toESM(require("react"));
+var React24 = __toESM(require("react"));
+var import_material2 = require("@mui/material");
 var sizes = [
+    "6px",
+    "7px",
+    "8px",
+    "9px",
     "10px",
     "11px",
     "12px",
     "14px",
+    "16px",
     "18px",
     "24px"
 ];
@@ -1984,10 +1963,12 @@ var FontSize = /*#__PURE__*/ function(Icon) {
         _this.propertyValue = "16px";
         _this.onClick = function() {};
         _this.onChange = function(v) {
-            _this.memory.set(_this.propertyName, v);
+            var parsedValue = parseInt(v);
+            parsedValue = parsedValue + "px";
+            _this.memory.set(_this.propertyName, parsedValue);
             _this.editor.setProperty([
                 _this.propertyName
-            ], v, true);
+            ], parsedValue, true);
             _this.forceUpdate();
             _this.editor.forceUpdate();
         };
@@ -2008,25 +1989,37 @@ var FontSize = /*#__PURE__*/ function(Icon) {
                 if (!sizesList.includes(value)) {
                     sizesList.push(value);
                 }
-                return /* @__PURE__ */ React25.createElement("div", {
+                return /* @__PURE__ */ React24.createElement("div", {
                     className: "scene-font-size"
-                }, /* @__PURE__ */ React25.createElement("button", {
+                }, /* @__PURE__ */ React24.createElement("button", {
                     onClick: function() {
                         _this.onChange("".concat(parsedValue - 1, "px"));
                     }
-                }, /* @__PURE__ */ React25.createElement("i", {
+                }, /* @__PURE__ */ React24.createElement("i", {
                     className: "fa-solid fa-minus"
-                })), /* @__PURE__ */ React25.createElement(SelectBox, {
-                    onChange: this.onChange,
-                    options: sizesList.sort(function(a, b) {
-                        return parseInt(a) - parseInt(b);
-                    }),
-                    value: value
-                }), /* @__PURE__ */ React25.createElement("button", {
+                })), /* @__PURE__ */ React24.createElement(import_material2.Autocomplete, {
+                    options: sizes,
+                    value: value,
+                    onChange: function(_, v) {
+                        return _this.onChange(v);
+                    },
+                    renderInput: function(params) {
+                        return /* @__PURE__ */ React24.createElement(import_material2.TextField, _object_spread_props(_object_spread({}, params), {
+                            variant: "standard",
+                            onFocus: function() {
+                                return _this.editor.keyManager.stop();
+                            }
+                        }));
+                    },
+                    size: "small",
+                    freeSolo: true,
+                    disableClearable: true,
+                    fullWidth: true
+                }), /* @__PURE__ */ React24.createElement("button", {
                     onClick: function() {
                         _this.onChange("".concat(parsedValue + 1, "px"));
                     }
-                }, /* @__PURE__ */ React25.createElement("i", {
+                }, /* @__PURE__ */ React24.createElement("i", {
                     className: "fa-solid fa-plus"
                 })));
             }
@@ -2066,7 +2059,7 @@ var FontSize = /*#__PURE__*/ function(Icon) {
 FontSize.id = "FontSize";
 FontSize.width = 98;
 // src/Editor/Menu/ShapeIcons/FillIcon.tsx
-var React26 = __toESM(require("react"));
+var React25 = __toESM(require("react"));
 var FillIcon = /*#__PURE__*/ function(Icon) {
     _inherits(FillIcon, Icon);
     var _super = _create_super(FillIcon);
@@ -2076,7 +2069,7 @@ var FillIcon = /*#__PURE__*/ function(Icon) {
         _this = _super.call.apply(_super, [
             this
         ].concat(Array.prototype.slice.call(arguments)));
-        _this.colorInput = React26.createRef();
+        _this.colorInput = React25.createRef();
         _this.propertyName = "background-color";
         _this.propertyValue = "#4af";
         _this.onChangeTextColor = function(v) {
@@ -2100,8 +2093,8 @@ var FillIcon = /*#__PURE__*/ function(Icon) {
             key: "renderIcon",
             value: function renderIcon() {
                 var color = this.getOldValue() || "#4af";
-                return /* @__PURE__ */ React26.createElement(ColorIconPicker, {
-                    icon: /* @__PURE__ */ React26.createElement("i", {
+                return /* @__PURE__ */ React25.createElement(ColorIconPicker, {
+                    icon: /* @__PURE__ */ React25.createElement("i", {
                         className: "fa-solid fa-fill-drip"
                     }),
                     onChange: this.onChangeTextColor,
@@ -2141,7 +2134,7 @@ var FillIcon = /*#__PURE__*/ function(Icon) {
 }(Icon);
 FillIcon.id = "FillIcon";
 // src/Editor/Menu/ShapeIcons/BorderColorIcon.tsx
-var React27 = __toESM(require("react"));
+var React26 = __toESM(require("react"));
 var BorderColorIcon = /*#__PURE__*/ function(Icon) {
     _inherits(BorderColorIcon, Icon);
     var _super = _create_super(BorderColorIcon);
@@ -2151,7 +2144,7 @@ var BorderColorIcon = /*#__PURE__*/ function(Icon) {
         _this = _super.call.apply(_super, [
             this
         ].concat(Array.prototype.slice.call(arguments)));
-        _this.colorInput = React27.createRef();
+        _this.colorInput = React26.createRef();
         _this.propertyName = "outline-color";
         _this.propertyValue = "transparent";
         _this.onChangeTextColor = function(v) {
@@ -2175,8 +2168,8 @@ var BorderColorIcon = /*#__PURE__*/ function(Icon) {
             key: "renderIcon",
             value: function renderIcon() {
                 var color = this.getOldValue() || "transparent";
-                return /* @__PURE__ */ React27.createElement(ColorIconPicker, {
-                    icon: /* @__PURE__ */ React27.createElement("i", {
+                return /* @__PURE__ */ React26.createElement(ColorIconPicker, {
+                    icon: /* @__PURE__ */ React26.createElement("i", {
                         className: "fa-solid fa-pen"
                     }),
                     onChange: this.onChangeTextColor,
@@ -2216,7 +2209,7 @@ var BorderColorIcon = /*#__PURE__*/ function(Icon) {
 }(Icon);
 BorderColorIcon.id = "BorderColorIcon";
 // src/Editor/Menu/Zoom/MoreZoom.tsx
-var React28 = __toESM(require("react"));
+var React27 = __toESM(require("react"));
 var MoreZoomIcon = /*#__PURE__*/ function(Icon) {
     _inherits(MoreZoomIcon, Icon);
     var _super = _create_super(MoreZoomIcon);
@@ -2227,9 +2220,9 @@ var MoreZoomIcon = /*#__PURE__*/ function(Icon) {
             this
         ].concat(Array.prototype.slice.call(arguments)));
         _this.onClick = function() {
-            var newZoom = _this.editor.state.zoom + 0.1;
-            _this.editor.setState({
-                zoom: newZoom
+            var editor = _this.editor;
+            editor.setZoom({
+                zoom: editor.state.zoom + 0.1
             });
         };
         return _this;
@@ -2238,7 +2231,7 @@ var MoreZoomIcon = /*#__PURE__*/ function(Icon) {
         {
             key: "renderIcon",
             value: function renderIcon() {
-                return /* @__PURE__ */ React28.createElement("i", {
+                return /* @__PURE__ */ React27.createElement("i", {
                     className: "fa-solid fa-plus"
                 });
             }
@@ -2248,7 +2241,7 @@ var MoreZoomIcon = /*#__PURE__*/ function(Icon) {
 }(Icon);
 MoreZoomIcon.id = "MoreZoom";
 // src/Editor/Menu/Zoom/LessZoom.tsx
-var React29 = __toESM(require("react"));
+var React28 = __toESM(require("react"));
 var LessZoomIcon = /*#__PURE__*/ function(Icon) {
     _inherits(LessZoomIcon, Icon);
     var _super = _create_super(LessZoomIcon);
@@ -2259,9 +2252,9 @@ var LessZoomIcon = /*#__PURE__*/ function(Icon) {
             this
         ].concat(Array.prototype.slice.call(arguments)));
         _this.onClick = function() {
-            var newZoom = _this.editor.state.zoom - 0.1;
-            _this.editor.setState({
-                zoom: newZoom <= 1 ? 1 : newZoom
+            var editor = _this.editor;
+            editor.setZoom({
+                zoom: editor.state.zoom - 0.1
             });
         };
         return _this;
@@ -2270,7 +2263,7 @@ var LessZoomIcon = /*#__PURE__*/ function(Icon) {
         {
             key: "renderIcon",
             value: function renderIcon() {
-                return /* @__PURE__ */ React29.createElement("i", {
+                return /* @__PURE__ */ React28.createElement("i", {
                     className: "fa-solid fa-minus"
                 });
             }
@@ -2280,7 +2273,7 @@ var LessZoomIcon = /*#__PURE__*/ function(Icon) {
 }(Icon);
 LessZoomIcon.id = "LessZoom";
 // src/Editor/Menu/Zoom/ZoomText.tsx
-var React30 = __toESM(require("react"));
+var React29 = __toESM(require("react"));
 var ZoomTextIcon = /*#__PURE__*/ function(Icon) {
     _inherits(ZoomTextIcon, Icon);
     var _super = _create_super(ZoomTextIcon);
@@ -2297,7 +2290,7 @@ var ZoomTextIcon = /*#__PURE__*/ function(Icon) {
         {
             key: "renderIcon",
             value: function renderIcon() {
-                return /* @__PURE__ */ React30.createElement("span", {
+                return /* @__PURE__ */ React29.createElement("span", {
                     style: {
                         fontSize: "0.8rem"
                     }
@@ -2309,9 +2302,9 @@ var ZoomTextIcon = /*#__PURE__*/ function(Icon) {
 }(Icon);
 ZoomTextIcon.id = "ZoomText";
 // src/Editor/Menu/TextIcons/Aligns/AlignIcon.tsx
-var React35 = __toESM(require("react"));
+var React34 = __toESM(require("react"));
 // src/Editor/Menu/TextIcons/Aligns/AlignCenter.tsx
-var React31 = __toESM(require("react"));
+var React30 = __toESM(require("react"));
 var AlignCenterIcon = /*#__PURE__*/ function(Icon) {
     _inherits(AlignCenterIcon, Icon);
     var _super = _create_super(AlignCenterIcon);
@@ -2341,7 +2334,7 @@ var AlignCenterIcon = /*#__PURE__*/ function(Icon) {
         {
             key: "renderIcon",
             value: function renderIcon() {
-                return /* @__PURE__ */ React31.createElement("i", {
+                return /* @__PURE__ */ React30.createElement("i", {
                     className: "fa-solid fa-align-center fa-rotate-180"
                 });
             }
@@ -2365,7 +2358,7 @@ var AlignCenterIcon = /*#__PURE__*/ function(Icon) {
 }(Icon);
 AlignCenterIcon.id = "AlignCenterIcon";
 // src/Editor/Menu/TextIcons/Aligns/AlignLeftIcon.tsx
-var React32 = __toESM(require("react"));
+var React31 = __toESM(require("react"));
 var AlignLeftIcon = /*#__PURE__*/ function(Icon) {
     _inherits(AlignLeftIcon, Icon);
     var _super = _create_super(AlignLeftIcon);
@@ -2394,7 +2387,7 @@ var AlignLeftIcon = /*#__PURE__*/ function(Icon) {
         {
             key: "renderIcon",
             value: function renderIcon() {
-                return /* @__PURE__ */ React32.createElement("i", {
+                return /* @__PURE__ */ React31.createElement("i", {
                     className: "fa-solid fa-align-right fa-rotate-180"
                 });
             }
@@ -2418,7 +2411,7 @@ var AlignLeftIcon = /*#__PURE__*/ function(Icon) {
 }(Icon);
 AlignLeftIcon.id = "AlignLeftIcon";
 // src/Editor/Menu/TextIcons/Aligns/AlignRightIcon.tsx
-var React33 = __toESM(require("react"));
+var React32 = __toESM(require("react"));
 var AlignRightIcon = /*#__PURE__*/ function(Icon) {
     _inherits(AlignRightIcon, Icon);
     var _super = _create_super(AlignRightIcon);
@@ -2447,7 +2440,7 @@ var AlignRightIcon = /*#__PURE__*/ function(Icon) {
         {
             key: "renderIcon",
             value: function renderIcon() {
-                return /* @__PURE__ */ React33.createElement("i", {
+                return /* @__PURE__ */ React32.createElement("i", {
                     className: "fa-solid fa-align-left fa-rotate-180"
                 });
             }
@@ -2471,7 +2464,7 @@ var AlignRightIcon = /*#__PURE__*/ function(Icon) {
 }(Icon);
 AlignRightIcon.id = "AlignRightIcon";
 // src/Editor/Menu/TextIcons/Aligns/AlignJustify.tsx
-var React34 = __toESM(require("react"));
+var React33 = __toESM(require("react"));
 var AlignJustifyIcon = /*#__PURE__*/ function(Icon) {
     _inherits(AlignJustifyIcon, Icon);
     var _super = _create_super(AlignJustifyIcon);
@@ -2500,7 +2493,7 @@ var AlignJustifyIcon = /*#__PURE__*/ function(Icon) {
         {
             key: "renderIcon",
             value: function renderIcon() {
-                return /* @__PURE__ */ React34.createElement("i", {
+                return /* @__PURE__ */ React33.createElement("i", {
                     className: "fa-solid fa-align-justify fa-rotate-180"
                 });
             }
@@ -2571,12 +2564,12 @@ var AlignIcon = /*#__PURE__*/ function(Icon) {
                 });
                 if (selected) {
                     var IconSelected = selected.children;
-                    return /* @__PURE__ */ React35.createElement(IconSelected, {
+                    return /* @__PURE__ */ React34.createElement(IconSelected, {
                         editor: this.editor,
                         hideSelected: true
                     });
                 }
-                return /* @__PURE__ */ React35.createElement("i", {
+                return /* @__PURE__ */ React34.createElement("i", {
                     className: "fa-solid fa-align-right fa-rotate-180"
                 });
             }
@@ -2601,14 +2594,14 @@ var AlignIcon = /*#__PURE__*/ function(Icon) {
             key: "renderSubIcon",
             value: function renderSubIcon(IconClass, id, isSelect) {
                 var _this = this;
-                return /* @__PURE__ */ React35.createElement("div", {
+                return /* @__PURE__ */ React34.createElement("div", {
                     key: id,
                     className: prefix("icon", "sub-icon", isSelect ? "selected" : ""),
                     onClick: function() {
                         _this.focusSub();
                         _this.forceUpdate();
                     }
-                }, /* @__PURE__ */ React35.createElement(IconClass, {
+                }, /* @__PURE__ */ React34.createElement(IconClass, {
                     editor: this.props.editor,
                     selected: isSelect
                 }));
@@ -2633,7 +2626,7 @@ var AlignIcon = /*#__PURE__*/ function(Icon) {
 }(Icon);
 AlignIcon.id = "AlignIcon";
 // src/Editor/Menu/DeleteIcon.tsx
-var React36 = __toESM(require("react"));
+var React35 = __toESM(require("react"));
 var DeleteIcon = /*#__PURE__*/ function(Icon) {
     _inherits(DeleteIcon, Icon);
     var _super = _create_super(DeleteIcon);
@@ -2653,7 +2646,7 @@ var DeleteIcon = /*#__PURE__*/ function(Icon) {
         {
             key: "renderIcon",
             value: function renderIcon() {
-                return /* @__PURE__ */ React36.createElement("i", {
+                return /* @__PURE__ */ React35.createElement("i", {
                     className: "fa-regular fa-trash red-icon"
                 });
             }
@@ -2704,6 +2697,10 @@ var PrintAreaMenu = [
     Divider,
     BorderColorIcon,
     Divider,
+    LessZoomIcon,
+    ZoomTextIcon,
+    MoreZoomIcon,
+    Divider,
     DeleteIcon
 ];
 var CompleteMenu = [
@@ -2726,11 +2723,11 @@ var CompleteMenu = [
     DeleteIcon
 ];
 // src/Editor/Menu/DropdownIcon.tsx
-var React37 = __toESM(require("react"));
+var React36 = __toESM(require("react"));
 var import_Menu = __toESM(require("@mui/material/Menu"));
 function DropdownIcon(param) {
     var children = param.children;
-    var _React37_useState = _sliced_to_array(React37.useState(null), 2), anchorEl = _React37_useState[0], setAnchorEl = _React37_useState[1];
+    var _React36_useState = _sliced_to_array(React36.useState(null), 2), anchorEl = _React36_useState[0], setAnchorEl = _React36_useState[1];
     var open = Boolean(anchorEl);
     var handleClick = function(event) {
         setAnchorEl(event.currentTarget);
@@ -2738,12 +2735,12 @@ function DropdownIcon(param) {
     var handleClose = function() {
         setAnchorEl(null);
     };
-    return /* @__PURE__ */ React37.createElement(React37.Fragment, null, /* @__PURE__ */ React37.createElement("div", {
+    return /* @__PURE__ */ React36.createElement(React36.Fragment, null, /* @__PURE__ */ React36.createElement("div", {
         className: "scena-icon",
         onClick: handleClick
-    }, /* @__PURE__ */ React37.createElement("i", {
+    }, /* @__PURE__ */ React36.createElement("i", {
         className: "fa-solid fa-ellipsis-vertical"
-    })), /* @__PURE__ */ React37.createElement(import_Menu.default, {
+    })), /* @__PURE__ */ React36.createElement(import_Menu.default, {
         anchorEl: anchorEl,
         open: open,
         onClose: handleClose,
@@ -2752,8 +2749,8 @@ function DropdownIcon(param) {
 }
 // src/Editor/Menu/Menu.tsx
 var import_lodash = require("lodash");
-var Menu2 = /*#__PURE__*/ function(_React38_PureComponent) {
-    _inherits(Menu2, _React38_PureComponent);
+var Menu2 = /*#__PURE__*/ function(_React37_PureComponent) {
+    _inherits(Menu2, _React37_PureComponent);
     var _super = _create_super(Menu2);
     function Menu2() {
         _class_call_check(this, Menu2);
@@ -2766,7 +2763,7 @@ var Menu2 = /*#__PURE__*/ function(_React38_PureComponent) {
             width: 0
         };
         _this.menuRefs = [];
-        _this.menuContainerRef = React38.createRef();
+        _this.menuContainerRef = React37.createRef();
         _this.select = function(id) {
             _this.setState({
                 selected: id
@@ -2818,7 +2815,7 @@ var Menu2 = /*#__PURE__*/ function(_React38_PureComponent) {
                         ],
                         [
                             "font-family",
-                            "Avenir"
+                            "Roboto"
                         ],
                         [
                             "text-align",
@@ -2830,7 +2827,7 @@ var Menu2 = /*#__PURE__*/ function(_React38_PureComponent) {
                     });
                 }
                 var isTargetsSame = targets.every(function(t) {
-                    return t.name === targets[0].name;
+                    return t && t.name && t.name === targets[0].name;
                 });
                 if (isTargetsSame && targets.length > 0 || selected !== "MoveTool") {
                     var target = selected !== "MoveTool" ? selected : targets[0].name.replaceAll(/\(|\)/g, "");
@@ -2868,14 +2865,14 @@ var Menu2 = /*#__PURE__*/ function(_React38_PureComponent) {
                 if (dropedMenu && dropedMenu.length > 0 && dropedMenu[0].id === "Divider") {
                     dropedMenu.splice(0, 1);
                 }
-                return /* @__PURE__ */ React38.createElement(React38.Fragment, null, !isPreview && /* @__PURE__ */ React38.createElement("div", {
+                return /* @__PURE__ */ React37.createElement(React37.Fragment, null, !isPreview && /* @__PURE__ */ React37.createElement("div", {
                     className: prefix("menu"),
                     ref: this.menuContainerRef
                 }, filteredMenu.map(function(MenuClass, i) {
                     return _this.renderIcon(MenuClass, i, selected);
-                }), dropedMenu.length > 0 && /* @__PURE__ */ React38.createElement(DropdownIcon, null, dropedMenu.map(function(MenuClass, i) {
+                }), dropedMenu.length > 0 && /* @__PURE__ */ React37.createElement(DropdownIcon, null, dropedMenu.map(function(MenuClass, i) {
                     return _this.renderIcon(MenuClass, i, selected);
-                }))), this.props.children, !isPreview && floatingMenu.length > 0 && /* @__PURE__ */ React38.createElement("div", {
+                }))), this.props.children, !isPreview && floatingMenu.length > 0 && /* @__PURE__ */ React37.createElement("div", {
                     className: prefix("floating-menu")
                 }, floatingMenu.map(function(MenuClass, i) {
                     return _this.renderIcon(MenuClass, i, selected);
@@ -2889,15 +2886,15 @@ var Menu2 = /*#__PURE__*/ function(_React38_PureComponent) {
                 var editor = this.props.editor;
                 var id = MenuClass.id;
                 if (!menuRefs[i]) {
-                    menuRefs[i] = React38.createRef();
+                    menuRefs[i] = React37.createRef();
                 }
                 if (id === "Divider") {
-                    return /* @__PURE__ */ React38.createElement(MenuClass, {
+                    return /* @__PURE__ */ React37.createElement(MenuClass, {
                         key: i,
                         editor: editor
                     });
                 }
-                return /* @__PURE__ */ React38.createElement(MenuClass, {
+                return /* @__PURE__ */ React37.createElement(MenuClass, {
                     ref: menuRefs[i],
                     key: i,
                     editor: editor,
@@ -2943,12 +2940,12 @@ var Menu2 = /*#__PURE__*/ function(_React38_PureComponent) {
         }
     ]);
     return Menu2;
-}(React38.PureComponent);
+}(React37.PureComponent);
 // src/Editor/Viewport/Viewport.tsx
-var React39 = __toESM(require("react"));
-var import_utils9 = require("@daybrush/utils");
-var Viewport = /*#__PURE__*/ function(_React39_PureComponent) {
-    _inherits(Viewport, _React39_PureComponent);
+var React38 = __toESM(require("react"));
+var import_utils7 = require("@daybrush/utils");
+var Viewport = /*#__PURE__*/ function(_React38_PureComponent) {
+    _inherits(Viewport, _React38_PureComponent);
     var _super = _create_super(Viewport);
     function Viewport() {
         _class_call_check(this, Viewport);
@@ -2959,7 +2956,7 @@ var Viewport = /*#__PURE__*/ function(_React39_PureComponent) {
         _this.components = {};
         _this.jsxs = {};
         _this.viewport = {
-            jsx: /* @__PURE__ */ React39.createElement("div", null),
+            jsx: /* @__PURE__ */ React38.createElement("div", null),
             name: "Viewport",
             id: "viewport",
             children: []
@@ -2968,7 +2965,7 @@ var Viewport = /*#__PURE__*/ function(_React39_PureComponent) {
             viewport: _this.viewport
         };
         _this.state = {};
-        _this.viewportRef = React39.createRef();
+        _this.viewportRef = React38.createRef();
         return _this;
     }
     _create_class(Viewport, [
@@ -2980,11 +2977,11 @@ var Viewport = /*#__PURE__*/ function(_React39_PureComponent) {
                 var editor = this.props.editor;
                 var isScreenshot = editor.state.isScreenshot;
                 var previewMode = editor.props.previewMode;
-                return /* @__PURE__ */ React39.createElement("div", {
+                return /* @__PURE__ */ React38.createElement("div", {
                     className: prefix("viewport-container"),
                     onBlur: this.props.onBlur,
                     style: style
-                }, this.props.children, /* @__PURE__ */ React39.createElement("div", _object_spread_props(_object_spread({
+                }, this.props.children, /* @__PURE__ */ React38.createElement("div", _object_spread_props(_object_spread({
                     className: prefix("viewport"),
                     id: "scene-viewport"
                 }, _define_property({}, DATA_SCENA_ELEMENT_ID, "viewport")), {
@@ -3009,7 +3006,7 @@ var Viewport = /*#__PURE__*/ function(_React39_PureComponent) {
                 var _this = this;
                 var areErrors = false;
                 var renders = children.map(function(info, _, allInfos) {
-                    var _React39;
+                    var _React38;
                     var _jsx_props;
                     var editor = _this.props.editor;
                     var jsx = info.jsx;
@@ -3018,7 +3015,7 @@ var Viewport = /*#__PURE__*/ function(_React39_PureComponent) {
                     var id = info.id;
                     var isScreenshot = editor.state.isScreenshot;
                     if (isScreenshot && info.name === "(PrintArea)") {
-                        return /* @__PURE__ */ React39.createElement("div", null);
+                        return /* @__PURE__ */ React38.createElement("div", null);
                     }
                     if (info.name === "(PrintArea)" && editor.props.printAreaSize) {
                         info.innerHTML = '<div class="print-area-size"><span>'.concat(editor.props.printAreaSize, "</span></div>");
@@ -3053,10 +3050,10 @@ var Viewport = /*#__PURE__*/ function(_React39_PureComponent) {
                     if (!info.attrs) {
                         info.attrs = {};
                     }
-                    if ((0, import_utils9.isString)(jsx)) {
-                        var _React391;
+                    if ((0, import_utils7.isString)(jsx)) {
+                        var _React381;
                         props[DATA_SCENA_ELEMENT_ID] = id;
-                        return (_React391 = React39).createElement.apply(_React391, [
+                        return (_React381 = React38).createElement.apply(_React381, [
                             jsx,
                             props
                         ].concat(_to_consumable_array(renderedChildren)));
@@ -3065,8 +3062,8 @@ var Viewport = /*#__PURE__*/ function(_React39_PureComponent) {
                         props.scenaAttrs = info.attrs || {};
                         props.scenaText = info.innerText;
                         props.scenaHTML = info.innerHTML;
-                        return React39.createElement(jsx, props);
-                    } else if ((0, import_utils9.isString)(jsx.type)) {
+                        return React38.createElement(jsx, props);
+                    } else if ((0, import_utils7.isString)(jsx.type)) {
                         props[DATA_SCENA_ELEMENT_ID] = id;
                     } else {
                         props.scenaElementId = id;
@@ -3075,10 +3072,10 @@ var Viewport = /*#__PURE__*/ function(_React39_PureComponent) {
                         props.scenaHTML = info.innerHTML;
                     }
                     var jsxChildren = (jsx === null || jsx === void 0 ? void 0 : (_jsx_props = jsx.props) === null || _jsx_props === void 0 ? void 0 : _jsx_props.children) || [];
-                    return (_React39 = React39).cloneElement.apply(_React39, [
+                    return (_React38 = React38).cloneElement.apply(_React38, [
                         jsx,
                         _object_spread({}, jsx.props, props)
-                    ].concat(_to_consumable_array((0, import_utils9.isArray)(jsxChildren) ? jsxChildren : [
+                    ].concat(_to_consumable_array((0, import_utils7.isArray)(jsxChildren) ? jsxChildren : [
                         jsxChildren
                     ]), _to_consumable_array(_this.renderChildren(nextChildren))));
                 });
@@ -3186,7 +3183,7 @@ var Viewport = /*#__PURE__*/ function(_React39_PureComponent) {
         {
             key: "getIndexes",
             value: function getIndexes(target) {
-                var info = (0, import_utils9.isString)(target) ? this.getInfo(target) : this.getInfoByElement(target);
+                var info = (0, import_utils7.isString)(target) ? this.getInfo(target) : this.getInfoByElement(target);
                 if (!info.scopeId) {
                     return [];
                 }
@@ -3402,7 +3399,7 @@ var Viewport = /*#__PURE__*/ function(_React39_PureComponent) {
         {
             key: "moveInside",
             value: function moveInside(target) {
-                var info = (0, import_utils9.isString)(target) ? this.getInfo(target) : this.getInfoByElement(target);
+                var info = (0, import_utils7.isString)(target) ? this.getInfo(target) : this.getInfoByElement(target);
                 var prevInfo = this.getPrevInfo(info.id);
                 var moved;
                 if (!prevInfo || isScenaFunction(prevInfo.jsx) || isScenaFunctionElement(prevInfo.jsx)) {
@@ -3419,7 +3416,7 @@ var Viewport = /*#__PURE__*/ function(_React39_PureComponent) {
         {
             key: "moveOutside",
             value: function moveOutside(target) {
-                var info = (0, import_utils9.isString)(target) ? this.getInfo(target) : this.getInfoByElement(target);
+                var info = (0, import_utils7.isString)(target) ? this.getInfo(target) : this.getInfoByElement(target);
                 var parentInfo = this.getInfo(info.scopeId);
                 var rootInfo = this.getInfo(parentInfo.scopeId);
                 var moved = rootInfo ? [
@@ -3486,7 +3483,7 @@ var Viewport = /*#__PURE__*/ function(_React39_PureComponent) {
         }
     ]);
     return Viewport;
-}(React39.PureComponent);
+}(React38.PureComponent);
 // src/Editor/utils/EventBus.ts
 var import_component = __toESM(require("@egjs/component"));
 var EventBus = /*#__PURE__*/ function(_import_component_default) {
@@ -3547,7 +3544,7 @@ var Memory = /*#__PURE__*/ function() {
     return Memory;
 }();
 // src/Editor/Viewport/MoveableMananger.tsx
-var React40 = __toESM(require("react"));
+var React39 = __toESM(require("react"));
 var import_react_moveable = __toESM(require("react-moveable"));
 var import_list_differ = require("@egjs/list-differ");
 function restoreRender(id, state, prevState, orders, editor) {
@@ -3604,26 +3601,28 @@ function redoRenders(param, editor) {
     editor.moveableManager.current.updateRect();
     editor.eventBus.trigger("render");
 }
-var DimensionViewable = {
-    name: "dimensionViewable",
-    props: [
-        "dimensionViewable"
-    ],
-    render: function render(moveable) {
-        var _moveable_state = moveable.state, left = _moveable_state.left, top = _moveable_state.top;
-        var rect = moveable.getRect();
-        return /* @__PURE__ */ React40.createElement("div", {
-            key: "dimension-viewer",
-            className: "moveable-dimension",
-            style: {
-                left: "".concat(rect.left + rect.width / 2 - left, "px"),
-                top: "".concat(rect.top + rect.height + 20 - top, "px")
-            }
-        }, Math.round(rect.offsetWidth), " x ", Math.round(rect.offsetHeight));
-    }
+var DimensionViewable = function(editor) {
+    return {
+        name: "dimensionViewable",
+        props: [
+            "dimensionViewable"
+        ],
+        render: function render(moveable) {
+            var _moveable_state = moveable.state, left = _moveable_state.left, top = _moveable_state.top;
+            var rect = moveable.getRect();
+            return /* @__PURE__ */ React39.createElement("div", {
+                key: "dimension-viewer",
+                className: "moveable-dimension",
+                style: {
+                    left: "".concat(rect.left + rect.width / 2 - left, "px"),
+                    top: "".concat(rect.top + rect.height + 20 - top, "px")
+                }
+            }, Math.round(rect.offsetWidth), " x ", Math.round(rect.offsetHeight));
+        }
+    };
 };
-var MoveableManager = /*#__PURE__*/ function(_React40_PureComponent) {
-    _inherits(MoveableManager, _React40_PureComponent);
+var MoveableManager = /*#__PURE__*/ function(_React39_PureComponent) {
+    _inherits(MoveableManager, _React39_PureComponent);
     var _super = _create_super(MoveableManager);
     function MoveableManager() {
         _class_call_check(this, MoveableManager);
@@ -3631,7 +3630,7 @@ var MoveableManager = /*#__PURE__*/ function(_React40_PureComponent) {
         _this = _super.call.apply(_super, [
             this
         ].concat(Array.prototype.slice.call(arguments)));
-        _this.moveable = React40.createRef();
+        _this.moveable = React39.createRef();
         return _this;
     }
     _create_class(MoveableManager, [
@@ -3649,7 +3648,8 @@ var MoveableManager = /*#__PURE__*/ function(_React40_PureComponent) {
                 if (!selectedTargets.length) {
                     return this.renderViewportMoveable();
                 }
-                var moveableData = editor.moveableData, eventBus = editor.eventBus, selecto = editor.selecto, memory = editor.memory;
+                var moveableData = editor.moveableData, eventBus = editor.eventBus, selecto = editor.selecto;
+                var zoom = editor.state.zoom;
                 var elementGuidelines = _to_consumable_array(moveableData.getTargets()).filter(function(el) {
                     return selectedTargets.indexOf(el) === -1;
                 });
@@ -3664,9 +3664,9 @@ var MoveableManager = /*#__PURE__*/ function(_React40_PureComponent) {
                 var keepRatio = targetIsText || targetIsImage && !isShift || !targetIsImage && isShift || selectedTargets.length > 1;
                 var _this1 = this;
                 var _this2 = this;
-                return /* @__PURE__ */ React40.createElement(import_react_moveable.default, {
+                return /* @__PURE__ */ React39.createElement(import_react_moveable.default, {
                     ables: [
-                        DimensionViewable
+                        DimensionViewable(editor)
                     ],
                     ref: this.moveable,
                     targets: selectedTargets,
@@ -3681,7 +3681,7 @@ var MoveableManager = /*#__PURE__*/ function(_React40_PureComponent) {
                     rotatable: true,
                     snappable: true,
                     snapGap: false,
-                    roundable: true,
+                    zoom: 1 / zoom,
                     snapDirections: {
                         bottom: true,
                         top: true,
@@ -3698,6 +3698,7 @@ var MoveableManager = /*#__PURE__*/ function(_React40_PureComponent) {
                         center: true,
                         middle: true
                     },
+                    origin: false,
                     verticalGuidelines: isAdmin ? verticalGuidelines : [],
                     horizontalGuidelines: isAdmin ? horizontalGuidelines : [],
                     elementGuidelines: elementGuidelines,
@@ -3723,15 +3724,17 @@ var MoveableManager = /*#__PURE__*/ function(_React40_PureComponent) {
                     onResizeStart: moveableData.onResizeStart,
                     onResize: function(e) {
                         moveableData.onResize(e);
+                        _this.rescaleHandleResizers();
                     },
                     onResizeGroupStart: moveableData.onResizeGroupStart,
                     onResizeGroup: moveableData.onResizeGroup,
                     onRotateStart: moveableData.onRotateStart,
-                    onRotate: moveableData.onRotate,
+                    onRotate: function(e) {
+                        moveableData.onRotate(e);
+                        _this.rescaleHandleResizers();
+                    },
                     onRotateGroupStart: moveableData.onRotateGroupStart,
                     onRotateGroup: moveableData.onRotateGroup,
-                    defaultClipPath: memory.get("crop") || "inset",
-                    onClip: moveableData.onClip,
                     onDragOriginStart: moveableData.onDragOriginStart,
                     onDragOrigin: function(e) {
                         moveableData.onDragOrigin(e);
@@ -3827,7 +3830,7 @@ var MoveableManager = /*#__PURE__*/ function(_React40_PureComponent) {
             value: function renderViewportMoveable() {
                 var viewport = this.editor.getViewport();
                 var target = viewport ? viewport.viewportRef.current : null;
-                return /* @__PURE__ */ React40.createElement(import_react_moveable.default, {
+                return /* @__PURE__ */ React39.createElement(import_react_moveable.default, {
                     ref: this.moveable,
                     rotatable: false,
                     target: target,
@@ -3887,10 +3890,14 @@ var MoveableManager = /*#__PURE__*/ function(_React40_PureComponent) {
                     memory.set(key, value);
                 });
             }
+        },
+        {
+            key: "rescaleHandleResizers",
+            value: function rescaleHandleResizers() {}
         }
     ]);
     return MoveableManager;
-}(React40.PureComponent);
+}(React39.PureComponent);
 MoveableManager = __decorateClass([
     connectEditorProps
 ], MoveableManager);
@@ -4121,7 +4128,7 @@ var Debugger = /*#__PURE__*/ function() {
     return Debugger;
 }();
 // src/Editor/utils/ClipboardManager.tsx
-var React41 = __toESM(require("react"));
+var React40 = __toESM(require("react"));
 var import_html2canvas = __toESM(require("html2canvas"));
 var ClipboardManager = /*#__PURE__*/ function() {
     function ClipboardManager(editor) {
@@ -4303,7 +4310,7 @@ var ClipboardManager = /*#__PURE__*/ function() {
                                 text = _state.sent();
                                 _this.editor.appendJSXs([
                                     {
-                                        jsx: /* @__PURE__ */ React41.createElement("div", {
+                                        jsx: /* @__PURE__ */ React40.createElement("div", {
                                             contentEditable: "true"
                                         }),
                                         name: "(Text)",
@@ -4426,7 +4433,69 @@ function TextEditor(param) {
         }
     }));
 }
+// src/Editor/utils/FontsManager.ts
+var import_webfontloader = __toESM(require("webfontloader"));
+var FontsManager = /*#__PURE__*/ function() {
+    function FontsManager(editor) {
+        _class_call_check(this, FontsManager);
+        this.fonts = [];
+        this.requestFonts();
+        this.editor = editor;
+    }
+    _create_class(FontsManager, [
+        {
+            key: "requestFonts",
+            value: function requestFonts() {
+                var _this = this;
+                return _async_to_generator(function() {
+                    var _this_editor_menu_current, rest, fonts;
+                    return _ts_generator(this, function(_state) {
+                        switch(_state.label){
+                            case 0:
+                                return [
+                                    4,
+                                    fetch("https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyD_U19-I04gS4WZwYvSmYHEQJxTG2DNoio&sort=popularity")
+                                ];
+                            case 1:
+                                rest = _state.sent();
+                                return [
+                                    4,
+                                    rest.json()
+                                ];
+                            case 2:
+                                fonts = _state.sent();
+                                _this.fonts = fonts.items;
+                                _this.loadFonts([
+                                    "Roboto"
+                                ]);
+                                (_this_editor_menu_current = _this.editor.menu.current) === null || _this_editor_menu_current === void 0 ? void 0 : _this_editor_menu_current.forceUpdate();
+                                return [
+                                    2
+                                ];
+                        }
+                    });
+                })();
+            }
+        },
+        {
+            key: "loadFonts",
+            value: function loadFonts(fonts) {
+                var _this = this;
+                import_webfontloader.default.load({
+                    google: {
+                        families: fonts
+                    },
+                    active: function() {
+                        return _this.editor.forceUpdate();
+                    }
+                });
+            }
+        }
+    ]);
+    return FontsManager;
+}();
 // src/Editor/Editor.tsx
+var import_lodash2 = require("lodash");
 function undoCreateElements(param, editor) {
     var infos = param.infos, prevSelected = param.prevSelected;
     var res = editor.removeByIds(infos.map(function(info) {
@@ -4464,8 +4533,8 @@ function redoMove(param, editor) {
     var nextInfos = param.nextInfos;
     editor.moves(nextInfos, true);
 }
-var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
-    _inherits(Editor, _React43_PureComponent);
+var Editor = /*#__PURE__*/ function(_React42_PureComponent) {
+    _inherits(Editor, _React42_PureComponent);
     var _super = _create_super(Editor);
     function Editor() {
         _class_call_check(this, Editor);
@@ -4501,15 +4570,16 @@ var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
             }
         });
         _this.clipboardManager = new ClipboardManager(_assert_this_initialized(_this));
-        _this.horizontalGuides = React43.createRef();
-        _this.verticalGuides = React43.createRef();
-        _this.infiniteViewer = React43.createRef();
-        _this.selecto = React43.createRef();
-        _this.menu = React43.createRef();
-        _this.moveableManager = React43.createRef();
-        _this.viewport = React43.createRef();
-        _this.tabs = React43.createRef();
-        _this.editorElement = React43.createRef();
+        _this.fontsManager = new FontsManager(_assert_this_initialized(_this));
+        _this.horizontalGuides = React42.createRef();
+        _this.verticalGuides = React42.createRef();
+        _this.infiniteViewer = React42.createRef();
+        _this.selecto = React42.createRef();
+        _this.menu = React42.createRef();
+        _this.moveableManager = React42.createRef();
+        _this.viewport = React42.createRef();
+        _this.tabs = React42.createRef();
+        _this.editorElement = React42.createRef();
         _this.onMenuChange = function(id) {
             _this.setState({
                 selectedMenu: id
@@ -4571,7 +4641,7 @@ var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
                 var _this_viewport_current;
                 var _this1 = this, horizontalGuides = _this1.horizontalGuides, verticalGuides = _this1.verticalGuides, infiniteViewer = _this1.infiniteViewer, moveableManager = _this1.moveableManager, viewport = _this1.viewport, menu = _this1.menu, selecto = _this1.selecto, state = _this1.state;
                 var previewMode = this.props.previewMode;
-                var selectedMenu = state.selectedMenu, selectedTargets = state.selectedTargets, zoom = state.zoom, showGuides = state.showGuides, minZoom = state.minZoom, width = state.width, height = state.height;
+                var selectedMenu = state.selectedMenu, selectedTargets = state.selectedTargets, zoom = state.zoom, showGuides = state.showGuides, width = state.width, height = state.height;
                 var horizontalSnapGuides = [
                     0,
                     height,
@@ -4583,20 +4653,20 @@ var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
                     width / 2
                 ].concat(_to_consumable_array(state.verticalGuides));
                 var unit = 50;
-                return /* @__PURE__ */ React43.createElement("div", {
+                return /* @__PURE__ */ React42.createElement("div", {
                     className: prefix("editor"),
                     ref: this.editorElement
-                }, /* @__PURE__ */ React43.createElement(Menu2, {
+                }, /* @__PURE__ */ React42.createElement(Menu2, {
                     ref: menu,
                     editor: this,
                     onSelect: this.onMenuChange,
                     isPreviewMode: !!previewMode
-                }, showGuides && !previewMode && /* @__PURE__ */ React43.createElement(React43.Fragment, null, /* @__PURE__ */ React43.createElement("div", {
+                }, showGuides && !previewMode && /* @__PURE__ */ React42.createElement(React42.Fragment, null, /* @__PURE__ */ React42.createElement("div", {
                     className: prefix("reset"),
                     onClick: function(e) {
                         infiniteViewer.current.scrollCenter();
                     }
-                }), /* @__PURE__ */ React43.createElement(import_react_guides.default, {
+                }), /* @__PURE__ */ React42.createElement(import_react_guides.default, {
                     ref: horizontalGuides,
                     type: "horizontal",
                     className: prefix("guides", "horizontal"),
@@ -4613,7 +4683,7 @@ var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
                             horizontalGuides: e.guides
                         });
                     }
-                }), /* @__PURE__ */ React43.createElement(import_react_guides.default, {
+                }), /* @__PURE__ */ React42.createElement(import_react_guides.default, {
                     ref: verticalGuides,
                     type: "vertical",
                     className: prefix("guides", "vertical"),
@@ -4630,13 +4700,13 @@ var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
                             verticalGuides: e.guides
                         });
                     }
-                })), /* @__PURE__ */ React43.createElement("div", {
+                })), /* @__PURE__ */ React42.createElement("div", {
                     className: "scena-editor-container"
-                }, selectedMenu === "Text" && selectedTargets.length === 1 && /* @__PURE__ */ React43.createElement(TextEditor, {
+                }, selectedMenu === "Text" && selectedTargets.length === 1 && /* @__PURE__ */ React42.createElement(TextEditor, {
                     element: (_this_viewport_current = this.viewport.current) === null || _this_viewport_current === void 0 ? void 0 : _this_viewport_current.getInfoByElement(selectedTargets[0]),
                     memory: this.memory,
                     editor: this
-                }), /* @__PURE__ */ React43.createElement(import_react_infinite_viewer.default, {
+                }), /* @__PURE__ */ React42.createElement(import_react_infinite_viewer.default, {
                     ref: infiniteViewer,
                     className: prefix("viewer"),
                     pinchThreshold: 5,
@@ -4673,12 +4743,9 @@ var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
                         selecto.current.triggerDragStart(e.inputEvent);
                     },
                     onPinch: function(e) {
-                        var zoom2 = e.zoom >= minZoom ? e.zoom : minZoom;
-                        _this.setState({
-                            zoom: zoom2
-                        });
+                        return _this.setZoom(e);
                     }
-                }, /* @__PURE__ */ React43.createElement(Viewport, {
+                }, /* @__PURE__ */ React42.createElement(Viewport, {
                     ref: viewport,
                     onBlur: this.onBlur,
                     style: {
@@ -4687,14 +4754,14 @@ var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
                     },
                     editor: this,
                     background: this.props.backgroundImg
-                }, !previewMode && /* @__PURE__ */ React43.createElement(MoveableManager, {
+                }, !previewMode && /* @__PURE__ */ React42.createElement(MoveableManager, {
                     ref: moveableManager,
                     selectedTargets: selectedTargets,
                     selectedMenu: selectedMenu,
                     verticalGuidelines: verticalSnapGuides,
                     horizontalGuidelines: horizontalSnapGuides,
                     editor: this
-                }))), !previewMode && /* @__PURE__ */ React43.createElement(import_react_selecto.default, {
+                }))), !previewMode && /* @__PURE__ */ React42.createElement(import_react_selecto.default, {
                     ref: selecto,
                     hitRate: 0,
                     dragContainer: ".scena-viewer",
@@ -5000,6 +5067,20 @@ var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
                 }
                 return this.getViewport().appendJSXs(jsxs, appendIndex, scopeId).then(function(param) {
                     var added = param.added;
+                    var areTexts = added.filter(function(e) {
+                        return e.name === "(Text)";
+                    });
+                    if (areTexts.length) {
+                        var fonts = (0, import_lodash2.unionBy)(areTexts.map(function(e) {
+                            if (e.frame && e.frame["font-family"]) {
+                                return e.frame["font-family"];
+                            }
+                            return "";
+                        })).filter(function(e) {
+                            return e;
+                        });
+                        _this.fontsManager.loadFonts(fonts);
+                    }
                     return _this.appendComplete(added, isNewText ? false : isRestore);
                 });
             }
@@ -5028,6 +5109,17 @@ var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
                     return checkImageLoaded(target);
                 })).then(function() {
                     return targets;
+                });
+            }
+        },
+        {
+            key: "setZoom",
+            value: function setZoom(e) {
+                var _this_state, _this;
+                var minZoom = ((_this = this) === null || _this === void 0 ? void 0 : (_this_state = _this.state) === null || _this_state === void 0 ? void 0 : _this_state.minZoom) || 1;
+                var zoom = e.zoom >= minZoom ? e.zoom : minZoom;
+                this.setState({
+                    zoom: zoom
                 });
             }
         },
@@ -5166,10 +5258,10 @@ var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
                     }
                     if (!jsx && componentId) {
                         var Component2 = viewport.getComponent(componentId);
-                        jsx = /* @__PURE__ */ React43.createElement(Component2, null);
+                        jsx = /* @__PURE__ */ React42.createElement(Component2, null);
                     }
                     if (!jsx) {
-                        jsx = React43.createElement(data.tagName);
+                        jsx = React42.createElement(data.tagName);
                     }
                     return _object_spread_props(_object_spread({}, data), {
                         children: children.map(loadData),
@@ -5222,7 +5314,7 @@ var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
             value: function appendBlob(blob) {
                 var url = URL.createObjectURL(blob);
                 return this.appendJSX({
-                    jsx: /* @__PURE__ */ React43.createElement("img", {
+                    jsx: /* @__PURE__ */ React42.createElement("img", {
                         src: url,
                         alt: "appended blob"
                     }),
@@ -5587,7 +5679,7 @@ var Editor = /*#__PURE__*/ function(_React43_PureComponent) {
         }
     ]);
     return Editor;
-}(React43.PureComponent);
+}(React42.PureComponent);
 // src/Editor/index.ts
 var Editor_default = Editor;
 // Annotate the CommonJS export names for ESM import in node:

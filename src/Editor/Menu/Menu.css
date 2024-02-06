@@ -213,12 +213,6 @@
     padding:0 0.2rem;
 }
 .scene-font-size input{
-    width: 2rem;
-    color:#fff;
-    background: transparent;
-    border: 1px solid #fff;
-    border-radius: 0.25rem;
-    padding: 0.2rem 0.25rem;
     font-size: 0.85rem;
 }
 
@@ -257,8 +251,20 @@
     background-color: #000;
     z-index: 11;
 }
-
+.scene-font-family .MuiAutocomplete-input {
+    min-width: 100px !important;
+}
+.scene-font-family .MuiInputBase-root::before,
+.scene-font-size .MuiInputBase-root::before{
+    content: none;
+}
 .scena-floating-menu .scene-font-family,
 .scena-floating-menu .scene-font-size{
     width: 50%;
+    padding: 0 0.5rem;
+    box-sizing: border-box;
+}
+.scene-font-size .MuiAutocomplete-input {
+    min-width: 63px !important;
+    text-align: center;
 }

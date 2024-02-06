@@ -31,7 +31,7 @@ export default function TextEditor({ element, memory, editor }: TextEditorProps)
     adjustTextareaSize();
   };
 
-  const adjustTextareaSize = () => {
+	const adjustTextareaSize = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.width = '10px';

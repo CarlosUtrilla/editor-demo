@@ -167,4 +167,5 @@
     font-weight: bold;
     transform: translate(-50%);
     pointer-events: none;
+    transform-origin: center top;
 }

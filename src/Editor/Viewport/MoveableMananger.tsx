@@ -1,6 +1,6 @@
 import * as React from "react";
-import Moveable, { Able, MoveableManagerInterface } from "react-moveable";
-import { getContentElement, connectEditorProps, getId, isDivInsideAnother } from "../utils/utils";
+import Moveable, { Able, MoveableManagerInterface, Renderer } from "react-moveable";
+import { connectEditorProps, getId } from "../utils/utils";
 import Editor from "../Editor";
 import { EditorInterface } from "../types";
 import { IObject } from "@daybrush/utils";
@@ -61,7 +61,7 @@ function redoRenders({ infos }: IObject<any>, editor: Editor) {
 export interface DimensionViewableProps {
     dimensionViewable?: boolean;
 }
-const DimensionViewable: Able = {
+const DimensionViewable = (editor: Editor): Able =>  ({
     name: "dimensionViewable",
     props: [
        "dimensionViewable"
@@ -70,15 +70,23 @@ const DimensionViewable: Able = {
         const { left, top } = moveable.state;
 
         const rect = moveable.getRect();
+        let transform = "translate(-50%)"
+
+        const zoom = editor.state.zoom;
+        if (zoom > 1) {
+            transform += `scale(${1/zoom})`
+        }
 
         return <div key={"dimension-viewer"} className={"moveable-dimension"} style={{
             left: `${rect.left + rect.width / 2 - left}px`,
             top: `${rect.top + rect.height + 20 - top}px`,
+            transform
         }}>
             {Math.round(rect.offsetWidth)} x {Math.round(rect.offsetHeight)}
         </div>
     }
-}
+})
+
 @connectEditorProps
 export default class MoveableManager extends React.PureComponent<{
     editor: Editor,
@@ -108,8 +116,8 @@ export default class MoveableManager extends React.PureComponent<{
             moveableData,
             eventBus,
             selecto,
-            memory,
         } = editor;
+        const { zoom } = editor.state
         const elementGuidelines = [...moveableData.getTargets()].filter(el => {
             return selectedTargets.indexOf(el) === -1;
         });
@@ -122,7 +130,7 @@ export default class MoveableManager extends React.PureComponent<{
             (!targetIsImage && isShift) ||
             selectedTargets.length > 1
         return <Moveable<DimensionViewableProps>
-            ables={[DimensionViewable]}
+            ables={[DimensionViewable(editor)]}
             ref={this.moveable}
             targets={selectedTargets}
             dimensionViewable={true}
@@ -136,7 +144,7 @@ export default class MoveableManager extends React.PureComponent<{
             rotatable={true}
             snappable={true}
             snapGap={false}
-            roundable={true}
+            zoom={1/zoom}
             snapDirections={{
                 bottom: true,
                 top: true,
@@ -153,6 +161,7 @@ export default class MoveableManager extends React.PureComponent<{
                 center: true,
                 middle: true,
             }}
+            origin={false}
             verticalGuidelines={isAdmin ? verticalGuidelines: []}
             horizontalGuidelines={isAdmin ? horizontalGuidelines: []}
             elementGuidelines={elementGuidelines}
@@ -175,24 +184,19 @@ export default class MoveableManager extends React.PureComponent<{
             onResizeStart={moveableData.onResizeStart}
             onResize={(e) => {
                 moveableData.onResize(e)
-                //TODO: Agregar redimension de texto
-               /*  const targets = e.currentTarget.getTargets()
-                const textTargets = targets.filter(t => t.className.includes("Text"))
-                console.log("")
-                if (textTargets.length > 0) {
-                    
-                } */
+                this.rescaleHandleResizers()
             }}
             onResizeGroupStart={moveableData.onResizeGroupStart}
             onResizeGroup={moveableData.onResizeGroup}
 
             onRotateStart={moveableData.onRotateStart}
-            onRotate={moveableData.onRotate}
+            onRotate={(e) => {
+                moveableData.onRotate(e)
+                this.rescaleHandleResizers()
+            }}
             onRotateGroupStart={moveableData.onRotateGroupStart}
             onRotateGroup={moveableData.onRotateGroup}
 
-            defaultClipPath={memory.get("crop") || "inset"}
-            onClip={moveableData.onClip}
 
             onDragOriginStart={moveableData.onDragOriginStart}
             onDragOrigin={e => {
@@ -295,6 +299,22 @@ export default class MoveableManager extends React.PureComponent<{
         Object.entries(styles).forEach(([key, value]) => {
             memory.set(key, value)
         })
+    }
+    public rescaleHandleResizers() {
+        /* // Redimenciona los puntos para rezice dependiendo del zoom
+        const moveableControls = document.querySelectorAll<HTMLDivElement>(".moveable-control")
+        if (moveableControls.length > 0) {
+            const { zoom } = this.editor.state
+            const scale = 1 / zoom;
+            moveableControls.forEach((e) => {
+                const oldTransform = e.style.transform;
+                if (oldTransform && oldTransform.includes("scale")) {
+                    e.style.transform = oldTransform.replace(/scale\((.+)\)/, `scale(${scale})`)
+                } else {
+                    e.style.transform = (oldTransform || "") + ` scale(${scale})`
+                }
+            })
+        } */
     }
 }
 export default interface MoveableManager extends EditorInterface { }
