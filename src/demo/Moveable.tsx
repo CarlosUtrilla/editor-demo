@@ -30,7 +30,9 @@ const elements = [
         "id": "scena88123614",
         "index": 0,
         "innerHTML": "<div class=\"print-area-size\"><span>20cmx20cm</span></div>",
-        "attrs": {}
+        "attrs": {
+            "class": "selectable"
+        },
     },
     {
         "jsx": "div",
@@ -101,7 +103,6 @@ class App extends React.Component {
                     onUploadImage={this.uploadFile}
                     printAreaSize="20cmx20cm"
                     onChange={console.log}
-                    isAdmin
                 />
             </div>
             {/* <button onClick={this.handleScreen}>screen</button>

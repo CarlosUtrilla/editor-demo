@@ -125,6 +125,9 @@ export default class Viewport extends React.PureComponent<{
             if (!info.attrs) {
                 info.attrs = {}
             }
+            if (!editor.props.isAdmin && info.name === "(PrintArea)" && info.attrs.class.includes("selectable")) {
+                info.attrs.class = info.attrs.class.replace("selectable","")
+            }
 
             if (isString(jsx)) {
                 props[DATA_SCENA_ELEMENT_ID] = id;
