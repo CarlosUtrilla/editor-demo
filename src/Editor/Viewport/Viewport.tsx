@@ -4,6 +4,7 @@ import { prefix, getId, getScenaAttrs, isScenaFunction, isScenaElement, isNumber
 import { DATA_SCENA_ELEMENT_ID } from "../consts";
 import { ScenaJSXElement, ScenaComponent, ScenaJSXType } from "../types";
 import Editor from "../Editor";
+import { cloneDeep } from "lodash";
 
 export interface AddedInfo {
     added: ElementInfo[];
@@ -266,8 +267,10 @@ export default class Viewport extends React.PureComponent<{
     public appendJSXs(jsxs: ElementInfo[], appendIndex: number, scopeId?: string): Promise<AddedInfo> {
         const jsxInfos = this.registerChildren(jsxs, scopeId)
         jsxInfos.forEach((info, i) => {
+            console.log("index",info.index)
             const scopeInfo = this.getInfo(scopeId || info.scopeId!);
             const children = scopeInfo.children!;
+            console.log("children",cloneDeep(children))
             if (appendIndex > -1) {
                 children.splice(appendIndex + i, 1, info);
                 info.index = appendIndex + i;
@@ -369,6 +372,8 @@ export default class Viewport extends React.PureComponent<{
         removed.forEach((info, i) => {
             info.index = indexes[i];
         })
+        const childrens = this.getViewportInfos()
+        this.appendJSXs(childrens, 0)
         return new Promise(resolve => {
             this.forceUpdate(() => {
                 resolve({

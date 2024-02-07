@@ -13,7 +13,7 @@ import {
   getScenaAttrs,
   makeScenaFunctionComponent,
   prefix
-} from "./chunk-2MZNJJQJ.mjs";
+} from "./chunk-WJ4HC2ES.mjs";
 
 // src/Editor/Editor.tsx
 import * as React41 from "react";
@@ -1676,9 +1676,15 @@ var DimensionViewable = (editor) => ({
   render(moveable) {
     const { left, top } = moveable.state;
     const rect = moveable.getRect();
+    let transform = "translate(-50%)";
+    const zoom = editor.state.zoom;
+    if (zoom > 1) {
+      transform += `scale(${1 / zoom})`;
+    }
     return /* @__PURE__ */ React38.createElement("div", { key: "dimension-viewer", className: "moveable-dimension", style: {
       left: `${rect.left + rect.width / 2 - left}px`,
-      top: `${rect.top + rect.height + 20 - top}px`
+      top: `${rect.top + rect.height + 20 - top}px`,
+      transform
     } }, Math.round(rect.offsetWidth), " x ", Math.round(rect.offsetHeight));
   }
 });
@@ -1870,6 +1876,7 @@ var MoveableManager = class extends React38.PureComponent {
     const viewport = this.editor.getViewport();
     const element = viewport.getInfoByElement(e);
     element.frame = moveableData.getFrame(e).get();
+    this.console.log("updateRender");
     await viewport.appendJSXs([element], -1);
     this.editor.forceUpdate();
   }
@@ -2892,7 +2899,6 @@ var Editor = class extends React41.PureComponent {
         selectedTarget && selectedTarget.el ? [selectedTarget.el] : [],
         true
       );
-      this.console.log("removeTargets", removed);
       !isRestore && this.historyManager.addAction("removeElements", {
         infos: removed.map(function removeTarget(info) {
           return {
@@ -2902,6 +2908,7 @@ var Editor = class extends React41.PureComponent {
           };
         })
       });
+      this.setSelectedTargets([]);
       return targets;
     });
   }
@@ -2915,6 +2922,7 @@ var Editor = class extends React41.PureComponent {
     if (targets.length && this.moveableManager.current) {
       targets.forEach((target) => this.moveableManager.current.updateRender(target));
     }
+    this.console.log("setProperty", scope, value);
     this.historyManager.addAction("renders", { infos });
   }
   setOrders(scope, orders, isUpdate) {

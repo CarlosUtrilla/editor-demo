@@ -120,6 +120,7 @@ function convertToSnakeCase(str) {
 }
 
 // src/Editor/Viewport/Viewport.tsx
+import { cloneDeep } from "lodash";
 var Viewport = class extends React.PureComponent {
   constructor() {
     super(...arguments);
@@ -330,8 +331,10 @@ var Viewport = class extends React.PureComponent {
   appendJSXs(jsxs, appendIndex, scopeId) {
     const jsxInfos = this.registerChildren(jsxs, scopeId);
     jsxInfos.forEach((info, i) => {
+      console.log("index", info.index);
       const scopeInfo = this.getInfo(scopeId || info.scopeId);
       const children = scopeInfo.children;
+      console.log("children", cloneDeep(children));
       if (appendIndex > -1) {
         children.splice(appendIndex + i, 1, info);
         info.index = appendIndex + i;
@@ -423,6 +426,8 @@ var Viewport = class extends React.PureComponent {
     removed.forEach((info, i) => {
       info.index = indexes[i];
     });
+    const childrens = this.getViewportInfos();
+    this.appendJSXs(childrens, 0);
     return new Promise((resolve) => {
       this.forceUpdate(() => {
         resolve({

@@ -288,9 +288,9 @@ export default class MoveableManager extends React.PureComponent<{
         const { moveableData} = this.editor
         const viewport = this.editor.getViewport()
         const element = viewport.getInfoByElement(e)
-
         // update the element adding transform css
         element.frame = moveableData.getFrame(e).get()
+        this.console.log("updateRender")
         await viewport.appendJSXs([element], -1)
         this.editor.forceUpdate()
     }

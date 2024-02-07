@@ -2944,6 +2944,7 @@ var Menu2 = /*#__PURE__*/ function(_React37_PureComponent) {
 // src/Editor/Viewport/Viewport.tsx
 var React38 = __toESM(require("react"));
 var import_utils7 = require("@daybrush/utils");
+var import_lodash2 = require("lodash");
 var Viewport = /*#__PURE__*/ function(_React38_PureComponent) {
     _inherits(Viewport, _React38_PureComponent);
     var _super = _create_super(Viewport);
@@ -3229,8 +3230,10 @@ var Viewport = /*#__PURE__*/ function(_React38_PureComponent) {
                 var _this = this;
                 var jsxInfos = this.registerChildren(jsxs, scopeId);
                 jsxInfos.forEach(function(info, i) {
+                    console.log("index", info.index);
                     var scopeInfo = _this.getInfo(scopeId || info.scopeId);
                     var children = scopeInfo.children;
+                    console.log("children", (0, import_lodash2.cloneDeep)(children));
                     if (appendIndex > -1) {
                         children.splice(appendIndex + i, 1, info);
                         info.index = appendIndex + i;
@@ -3344,6 +3347,8 @@ var Viewport = /*#__PURE__*/ function(_React38_PureComponent) {
                 removed.forEach(function(info, i) {
                     info.index = indexes[i];
                 });
+                var childrens = this.getViewportInfos();
+                this.appendJSXs(childrens, 0);
                 return new Promise(function(resolve) {
                     _this.forceUpdate(function() {
                         resolve({
@@ -3610,12 +3615,18 @@ var DimensionViewable = function(editor) {
         render: function render(moveable) {
             var _moveable_state = moveable.state, left = _moveable_state.left, top = _moveable_state.top;
             var rect = moveable.getRect();
+            var transform = "translate(-50%)";
+            var zoom = editor.state.zoom;
+            if (zoom > 1) {
+                transform += "scale(".concat(1 / zoom, ")");
+            }
             return /* @__PURE__ */ React39.createElement("div", {
                 key: "dimension-viewer",
                 className: "moveable-dimension",
                 style: {
                     left: "".concat(rect.left + rect.width / 2 - left, "px"),
-                    top: "".concat(rect.top + rect.height + 20 - top, "px")
+                    top: "".concat(rect.top + rect.height + 20 - top, "px"),
+                    transform: transform
                 }
             }, Math.round(rect.offsetWidth), " x ", Math.round(rect.offsetHeight));
         }
@@ -3864,6 +3875,7 @@ var MoveableManager = /*#__PURE__*/ function(_React39_PureComponent) {
                                 viewport = _this.editor.getViewport();
                                 element = viewport.getInfoByElement(e);
                                 element.frame = moveableData.getFrame(e).get();
+                                _this.console.log("updateRender");
                                 return [
                                     4,
                                     viewport.appendJSXs([
@@ -4495,7 +4507,7 @@ var FontsManager = /*#__PURE__*/ function() {
     return FontsManager;
 }();
 // src/Editor/Editor.tsx
-var import_lodash2 = require("lodash");
+var import_lodash3 = require("lodash");
 function undoCreateElements(param, editor) {
     var infos = param.infos, prevSelected = param.prevSelected;
     var res = editor.removeByIds(infos.map(function(info) {
@@ -5071,7 +5083,7 @@ var Editor = /*#__PURE__*/ function(_React42_PureComponent) {
                         return e.name === "(Text)";
                     });
                     if (areTexts.length) {
-                        var fonts = (0, import_lodash2.unionBy)(areTexts.map(function(e) {
+                        var fonts = (0, import_lodash3.unionBy)(areTexts.map(function(e) {
                             if (e.frame && e.frame["font-family"]) {
                                 return e.frame["font-family"];
                             }
@@ -5194,7 +5206,6 @@ var Editor = /*#__PURE__*/ function(_React42_PureComponent) {
                     _this.setSelectedTargets(selectedTarget && selectedTarget.el ? [
                         selectedTarget.el
                     ] : [], true);
-                    _this.console.log("removeTargets", removed);
                     !isRestore && _this.historyManager.addAction("removeElements", {
                         infos: removed.map(function removeTarget(info) {
                             return _object_spread_props(_object_spread({}, info), {
@@ -5203,6 +5214,7 @@ var Editor = /*#__PURE__*/ function(_React42_PureComponent) {
                             });
                         })
                     });
+                    _this.setSelectedTargets([]);
                     return targets;
                 });
             }
@@ -5222,6 +5234,7 @@ var Editor = /*#__PURE__*/ function(_React42_PureComponent) {
                         return _this.moveableManager.current.updateRender(target);
                     });
                 }
+                this.console.log("setProperty", scope, value);
                 this.historyManager.addAction("renders", {
                     infos: infos
                 });

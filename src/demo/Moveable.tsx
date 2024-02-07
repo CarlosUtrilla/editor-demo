@@ -66,7 +66,6 @@ const elements = [
         "componentId": "",
         "jsxId": "",
         "id": "scena46694718",
-        "index": 1,
         "innerText": "Hola"
     }
 ] as ElementInfo[]

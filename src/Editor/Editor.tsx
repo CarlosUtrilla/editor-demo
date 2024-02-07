@@ -716,7 +716,6 @@ export default class Editor extends React.PureComponent<
         true
       );
 
-      this.console.log("removeTargets", removed);
       !isRestore &&
         this.historyManager.addAction("removeElements", {
           infos: removed.map(function removeTarget(
@@ -729,6 +728,7 @@ export default class Editor extends React.PureComponent<
             };
           })
         });
+      this.setSelectedTargets([])
       return targets;
     });
   }
@@ -744,11 +744,11 @@ export default class Editor extends React.PureComponent<
     if (targets.length && this.moveableManager.current) {
       targets.forEach(target => this.moveableManager.current!.updateRender(target))
     }
+    this.console.log("setProperty", scope, value)
     this.historyManager.addAction("renders", { infos });
   }
   public setOrders(scope: string[], orders: NameType[], isUpdate?: boolean) {
     const infos = this.moveableData.setOrders(scope, orders);
-
     this.historyManager.addAction("renders", { infos });
 
     if (isUpdate) {

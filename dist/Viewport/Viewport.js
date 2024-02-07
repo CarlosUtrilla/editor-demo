@@ -279,6 +279,7 @@ function isDivInsideAnother(div1, parentDiv) {
     return rect1.left >= rect2.left - 3 && rect1.right <= rect2.right + 1 && rect1.top >= rect2.top - 3 && rect1.bottom <= rect2.bottom + 1;
 }
 // src/Editor/Viewport/Viewport.tsx
+var import_lodash = require("lodash");
 var Viewport = /*#__PURE__*/ function(_React_PureComponent) {
     _inherits(Viewport, _React_PureComponent);
     var _super = _create_super(Viewport);
@@ -564,8 +565,10 @@ var Viewport = /*#__PURE__*/ function(_React_PureComponent) {
                 var _this = this;
                 var jsxInfos = this.registerChildren(jsxs, scopeId);
                 jsxInfos.forEach(function(info, i) {
+                    console.log("index", info.index);
                     var scopeInfo = _this.getInfo(scopeId || info.scopeId);
                     var children = scopeInfo.children;
+                    console.log("children", (0, import_lodash.cloneDeep)(children));
                     if (appendIndex > -1) {
                         children.splice(appendIndex + i, 1, info);
                         info.index = appendIndex + i;
@@ -679,6 +682,8 @@ var Viewport = /*#__PURE__*/ function(_React_PureComponent) {
                 removed.forEach(function(info, i) {
                     info.index = indexes[i];
                 });
+                var childrens = this.getViewportInfos();
+                this.appendJSXs(childrens, 0);
                 return new Promise(function(resolve) {
                     _this.forceUpdate(function() {
                         resolve({
