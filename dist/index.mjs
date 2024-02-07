@@ -13,7 +13,7 @@ import {
   getScenaAttrs,
   makeScenaFunctionComponent,
   prefix
-} from "./chunk-VZMPOJYG.mjs";
+} from "./chunk-3RM2AS46.mjs";
 
 // src/Editor/Editor.tsx
 import * as React41 from "react";

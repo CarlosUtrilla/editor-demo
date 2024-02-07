@@ -3051,7 +3051,7 @@ var Viewport = /*#__PURE__*/ function(_React38_PureComponent) {
                     if (!info.attrs) {
                         info.attrs = {};
                     }
-                    if (!editor.props.isAdmin && info.name === "(PrintArea)" && info.attrs.class.includes("selectable")) {
+                    if (!editor.props.isAdmin && info.name === "(PrintArea)" && typeof info.attrs.class === "string" && info.attrs.class.includes("selectable")) {
                         info.attrs.class = info.attrs.class.replace("selectable", "");
                     }
                     if ((0, import_utils7.isString)(jsx)) {
